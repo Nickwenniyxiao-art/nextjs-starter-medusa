@@ -31,7 +31,8 @@
     "react-dom": "19.0.4",
     "server-only": "^0.0.1",
     "tailwindcss-radix": "^2.8.0",
-    "webpack": "^5"
+    "webpack": "^5",
+    "next-intl": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
