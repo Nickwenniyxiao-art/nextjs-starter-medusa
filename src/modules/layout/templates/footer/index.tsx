@@ -106,10 +106,6 @@ export default async function Footer() {
                 <span className="txt-small-plus text-warm">{homeT("categories")}</span>
                 <ul className="grid grid-cols-1 gap-2" data-testid="footer-categories">
                   {productCategories.slice(0, 5).map((c) => {
-                    if (c.parent_category) {
-                      return null
-                    }
-
                     const children =
                       c.category_children?.map((child) => ({
                         name: child.name,
