@@ -34,6 +34,20 @@ module.exports = {
           80: "#1F2937",
           90: "#111827",
         },
+        forest: {
+          DEFAULT: "#2C3E2D",
+          light: "#3A5240",
+          dark: "#1E2D1F",
+        },
+        warm: {
+          DEFAULT: "#FAFAF8",
+          dark: "#F0F0EC",
+        },
+        brass: {
+          DEFAULT: "#B8956A",
+          light: "#D4B88C",
+          dark: "#96774F",
+        },
       },
       borderRadius: {
         none: "0px",
@@ -42,6 +56,7 @@ module.exports = {
         rounded: "8px",
         large: "16px",
         circle: "9999px",
+        nord: "8px",
       },
       maxWidth: {
         "8xl": "100rem",
@@ -59,14 +74,18 @@ module.exports = {
         "3xl": "2rem",
       },
       fontFamily: {
+        heading: ["var(--font-heading)", "Georgia", "serif"],
+        "sans-en": ["var(--font-sans-en)", "system-ui", "sans-serif"],
+        "sans-zh": [
+          "var(--font-sans-zh)",
+          "PingFang SC",
+          "Microsoft YaHei",
+          "sans-serif",
+        ],
         sans: [
-          "Inter",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Ubuntu",
+          "var(--font-sans-en)",
+          "var(--font-sans-zh)",
+          "system-ui",
           "sans-serif",
         ],
       },
