@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import { getTranslations } from "next-intl/server"
 
 import { listRegions } from "@lib/data/regions"
 import { listLocales } from "@lib/data/locales"
@@ -9,6 +10,8 @@ import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 
 export default async function Nav() {
+  const t = await getTranslations("nav")
+
   const [regions, locales, currentLocale] = await Promise.all([
     listRegions().then((regions: StoreRegion[]) => regions),
     listLocales(),
@@ -17,42 +20,46 @@ export default async function Nav() {
 
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
+      <header className="relative h-16 mx-auto border-b duration-200 bg-warm border-forest/10">
+        <nav className="content-container txt-xsmall-plus text-forest/70 flex items-center justify-between w-full h-full text-small-regular">
           <div className="flex-1 basis-0 h-full flex items-center">
             <div className="h-full">
-              <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
+              <SideMenu
+                regions={regions}
+                locales={locales}
+                currentLocale={currentLocale}
+              />
             </div>
           </div>
 
           <div className="flex items-center h-full">
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
+              className="text-xl md:text-2xl font-heading text-forest hover:text-brass transition-colors tracking-wide"
               data-testid="nav-store-link"
             >
-              Medusa Store
+              NordHjem
             </LocalizedClientLink>
           </div>
 
           <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
             <div className="hidden small:flex items-center gap-x-6 h-full">
               <LocalizedClientLink
-                className="hover:text-ui-fg-base"
+                className="hover:text-brass transition-colors"
                 href="/account"
                 data-testid="nav-account-link"
               >
-                Account
+                {t("account")}
               </LocalizedClientLink>
             </div>
             <Suspense
               fallback={
                 <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
+                  className="hover:text-brass transition-colors flex gap-2"
                   href="/cart"
                   data-testid="nav-cart-link"
                 >
-                  Cart (0)
+                  {t("cart")} (0)
                 </LocalizedClientLink>
               }
             >
