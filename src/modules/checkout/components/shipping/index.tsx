@@ -58,7 +58,7 @@ const optionMatchesCountry = (
   const geoZones = option.service_zone?.geo_zones
 
   if (!Array.isArray(geoZones) || geoZones.length === 0) {
-    return false
+    return true
   }
 
   return geoZones.some((geoZone: any) => {
