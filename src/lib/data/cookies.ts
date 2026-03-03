@@ -1,4 +1,5 @@
 import "server-only"
+import { getCookieSecureFlag } from "@lib/util/cookie-secure"
 import { cookies as nextCookies } from "next/headers"
 
 export const getAuthHeaders = async (): Promise<
@@ -55,7 +56,7 @@ export const setAuthToken = async (token: string) => {
     maxAge: 60 * 60 * 24 * 7,
     httpOnly: true,
     sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    secure: getCookieSecureFlag(),
   })
 }
 
@@ -77,7 +78,7 @@ export const setCartId = async (cartId: string) => {
     maxAge: 60 * 60 * 24 * 7,
     httpOnly: true,
     sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    secure: getCookieSecureFlag(),
   })
 }
 
