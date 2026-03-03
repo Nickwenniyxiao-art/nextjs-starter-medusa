@@ -58,7 +58,7 @@ function formatAddress(address: HttpTypes.StoreCartAddress) {
  * to dynamic geo_zones-based filtering.
  */
 const COUNTRY_SHIPPING_MAP: Record<string, string[]> = {
-  // North America
+  // North America (single shared option ID for US/CA)
   us: ["so_01KJQNGJ26GDRQ87T1FR0GDJJP"],
   ca: ["so_01KJQNGJ26GDRQ87T1FR0GDJJP"],
 }
