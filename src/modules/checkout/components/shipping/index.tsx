@@ -47,6 +47,22 @@ function formatAddress(address: HttpTypes.StoreCartAddress) {
   return ret
 }
 
+/**
+ * Maps country codes to their valid shipping option IDs.
+ *
+ * WORKAROUND: The Medusa v2 Store API returns empty geo_zones for all
+ * shipping options, making client-side geo filtering impossible.
+ * This hardcoded map ensures only the correct option shows for each country.
+ *
+ * When Medusa fixes the Store API to return geo_zones, this can be reverted
+ * to dynamic geo_zones-based filtering.
+ */
+const COUNTRY_SHIPPING_MAP: Record<string, string[]> = {
+  // North America (single shared option ID for US/CA)
+  us: ["so_01KJQNGJ26GDRQ87T1FR0GDJJP"],
+  ca: ["so_01KJQNGJ26GDRQ87T1FR0GDJJP"],
+}
+
 const optionMatchesCountry = (
   option: HttpTypes.StoreCartShippingOption,
   countryCode?: string
@@ -55,28 +71,16 @@ const optionMatchesCountry = (
     return true
   }
 
-  const geoZones = option.service_zone?.geo_zones
+  const allowedIds = COUNTRY_SHIPPING_MAP[countryCode.toLowerCase()]
 
-  if (!Array.isArray(geoZones) || geoZones.length === 0) {
-    return true
+  // If country has explicit mapping, only allow listed options
+  if (allowedIds) {
+    return allowedIds.includes(option.id)
   }
 
-  return geoZones.some((geoZone: any) => {
-    if (typeof geoZone?.country_code === "string") {
-      return geoZone.country_code.toLowerCase() === countryCode
-    }
-
-    if (Array.isArray(geoZone?.countries)) {
-      return geoZone.countries.some((country: any) => {
-        const code =
-          country?.iso_2 || country?.country_code || country?.code || country
-
-        return typeof code === "string" && code.toLowerCase() === countryCode
-      })
-    }
-
-    return false
-  })
+  // For unmapped countries, fall back to showing all options
+  // (Medusa backend will validate on selection)
+  return true
 }
 
 const isValidAmount = (amount: unknown): amount is number =>
