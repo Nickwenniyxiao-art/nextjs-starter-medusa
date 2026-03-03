@@ -1,7 +1,7 @@
 import { isEmpty } from "./isEmpty"
 
 type ConvertToLocaleParams = {
-  amount: number
+  amount: number | null | undefined
   currency_code: string
   minimumFractionDigits?: number
   maximumFractionDigits?: number
@@ -15,6 +15,10 @@ export const convertToLocale = ({
   maximumFractionDigits,
   locale = "en-US",
 }: ConvertToLocaleParams) => {
+  if (amount == null || typeof amount !== "number" || !Number.isFinite(amount)) {
+    return "—"
+  }
+
   return currency_code && !isEmpty(currency_code)
     ? new Intl.NumberFormat(locale, {
         style: "currency",
