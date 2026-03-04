@@ -101,7 +101,10 @@
     "easyReturns": "便捷退货",
     "easyReturnsDescription": "退货即可获得退款，无需理由。",
     "relatedProductsTitle": "相关产品",
-    "relatedProductsDescription": "您可能还喜欢这些产品。"
+    "relatedProductsDescription": "您可能还喜欢这些产品。",
+    "adding": "添加中...",
+    "from": "起",
+    "originalPrice": "原价"
   },
   "collection": {
     "title": "商品系列",
@@ -125,7 +128,17 @@
     "pagination": "第 {current} 页，共 {total} 页",
     "prevPage": "上一页",
     "nextPage": "下一页",
-    "itemsPerPage": "每页显示"
+    "itemsPerPage": "每页显示",
+    "names": {
+      "living-room": "客厅",
+      "bedroom": "卧室",
+      "dining": "餐厅",
+      "office": "办公",
+      "lighting": "灯具",
+      "outdoor": "户外",
+      "storage": "收纳",
+      "decor": "装饰"
+    }
   },
   "cart": {
     "title": "购物车",

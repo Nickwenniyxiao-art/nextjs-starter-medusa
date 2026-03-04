@@ -1,12 +1,16 @@
+import { getLocalizedCollectionName } from "@lib/util/collection-name"
 import { HttpTypes } from "@medusajs/types"
 import { Heading, Text } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { getTranslations } from "next-intl/server"
 
 type ProductInfoProps = {
   product: HttpTypes.StoreProduct
 }
 
-const ProductInfo = ({ product }: ProductInfoProps) => {
+const ProductInfo = async ({ product }: ProductInfoProps) => {
+  const tCollection = await getTranslations("collection")
+
   return (
     <div id="product-info">
       <div className="flex flex-col gap-y-4 lg:max-w-[500px] mx-auto">
@@ -15,7 +19,11 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
             href={`/collections/${product.collection.handle}`}
             className="text-medium text-ui-fg-muted hover:text-ui-fg-subtle"
           >
-            {product.collection.title}
+            {getLocalizedCollectionName(
+              product.collection.handle,
+              product.collection.title,
+              tCollection
+            )}
           </LocalizedClientLink>
         )}
         <Heading

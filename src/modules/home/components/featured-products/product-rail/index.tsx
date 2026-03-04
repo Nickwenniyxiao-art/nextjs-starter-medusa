@@ -1,4 +1,5 @@
 import { listProducts } from "@lib/data/products"
+import { getLocalizedCollectionName } from "@lib/util/collection-name"
 import { HttpTypes } from "@medusajs/types"
 import { Text } from "@medusajs/ui"
 import { getTranslations } from "next-intl/server"
@@ -14,6 +15,7 @@ export default async function ProductRail({
   region: HttpTypes.StoreRegion
 }) {
   const t = await getTranslations("home")
+  const tCollection = await getTranslations("collection")
 
   const {
     response: { products: pricedProducts },
@@ -32,7 +34,13 @@ export default async function ProductRail({
   return (
     <div className="content-container py-12 small:py-24">
       <div className="flex justify-between mb-8">
-        <Text className="txt-xlarge">{collection.title}</Text>
+        <Text className="txt-xlarge">
+          {getLocalizedCollectionName(
+            collection.handle,
+            collection.title,
+            tCollection
+          )}
+        </Text>
         <InteractiveLink href={`/collections/${collection.handle}`}>
           {t("viewAll")}
         </InteractiveLink>

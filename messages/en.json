@@ -101,7 +101,10 @@
     "easyReturns": "Easy returns",
     "easyReturnsDescription": "Just return your product...",
     "relatedProductsTitle": "Related products",
-    "relatedProductsDescription": "You might also want to check out these products."
+    "relatedProductsDescription": "You might also want to check out these products.",
+    "adding": "Adding...",
+    "from": "From",
+    "originalPrice": "Original"
   },
   "collection": {
     "title": "Collections",
@@ -125,7 +128,17 @@
     "pagination": "Page {current} of {total}",
     "prevPage": "Previous",
     "nextPage": "Next",
-    "itemsPerPage": "Items per page"
+    "itemsPerPage": "Items per page",
+    "names": {
+      "living-room": "Living Room",
+      "bedroom": "Bedroom",
+      "dining": "Dining",
+      "office": "Office",
+      "lighting": "Lighting",
+      "outdoor": "Outdoor",
+      "storage": "Storage",
+      "decor": "Decor"
+    }
   },
   "cart": {
     "title": "Shopping Cart",
