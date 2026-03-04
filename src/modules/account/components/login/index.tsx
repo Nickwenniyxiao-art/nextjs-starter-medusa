@@ -4,6 +4,7 @@ import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
 import { useActionState } from "react"
+import { useTranslations } from "next-intl"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
@@ -11,6 +12,7 @@ type Props = {
 
 const Login = ({ setCurrentView }: Props) => {
   const [message, formAction] = useActionState(login, null)
+  const t = useTranslations("account")
 
   return (
     <div
@@ -24,16 +26,16 @@ const Login = ({ setCurrentView }: Props) => {
       <form className="w-full" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
-            label="Email"
+            label={t("emailLabel")}
             name="email"
             type="email"
-            title="Enter a valid email address."
+            title={t("emailValidation")}
             autoComplete="email"
             required
             data-testid="email-input"
           />
           <Input
-            label="Password"
+            label={t("password")}
             name="password"
             type="password"
             autoComplete="current-password"

@@ -5,6 +5,7 @@ import Input from "@modules/common/components/input"
 import AccountInfo from "../account-info"
 import { HttpTypes } from "@medusajs/types"
 import { toast } from "@medusajs/ui"
+import { useTranslations } from "next-intl"
 
 type MyInformationProps = {
   customer: HttpTypes.StoreCustomer
@@ -12,10 +13,11 @@ type MyInformationProps = {
 
 const ProfilePassword: React.FC<MyInformationProps> = ({ customer }) => {
   const [successState, setSuccessState] = React.useState(false)
+  const t = useTranslations("account")
 
   // TODO: Add support for password updates
   const updatePassword = async () => {
-    toast.info("Password update is not implemented")
+    toast.info(t("passwordNotImplemented"))
   }
 
   const clearState = () => {

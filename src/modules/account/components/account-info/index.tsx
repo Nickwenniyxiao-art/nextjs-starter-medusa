@@ -1,6 +1,7 @@
 import { Disclosure } from "@headlessui/react"
 import { Badge, Button, clx } from "@medusajs/ui"
 import { useEffect } from "react"
+import { useTranslations } from "next-intl"
 
 import useToggleState from "@lib/hooks/use-toggle-state"
 import { useFormStatus } from "react-dom"
@@ -22,11 +23,12 @@ const AccountInfo = ({
   isSuccess,
   isError,
   clearState,
-  errorMessage = "An error occurred, please try again",
+  errorMessage = "",
   children,
   'data-testid': dataTestid
 }: AccountInfoProps) => {
   const { state, close, toggle } = useToggleState()
+  const t = useTranslations("account")
 
   const { pending } = useFormStatus()
 
@@ -63,7 +65,7 @@ const AccountInfo = ({
             data-testid="edit-button"
             data-active={state}
           >
-            {state ? "Cancel" : "Edit"}
+            {state ? t("cancelEdit") : t("editAction")}
           </Button>
         </div>
       </div>
@@ -101,7 +103,7 @@ const AccountInfo = ({
           data-testid="error-message"
         >
           <Badge className="p-2 my-4" color="red">
-            <span>{errorMessage}</span>
+            <span>{errorMessage || t("errorDefault")}</span>
           </Badge>
         </Disclosure.Panel>
       </Disclosure>
