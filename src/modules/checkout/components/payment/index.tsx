@@ -233,7 +233,7 @@ const Payment = ({
                   <Text>
                     {isStripeLike(selectedPaymentMethod) && cardBrand
                       ? cardBrand
-                      : "Another step will appear"}
+                      : t("anotherStep")}
                   </Text>
                 </div>
               </div>
