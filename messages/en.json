@@ -38,7 +38,8 @@
     "newsletterPlaceholder": "Enter your email",
     "subscribe": "Subscribe",
     "copyright": "© 2026 NordHjem. All rights reserved.",
-    "refundPolicy": "Refund Policy"
+    "refundPolicy": "Refund Policy",
+    "shippingPolicy": "Shipping Policy"
   },
   "home": {
     "heroTitle": "Nordic Living, Timeless Design",
@@ -360,6 +361,32 @@
         "liability": {
           "title": "3. Limitation of Liability",
           "body": "NordHjem is not liable for indirect or incidental damages to the fullest extent permitted by law. This section is placeholder copy and not final legal advice."
+        }
+      }
+    },
+    "shipping": {
+      "title": "Shipping Policy",
+      "lastUpdated": "Last updated: January 1, 2026",
+      "sections": {
+        "methods": {
+          "title": "1. Shipping Methods",
+          "body": "We offer standard and expedited shipping options based on destination and product availability. Available methods are shown at checkout before payment is completed."
+        },
+        "deliveryTimes": {
+          "title": "2. Delivery Times",
+          "body": "Estimated delivery times vary by region and shipping method. Orders are typically processed within 1–2 business days, and transit times are provided as estimates only."
+        },
+        "costs": {
+          "title": "3. Shipping Costs",
+          "body": "Shipping fees are calculated at checkout according to destination, package size, and selected delivery speed. Promotional free-shipping offers may apply when eligible."
+        },
+        "international": {
+          "title": "4. International Shipping",
+          "body": "We ship to selected international destinations. Customs duties, taxes, and import fees are the responsibility of the recipient unless otherwise stated at checkout."
+        },
+        "tracking": {
+          "title": "5. Order Tracking",
+          "body": "Once your order ships, you will receive a confirmation email with tracking details. Tracking updates may take up to 24 hours to appear after carrier pickup."
         }
       }
     },
