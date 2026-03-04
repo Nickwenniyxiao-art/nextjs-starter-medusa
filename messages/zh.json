@@ -53,7 +53,15 @@
     "brandStoryText": "NordHjem 源于对北欧简约生活的热爱。我们相信，家应该是一个充满美感、实用且经久耐用之物的港湾。",
     "brandStoryCta": "了解更多",
     "viewAll": "查看全部",
-    "bestSellers": "热销商品"
+    "bestSellers": "热销商品",
+    "category_livingRoom": "客厅",
+    "category_livingRoom_sub": "沙发、茶几、灯具",
+    "category_bedroom": "卧室",
+    "category_bedroom_sub": "床具、纺织品、床头柜",
+    "category_dining": "餐厅",
+    "category_dining_sub": "餐桌、餐椅、餐具",
+    "category_office": "办公",
+    "category_office_sub": "书桌、办公椅、收纳"
   },
   "product": {
     "price": "价格",

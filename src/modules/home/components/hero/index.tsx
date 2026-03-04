@@ -1,35 +1,38 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 const Hero = () => {
   const t = useTranslations("home")
 
   return (
-    <div className="relative w-full bg-warm">
+    <div className="relative w-full">
       <div
-        className="relative min-h-[70vh] flex flex-col justify-center items-center text-center px-6 py-20"
+        className="relative min-h-[75vh] flex flex-col justify-center items-center text-center px-6"
         style={{
-          background: "linear-gradient(180deg, #2C3E2D 0%, #3a5240 40%, #FAFAF8 100%)",
+          backgroundImage: "url('/images/hero-banner.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading text-warm mb-4 tracking-tight">
-          NordHjem
-        </h1>
-        <p className="text-lg md:text-2xl text-warm/80 mb-2 font-light">
-          {t("heroTitle")}
-        </p>
-        <p className="text-base md:text-lg text-warm/60 mb-10 max-w-xl">
-          {t("heroSubtitle")}
-        </p>
-        <LocalizedClientLink
-          href="/store"
-          className="btn-primary text-base md:text-lg px-10 py-4"
-        >
-          {t("heroCta")}
-        </LocalizedClientLink>
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="relative z-10">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading text-white mb-4 tracking-tight">
+            {t("heroTitle")}
+          </h1>
+          <p className="text-lg md:text-xl text-white/80 mb-2 font-light italic">
+            {t("heroSubtitle")}
+          </p>
+          <div className="mt-8">
+            <LocalizedClientLink
+              href="/store"
+              className="inline-block bg-white text-[#2C3E2D] px-10 py-4 text-base md:text-lg font-medium hover:bg-[#FAFAF8] transition-colors tracking-wide"
+            >
+              {t("heroCta")}
+            </LocalizedClientLink>
+          </div>
+        </div>
       </div>
     </div>
   )
