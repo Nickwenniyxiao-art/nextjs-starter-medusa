@@ -2,6 +2,7 @@
 
 import { Badge, Heading, Input, Label, Text } from "@medusajs/ui"
 import React from "react"
+import { useTranslations } from "next-intl"
 
 import { applyPromotions } from "@lib/data/cart"
 import { convertToLocale } from "@lib/util/money"
@@ -17,6 +18,7 @@ type DiscountCodeProps = {
 }
 
 const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
+  const t = useTranslations("checkout")
   const [isOpen, setIsOpen] = React.useState(false)
   const [errorMessage, setErrorMessage] = React.useState("")
 
@@ -66,7 +68,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
               className="txt-medium text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               data-testid="add-discount-button"
             >
-              Add Promotion Code(s)
+              {t("addPromoCode")}
             </button>
 
             {/* <Tooltip content="You can add multiple promotion codes">

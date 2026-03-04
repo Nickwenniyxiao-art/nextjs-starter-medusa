@@ -62,7 +62,7 @@ const BillingAddress = ({ cart }: { cart: HttpTypes.StoreCart | null }) => {
           data-testid="billing-address-input"
         />
         <Input
-          label="Company"
+          label={t("company")}
           name="billing_address.company"
           value={formData["billing_address.company"]}
           onChange={handleChange}

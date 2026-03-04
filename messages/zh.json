@@ -168,7 +168,13 @@
     "processing": "处理中...",
     "orderSummary": "订单摘要",
     "editCart": "修改购物车",
-    "termsAgree": "提交订单即表示您同意我们的{terms}和{privacy}"
+    "company": "公司",
+    "contact": "联系方式",
+    "edit": "编辑",
+    "backToCart": "返回购物车",
+    "addPromoCode": "添加优惠码",
+    "billingSameAsDelivery": "账单地址与配送地址相同。",
+    "termsAgree": "提交订单即表示您同意我们的<terms>使用条款</terms>和<privacy>隐私政策</privacy>"
   },
   "order": {
     "confirmation": "订单确认",

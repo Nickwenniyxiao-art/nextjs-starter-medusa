@@ -40,7 +40,18 @@ const Review = ({ cart }: { cart: any }) => {
           <div className="flex items-start gap-x-1 w-full mb-6">
             <div className="w-full">
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
-                {t("termsAgree")}
+                {t.rich("termsAgree", {
+                  terms: (chunks) => (
+                    <a href="/terms" className="underline">
+                      {chunks}
+                    </a>
+                  ),
+                  privacy: (chunks) => (
+                    <a href="/privacy" className="underline">
+                      {chunks}
+                    </a>
+                  ),
+                })}
               </Text>
             </div>
           </div>
