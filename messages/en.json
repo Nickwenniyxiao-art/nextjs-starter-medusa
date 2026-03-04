@@ -168,7 +168,13 @@
     "processing": "Processing...",
     "orderSummary": "Order Summary",
     "editCart": "Edit Cart",
-    "termsAgree": "By placing this order, you agree to our {terms} and {privacy}"
+    "company": "Company",
+    "contact": "Contact",
+    "edit": "Edit",
+    "backToCart": "Back to Shopping Cart",
+    "addPromoCode": "Add Promotion Code",
+    "billingSameAsDelivery": "Billing and delivery address are the same.",
+    "termsAgree": "By placing this order, you agree to our <terms>Terms of Use</terms> and <privacy>Privacy Policy</privacy>"
   },
   "order": {
     "confirmation": "Order Confirmation",
