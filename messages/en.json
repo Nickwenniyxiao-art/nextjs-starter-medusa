@@ -277,5 +277,12 @@
     "currency": "Currency",
     "english": "English",
     "chinese": "中文"
+  },
+  "store": {
+    "allProducts": "All products",
+    "sortBy": "Sort by",
+    "latestArrivals": "Latest Arrivals",
+    "priceLowToHigh": "Price: Low -> High",
+    "priceHighToLow": "Price: High -> Low"
   }
 }
