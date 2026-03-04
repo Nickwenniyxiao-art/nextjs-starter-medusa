@@ -53,7 +53,15 @@
     "brandStoryText": "NordHjem was born from a love of Scandinavian simplicity. We believe your home should be a sanctuary — filled with pieces that are beautiful, functional, and built to last.",
     "brandStoryCta": "Learn More",
     "viewAll": "View All",
-    "bestSellers": "Best Sellers"
+    "bestSellers": "Best Sellers",
+    "category_livingRoom": "Living Room",
+    "category_livingRoom_sub": "Sofas, Coffee Tables, Lighting",
+    "category_bedroom": "Bedroom",
+    "category_bedroom_sub": "Beds, Textiles, Nightstands",
+    "category_dining": "Dining",
+    "category_dining_sub": "Tables, Chairs, Tableware",
+    "category_office": "Office",
+    "category_office_sub": "Desks, Chairs, Storage"
   },
   "product": {
     "price": "Price",
