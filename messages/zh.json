@@ -277,5 +277,12 @@
     "currency": "货币",
     "english": "English",
     "chinese": "中文"
+  },
+  "store": {
+    "allProducts": "所有商品",
+    "sortBy": "排序方式",
+    "latestArrivals": "最新上架",
+    "priceLowToHigh": "价格：从低到高",
+    "priceHighToLow": "价格：从高到低"
   }
 }
