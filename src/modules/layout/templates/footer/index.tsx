@@ -98,6 +98,11 @@ export default async function Footer() {
                     {t("refundPolicy")}
                   </LocalizedClientLink>
                 </li>
+                <li>
+                  <LocalizedClientLink className="hover:text-brass" href="/legal/shipping-policy">
+                    {t("shippingPolicy")}
+                  </LocalizedClientLink>
+                </li>
               </ul>
             </div>
 
