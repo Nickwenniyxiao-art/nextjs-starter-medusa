@@ -84,18 +84,18 @@ export default async function Footer() {
               <span className="txt-small-plus text-warm">{t("policies")}</span>
               <ul className="grid grid-cols-1 gap-y-2 text-warm/80 txt-small">
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/privacy-policy">
+                  <LocalizedClientLink className="hover:text-brass" href="/legal/privacy-policy">
                     {t("privacyPolicy")}
                   </LocalizedClientLink>
                 </li>
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/terms-of-service">
+                  <LocalizedClientLink className="hover:text-brass" href="/legal/terms-of-service">
                     {t("termsOfService")}
                   </LocalizedClientLink>
                 </li>
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/cookie-policy">
-                    {t("cookiePolicy")}
+                  <LocalizedClientLink className="hover:text-brass" href="/legal/refund-policy">
+                    {t("refundPolicy")}
                   </LocalizedClientLink>
                 </li>
               </ul>

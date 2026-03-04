@@ -37,7 +37,8 @@
     "newsletter": "Newsletter",
     "newsletterPlaceholder": "Enter your email",
     "subscribe": "Subscribe",
-    "copyright": "© 2026 NordHjem. All rights reserved."
+    "copyright": "© 2026 NordHjem. All rights reserved.",
+    "refundPolicy": "Refund Policy"
   },
   "home": {
     "heroTitle": "Nordic Living, Timeless Design",
@@ -324,5 +325,61 @@
     "latestArrivals": "Latest Arrivals",
     "priceLowToHigh": "Price: Low -> High",
     "priceHighToLow": "Price: High -> Low"
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: January 1, 2026",
+      "sections": {
+        "overview": {
+          "title": "1. Overview",
+          "body": "This placeholder privacy policy explains how we may collect, use, and protect customer information when you browse or purchase from NordHjem. The final legal text will be provided by our legal team."
+        },
+        "data": {
+          "title": "2. Information We Collect",
+          "body": "We may collect account details, order history, shipping information, and customer support messages. This placeholder section is for demonstration only and will be replaced with complete disclosures."
+        },
+        "contact": {
+          "title": "3. Contact Us",
+          "body": "If you have questions about privacy practices, please contact our support team through the official contact channel listed on the website."
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated: January 1, 2026",
+      "sections": {
+        "acceptance": {
+          "title": "1. Acceptance of Terms",
+          "body": "By using this website, you agree to these placeholder terms. The definitive legal language will be updated in a later release."
+        },
+        "usage": {
+          "title": "2. Account and Usage Rules",
+          "body": "Users should provide accurate account details, use the platform responsibly, and comply with all applicable laws. This is sample content for layout and localization purposes."
+        },
+        "liability": {
+          "title": "3. Limitation of Liability",
+          "body": "NordHjem is not liable for indirect or incidental damages to the fullest extent permitted by law. This section is placeholder copy and not final legal advice."
+        }
+      }
+    },
+    "refund": {
+      "title": "Refund Policy",
+      "lastUpdated": "Last updated: January 1, 2026",
+      "sections": {
+        "eligibility": {
+          "title": "1. Refund Eligibility",
+          "body": "Refund requests may be accepted for eligible items within a defined period after delivery. Specific eligibility conditions will be finalized in the official policy."
+        },
+        "process": {
+          "title": "2. Refund Request Process",
+          "body": "Customers can submit a refund request with order details and reason for return. Our support team will review and respond according to the final policy terms."
+        },
+        "timing": {
+          "title": "3. Processing Time",
+          "body": "Approved refunds are typically processed to the original payment method within several business days, depending on banking timelines."
+        }
+      }
+    }
   }
 }
