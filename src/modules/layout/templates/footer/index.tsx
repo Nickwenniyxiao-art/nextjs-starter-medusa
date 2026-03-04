@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server"
 
 import { listCategories } from "@lib/data/categories"
+import { getLocale } from "@lib/data/locale-actions"
 import { Text, clx } from "@medusajs/ui"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -8,7 +9,16 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 export default async function Footer() {
   const t = await getTranslations("footer")
   const homeT = await getTranslations("home")
-  const productCategories = await listCategories()
+  const collectionNamesT = await getTranslations("collection.names")
+  const [productCategories, currentLocale] = await Promise.all([listCategories(), getLocale()])
+
+  const getCategoryLabel = (handle: string, fallback: string) => {
+    if (currentLocale !== "zh") {
+      return fallback
+    }
+
+    return collectionNamesT.has(handle) ? collectionNamesT(handle) : fallback
+  }
 
   return (
     <footer className="border-t border-forest/10 w-full bg-forest text-warm">
@@ -125,7 +135,7 @@ export default async function Footer() {
                           href={`/categories/${c.handle}`}
                           data-testid="category-link"
                         >
-                          {c.name}
+                          {getCategoryLabel(c.handle, c.name)}
                         </LocalizedClientLink>
                         {children && (
                           <ul className="grid grid-cols-1 ml-3 gap-2">
@@ -136,7 +146,7 @@ export default async function Footer() {
                                   href={`/categories/${child.handle}`}
                                   data-testid="category-link"
                                 >
-                                  {child.name}
+                                  {getCategoryLabel(child.handle, child.name)}
                                 </LocalizedClientLink>
                               </li>
                             ))}
