@@ -25,6 +25,7 @@ const notoSansSC = Noto_Sans_SC({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
+  title: "NordHjem - Nordic Minimalist Furniture",
 }
 
 export default function RootLayout(props: { children: React.ReactNode }) {

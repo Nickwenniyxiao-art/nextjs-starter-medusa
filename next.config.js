@@ -60,6 +60,24 @@ const nextConfig = {
         : []),
     ],
   },
+  async redirects() {
+    const defaultLocale = "en"
+    const defaultCountryCode =
+      process.env.NEXT_PUBLIC_DEFAULT_REGION?.toLowerCase() || "us"
+
+    return [
+      {
+        source: "/",
+        destination: `/${defaultLocale}/${defaultCountryCode}`,
+        permanent: false,
+      },
+      {
+        source: `/${defaultLocale}`,
+        destination: `/${defaultLocale}/${defaultCountryCode}`,
+        permanent: false,
+      },
+    ]
+  },
 }
 
 module.exports = withNextIntl(nextConfig)
