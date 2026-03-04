@@ -1,16 +1,20 @@
+"use client"
+
 import { forwardRef, useImperativeHandle, useMemo, useRef } from "react"
 
 import NativeSelect, {
   NativeSelectProps,
 } from "@modules/common/components/native-select"
 import { HttpTypes } from "@medusajs/types"
+import { useTranslations } from "next-intl"
 
 const CountrySelect = forwardRef<
   HTMLSelectElement,
   NativeSelectProps & {
     region?: HttpTypes.StoreRegion
   }
->(({ placeholder = "Country", region, defaultValue, ...props }, ref) => {
+>(({ placeholder, region, defaultValue, ...props }, ref) => {
+  const t = useTranslations("checkout")
   const innerRef = useRef<HTMLSelectElement>(null)
 
   useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
@@ -32,7 +36,7 @@ const CountrySelect = forwardRef<
   return (
     <NativeSelect
       ref={innerRef}
-      placeholder={placeholder}
+      placeholder={placeholder ?? t("country")}
       defaultValue={defaultValue}
       {...props}
     >
