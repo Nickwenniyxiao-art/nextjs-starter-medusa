@@ -1,4 +1,5 @@
 import { getBaseURL } from "@lib/util/env"
+import CrispChat from "@modules/common/components/crisp-chat"
 import { Metadata } from "next"
 import "styles/globals.css"
 import { DM_Serif_Display, Inter, Noto_Sans_SC } from "next/font/google"
@@ -37,6 +38,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     >
       <body>
         <main className="relative">{props.children}</main>
+        <CrispChat />
       </body>
     </html>
   )
