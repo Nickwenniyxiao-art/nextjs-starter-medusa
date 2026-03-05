@@ -9,15 +9,18 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 export default async function Footer() {
   const t = await getTranslations("footer")
   const homeT = await getTranslations("home")
-  const collectionNamesT = await getTranslations("collection.names")
   const [productCategories, currentLocale] = await Promise.all([listCategories(), getLocale()])
 
-  const getCategoryLabel = (handle: string, fallback: string) => {
-    if (currentLocale !== "zh") {
-      return fallback
+  const getCategoryLabel = (category: {
+    handle: string
+    name: string
+    metadata?: Record<string, string> | null
+  }) => {
+    if (currentLocale === "zh" && category.metadata?.zh_name) {
+      return category.metadata.zh_name
     }
 
-    return collectionNamesT.has(handle) ? collectionNamesT(handle) : fallback
+    return category.name
   }
 
   return (
@@ -126,6 +129,7 @@ export default async function Footer() {
                         name: child.name,
                         handle: child.handle,
                         id: child.id,
+                        metadata: child.metadata,
                       })) || null
 
                     return (
@@ -135,7 +139,7 @@ export default async function Footer() {
                           href={`/categories/${c.handle}`}
                           data-testid="category-link"
                         >
-                          {getCategoryLabel(c.handle, c.name)}
+                          {getCategoryLabel(c as { handle: string; name: string; metadata?: Record<string, string> | null })}
                         </LocalizedClientLink>
                         {children && (
                           <ul className="grid grid-cols-1 ml-3 gap-2">
@@ -146,7 +150,7 @@ export default async function Footer() {
                                   href={`/categories/${child.handle}`}
                                   data-testid="category-link"
                                 >
-                                  {getCategoryLabel(child.handle, child.name)}
+                                  {getCategoryLabel(child as { handle: string; name: string; metadata?: Record<string, string> | null })}
                                 </LocalizedClientLink>
                               </li>
                             ))}
