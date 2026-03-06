@@ -1,7 +1,6 @@
-import { getTranslations } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
 
 import { listCategories } from "@lib/data/categories"
-import { getLocale } from "@lib/data/locale-actions"
 import { Text, clx } from "@medusajs/ui"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
