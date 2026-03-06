@@ -211,7 +211,33 @@
     "billingSameAsDelivery": "账单地址与配送地址相同。",
     "termsAgree": "提交订单即表示您同意我们的<terms>使用条款</terms>和<privacy>隐私政策</privacy>",
     "chooseAddress": "选择地址",
-    "anotherStep": "下一步将会显示"
+    "anotherStep": "下一步将会显示",
+    "processingPayment": "正在处理支付...",
+    "enterCardDetails": "输入卡片信息",
+    "noPaymentMethodsTitle": "暂无可用支付方式",
+    "noPaymentMethodsDescription": "请检查账单信息或尝试切换地区后重试。",
+    "paymentMethods": {
+      "creditCard": "信用卡",
+      "ideal": "iDEAL",
+      "bancontact": "Bancontact",
+      "paypal": "PayPal",
+      "manual": "手动支付",
+      "fallback": "支付方式"
+    },
+    "paymentErrors": {
+      "title": "支付失败",
+      "generic": "无法完成支付，请稍后重试。",
+      "notReady": "支付服务仍在加载中，请稍后重试。",
+      "authenticationRequired": "需要额外身份验证。请在弹窗中完成 3D Secure 验证后重试。",
+      "codes": {
+        "card_declined": "银行卡被拒绝，请更换银行卡。",
+        "insufficient_funds": "余额不足，请使用其他支付方式。",
+        "expired_card": "银行卡已过期，请使用有效银行卡。",
+        "incorrect_cvc": "安全码不正确，请检查后重试。",
+        "processing_error": "银行卡处理失败，请稍后重试。",
+        "authentication_required": "需要完成 3D Secure 验证，请先完成弹窗挑战。"
+      }
+    }
   },
   "order": {
     "confirmation": "订单确认",
