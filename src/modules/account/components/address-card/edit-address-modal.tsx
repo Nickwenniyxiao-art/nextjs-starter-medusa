@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useActionState } from "react"
 import { PencilSquare as Edit, Trash } from "@medusajs/icons"
-import { Button, Heading, Text, clx } from "@medusajs/ui"
+import { Badge, Button, Heading, Text, clx } from "@medusajs/ui"
 import { useTranslations } from "next-intl"
 
 import useToggleState from "@lib/hooks/use-toggle-state"
@@ -14,21 +14,24 @@ import { SubmitButton } from "@modules/checkout/components/submit-button"
 import { HttpTypes } from "@medusajs/types"
 import {
   deleteCustomerAddress,
+  setDefaultCustomerAddress,
   updateCustomerAddress,
 } from "@lib/data/customer"
 
 type EditAddressProps = {
   region: HttpTypes.StoreRegion
   address: HttpTypes.StoreCustomerAddress
-  isActive?: boolean
+  isDefault?: boolean
 }
 
 const EditAddress: React.FC<EditAddressProps> = ({
   region,
   address,
-  isActive = false,
+  isDefault = false,
 }) => {
   const [removing, setRemoving] = useState(false)
+  const [settingDefault, setSettingDefault] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const t = useTranslations("account")
   const [successState, setSuccessState] = useState(false)
   const { state, open, close: closeModal } = useToggleState(false)
@@ -61,26 +64,41 @@ const EditAddress: React.FC<EditAddressProps> = ({
     setRemoving(true)
     await deleteCustomerAddress(address.id)
     setRemoving(false)
+    setDeleteModalOpen(false)
+  }
+
+  const setAsDefaultAddress = async () => {
+    setSettingDefault(true)
+    await setDefaultCustomerAddress(address.id)
+    setSettingDefault(false)
   }
 
   return (
     <>
       <div
         className={clx(
-          "border rounded-rounded p-5 min-h-[220px] h-full w-full flex flex-col justify-between transition-colors",
+          "flex h-full min-h-[220px] w-full flex-col justify-between rounded-rounded border p-5 transition-colors",
           {
-            "border-gray-900": isActive,
+            "border-gray-900": isDefault,
+            "border-ui-border-base": !isDefault,
           }
         )}
         data-testid="address-container"
       >
         <div className="flex flex-col">
-          <Heading
-            className="text-left text-base-semi"
-            data-testid="address-name"
-          >
-            {address.first_name} {address.last_name}
-          </Heading>
+          <div className="mb-1 flex items-center justify-between gap-2">
+            <Heading
+              className="text-left text-base-semi"
+              data-testid="address-name"
+            >
+              {address.first_name} {address.last_name}
+            </Heading>
+            {isDefault && (
+              <Badge size="2xsmall" data-testid="default-address-badge">
+                {t("defaultAddress")}
+              </Badge>
+            )}
+          </div>
           {address.company && (
             <Text
               className="txt-compact-small text-ui-fg-base"
@@ -89,7 +107,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
               {address.company}
             </Text>
           )}
-          <Text className="flex flex-col text-left text-base-regular mt-2">
+          <Text className="mt-2 flex flex-col text-left text-base-regular">
             <span data-testid="address-address">
               {address.address_1}
               {address.address_2 && <span>, {address.address_2}</span>}
@@ -103,35 +121,47 @@ const EditAddress: React.FC<EditAddressProps> = ({
             </span>
           </Text>
         </div>
-        <div className="flex items-center gap-x-4">
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
           <button
-            className="text-small-regular text-ui-fg-base flex items-center gap-x-2"
+            className="flex items-center gap-x-2 text-small-regular text-ui-fg-base"
             onClick={open}
             data-testid="address-edit-button"
           >
             <Edit />
-            Edit
+            {t("editAction")}
           </button>
+
           <button
-            className="text-small-regular text-ui-fg-base flex items-center gap-x-2"
-            onClick={removeAddress}
+            className="flex items-center gap-x-2 text-small-regular text-ui-fg-base"
+            onClick={() => setDeleteModalOpen(true)}
             data-testid="address-delete-button"
           >
             {removing ? <Spinner /> : <Trash />}
-            Remove
+            {t("deleteAddress")}
           </button>
+
+          {!isDefault && (
+            <button
+              className="text-small-regular text-ui-fg-interactive"
+              onClick={setAsDefaultAddress}
+              disabled={settingDefault}
+              data-testid="address-default-button"
+            >
+              {settingDefault ? t("settingDefault") : t("setDefault")}
+            </button>
+          )}
         </div>
       </div>
 
       <Modal isOpen={state} close={close} data-testid="edit-address-modal">
         <Modal.Title>
-          <Heading className="mb-2">Edit address</Heading>
+          <Heading className="mb-2">{t("editAddress")}</Heading>
         </Modal.Title>
         <form action={formAction}>
           <input type="hidden" name="addressId" value={address.id} />
           <Modal.Body>
             <div className="grid grid-cols-1 gap-y-2">
-              <div className="grid grid-cols-2 gap-x-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <Input
                   label={t("firstName")}
                   name="first_name"
@@ -171,7 +201,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 defaultValue={address.address_2 || undefined}
                 data-testid="address-2-input"
               />
-              <div className="grid grid-cols-[144px_1fr] gap-x-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-[144px_1fr]">
                 <Input
                   label={t("postalCode")}
                   name="postal_code"
@@ -213,13 +243,13 @@ const EditAddress: React.FC<EditAddressProps> = ({
               />
             </div>
             {formState.error && (
-              <div className="text-rose-500 text-small-regular py-2">
+              <div className="py-2 text-small-regular text-rose-500">
                 {formState.error}
               </div>
             )}
           </Modal.Body>
           <Modal.Footer>
-            <div className="flex gap-3 mt-6">
+            <div className="mt-6 flex gap-3">
               <Button
                 type="reset"
                 variant="secondary"
@@ -227,12 +257,45 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 className="h-10"
                 data-testid="cancel-button"
               >
-                Cancel
+                {t("cancelEdit")}
               </Button>
-              <SubmitButton data-testid="save-button">Save</SubmitButton>
+              <SubmitButton data-testid="save-button">
+                {t("saveAddress")}
+              </SubmitButton>
             </div>
           </Modal.Footer>
         </form>
+      </Modal>
+
+      <Modal
+        isOpen={deleteModalOpen}
+        close={() => setDeleteModalOpen(false)}
+        size="small"
+        data-testid="delete-address-modal"
+      >
+        <Modal.Title>
+          <Heading>{t("deleteAddressConfirmTitle")}</Heading>
+        </Modal.Title>
+        <Modal.Description>
+          {t("deleteAddressConfirmDescription")}
+        </Modal.Description>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setDeleteModalOpen(false)}
+            data-testid="delete-cancel-button"
+          >
+            {t("cancelEdit")}
+          </Button>
+          <Button
+            variant="danger"
+            onClick={removeAddress}
+            disabled={removing}
+            data-testid="delete-confirm-button"
+          >
+            {removing ? t("deletingAddress") : t("confirmDelete")}
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   )
