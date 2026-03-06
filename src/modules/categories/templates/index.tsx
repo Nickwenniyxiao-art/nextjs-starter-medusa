@@ -9,16 +9,28 @@ import PaginatedProducts from "@modules/store/templates/paginated-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
 
+function getCategoryLabel(
+  category: { name: string; metadata?: Record<string, any> | null },
+  locale: string | null
+): string {
+  if (locale === "zh" && category.metadata?.zh_name) {
+    return category.metadata.zh_name
+  }
+  return category.name
+}
+
 export default function CategoryTemplate({
   category,
   sortBy,
   page,
   countryCode,
+  locale,
 }: {
   category: HttpTypes.StoreProductCategory
   sortBy?: SortOptions
   page?: string
   countryCode: string
+  locale?: string | null
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
@@ -36,6 +48,8 @@ export default function CategoryTemplate({
 
   getParents(category)
 
+  const currentLocale = locale ?? null
+
   return (
     <div
       className="flex flex-col small:flex-row small:items-start py-6 content-container"
@@ -52,12 +66,12 @@ export default function CategoryTemplate({
                   href={`/categories/${parent.handle}`}
                   data-testid="sort-by-link"
                 >
-                  {parent.name}
+                  {getCategoryLabel(parent, currentLocale)}
                 </LocalizedClientLink>
                 /
               </span>
             ))}
-          <h1 data-testid="category-page-title">{category.name}</h1>
+          <h1 data-testid="category-page-title">{getCategoryLabel(category, currentLocale)}</h1>
         </div>
         {category.description && (
           <div className="mb-8 text-base-regular">
@@ -70,7 +84,7 @@ export default function CategoryTemplate({
               {category.category_children?.map((c) => (
                 <li key={c.id}>
                   <InteractiveLink href={`/categories/${c.handle}`}>
-                    {c.name}
+                    {getCategoryLabel(c, currentLocale)}
                   </InteractiveLink>
                 </li>
               ))}

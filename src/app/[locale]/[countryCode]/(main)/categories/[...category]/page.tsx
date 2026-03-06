@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { getLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 
 import { getCategoryByHandle, listCategories } from "@lib/data/categories"
@@ -74,12 +75,15 @@ export default async function CategoryPage(props: Props) {
     notFound()
   }
 
+  const locale = await getLocale()
+
   return (
     <CategoryTemplate
       category={productCategory}
       sortBy={sortBy}
       page={page}
       countryCode={params.countryCode}
+      locale={locale}
     />
   )
 }
