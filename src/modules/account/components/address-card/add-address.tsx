@@ -51,22 +51,22 @@ const AddAddress = ({
   return (
     <>
       <button
-        className="border border-ui-border-base rounded-rounded p-5 min-h-[220px] h-full w-full flex flex-col justify-between"
+        className="flex h-full min-h-[220px] w-full flex-col justify-between rounded-rounded border border-ui-border-base p-5 text-left"
         onClick={open}
         data-testid="add-address-button"
       >
-        <span className="text-base-semi">New address</span>
+        <span className="text-base-semi">{t("addAddress")}</span>
         <Plus />
       </button>
 
       <Modal isOpen={state} close={close} data-testid="add-address-modal">
         <Modal.Title>
-          <Heading className="mb-2">Add address</Heading>
+          <Heading className="mb-2">{t("addAddress")}</Heading>
         </Modal.Title>
         <form action={formAction}>
           <Modal.Body>
             <div className="flex flex-col gap-y-2">
-              <div className="grid grid-cols-2 gap-x-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <Input
                   label={t("firstName")}
                   name="first_name"
@@ -101,7 +101,7 @@ const AddAddress = ({
                 autoComplete="address-line2"
                 data-testid="address-2-input"
               />
-              <div className="grid grid-cols-[144px_1fr] gap-x-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-[144px_1fr]">
                 <Input
                   label={t("postalCode")}
                   name="postal_code"
@@ -139,7 +139,7 @@ const AddAddress = ({
             </div>
             {formState.error && (
               <div
-                className="text-rose-500 text-small-regular py-2"
+                className="py-2 text-small-regular text-rose-500"
                 data-testid="address-error"
               >
                 {formState.error}
@@ -147,7 +147,7 @@ const AddAddress = ({
             )}
           </Modal.Body>
           <Modal.Footer>
-            <div className="flex gap-3 mt-6">
+            <div className="mt-6 flex gap-3">
               <Button
                 type="reset"
                 variant="secondary"
@@ -155,9 +155,11 @@ const AddAddress = ({
                 className="h-10"
                 data-testid="cancel-button"
               >
-                Cancel
+                {t("cancelEdit")}
               </Button>
-              <SubmitButton data-testid="save-button">Save</SubmitButton>
+              <SubmitButton data-testid="save-button">
+                {t("saveAddress")}
+              </SubmitButton>
             </div>
           </Modal.Footer>
         </form>

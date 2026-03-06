@@ -259,3 +259,27 @@ export const updateCustomerAddress = async (
       return { success: false, error: err.toString() }
     })
 }
+
+export const setDefaultCustomerAddress = async (
+  addressId: string
+): Promise<{ success: boolean; error: string | null }> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const body = {
+    default_shipping_address_id: addressId,
+    default_billing_address_id: addressId,
+  } as HttpTypes.StoreUpdateCustomer
+
+  return sdk.store.customer
+    .update(body, {}, headers)
+    .then(async () => {
+      const customerCacheTag = await getCacheTag("customers")
+      revalidateTag(customerCacheTag)
+      return { success: true, error: null }
+    })
+    .catch((err) => {
+      return { success: false, error: err.toString() }
+    })
+}
