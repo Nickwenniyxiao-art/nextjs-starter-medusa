@@ -3,6 +3,10 @@ import { notFound } from "next/navigation"
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import ProductTemplate from "@modules/products/templates"
+import {
+  generateBreadcrumbJsonLd,
+  generateProductJsonLd,
+} from "@lib/util/structured-data"
 import { HttpTypes } from "@medusajs/types"
 
 export const dynamic = "force-dynamic"
@@ -85,12 +89,38 @@ export default async function ProductPage(props: Props) {
     notFound()
   }
 
+  const productJsonLd = generateProductJsonLd(pricedProduct)
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    {
+      name: "Home",
+      item: "https://nordhjem.store",
+    },
+    {
+      name: "Products",
+      item: "https://nordhjem.store/products",
+    },
+    {
+      name: pricedProduct.title,
+      item: `https://nordhjem.store/products/${pricedProduct.handle}`,
+    },
+  ])
+
   return (
-    <ProductTemplate
-      product={pricedProduct}
-      region={region}
-      countryCode={params.countryCode}
-      images={images}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ProductTemplate
+        product={pricedProduct}
+        region={region}
+        countryCode={params.countryCode}
+        images={images}
+      />
+    </>
   )
 }
