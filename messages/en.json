@@ -211,7 +211,33 @@
     "chooseAddress": "Choose an address",
     "anotherStep": "Another step will appear",
     "billingSameAsDelivery": "Billing and delivery address are the same.",
-    "termsAgree": "By placing this order, you agree to our <terms>Terms of Use</terms> and <privacy>Privacy Policy</privacy>"
+    "termsAgree": "By placing this order, you agree to our <terms>Terms of Use</terms> and <privacy>Privacy Policy</privacy>",
+    "processingPayment": "Processing payment...",
+    "enterCardDetails": "Enter card details",
+    "noPaymentMethodsTitle": "No payment methods available",
+    "noPaymentMethodsDescription": "Please check your billing details or try another region.",
+    "paymentMethods": {
+      "creditCard": "Credit card",
+      "ideal": "iDEAL",
+      "bancontact": "Bancontact",
+      "paypal": "PayPal",
+      "manual": "Manual Payment",
+      "fallback": "Payment method"
+    },
+    "paymentErrors": {
+      "title": "Payment failed",
+      "generic": "Your payment could not be completed. Please try again.",
+      "notReady": "Payment service is still loading. Please try again in a moment.",
+      "authenticationRequired": "Additional authentication is required. Please complete the 3D Secure verification in the popup and try again.",
+      "codes": {
+        "card_declined": "Your card was declined. Please use another card.",
+        "insufficient_funds": "Insufficient funds. Please use another payment method.",
+        "expired_card": "Your card has expired. Please use a valid card.",
+        "incorrect_cvc": "The CVC code is incorrect. Please check and retry.",
+        "processing_error": "We could not process your card. Please try again.",
+        "authentication_required": "3D Secure verification is required. Please complete the popup challenge."
+      }
+    }
   },
   "order": {
     "confirmation": "Order Confirmation",

@@ -7,7 +7,7 @@ import { Button } from "@medusajs/ui"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
 import React, { useState } from "react"
 import { useTranslations } from "next-intl"
-import ErrorMessage from "../error-message"
+import PaymentError from "../payment-error"
 
 type PaymentButtonProps = {
   cart: HttpTypes.StoreCart
@@ -64,6 +64,7 @@ const StripePaymentButton = ({
 }) => {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorCode, setErrorCode] = useState<string | null>(null)
 
   const onPaymentCompleted = async () => {
     await placeOrder()
@@ -87,14 +88,24 @@ const StripePaymentButton = ({
 
   const handlePayment = async () => {
     setSubmitting(true)
+    setErrorMessage(null)
+    setErrorCode(null)
 
-    if (!stripe || !elements || !card || !cart) {
+    if (
+      !stripe ||
+      !elements ||
+      !card ||
+      !cart ||
+      !session?.data.client_secret
+    ) {
+      setErrorMessage(t("paymentErrors.notReady"))
       setSubmitting(false)
       return
     }
 
-    await stripe
-      .confirmCardPayment(session?.data.client_secret as string, {
+    const { error, paymentIntent } = await stripe.confirmCardPayment(
+      session.data.client_secret as string,
+      {
         payment_method: {
           card: card,
           billing_details: {
@@ -114,31 +125,45 @@ const StripePaymentButton = ({
             phone: cart.billing_address?.phone ?? undefined,
           },
         },
-      })
-      .then(({ error, paymentIntent }) => {
-        if (error) {
-          const pi = error.payment_intent
+      }
+    )
 
-          if (
-            (pi && pi.status === "requires_capture") ||
-            (pi && pi.status === "succeeded")
-          ) {
-            onPaymentCompleted()
-          }
+    if (error) {
+      const pi = error.payment_intent
 
-          setErrorMessage(error.message || null)
-          return
-        }
+      if (
+        (pi && pi.status === "requires_capture") ||
+        (pi && pi.status === "succeeded")
+      ) {
+        return onPaymentCompleted()
+      }
 
-        if (
-          (paymentIntent && paymentIntent.status === "requires_capture") ||
-          paymentIntent.status === "succeeded"
-        ) {
-          return onPaymentCompleted()
-        }
+      if (
+        error.type === "card_error" &&
+        error.code === "authentication_required"
+      ) {
+        setErrorMessage(t("paymentErrors.authenticationRequired"))
+      } else {
+        setErrorMessage(error.message || t("paymentErrors.generic"))
+      }
+      setErrorCode(error.code || null)
+      setSubmitting(false)
+      return
+    }
 
-        return
-      })
+    if (
+      (paymentIntent && paymentIntent.status === "requires_capture") ||
+      paymentIntent?.status === "succeeded"
+    ) {
+      return onPaymentCompleted()
+    }
+
+    if (paymentIntent?.status === "requires_action") {
+      setErrorMessage(t("paymentErrors.authenticationRequired"))
+      setErrorCode("authentication_required")
+    }
+
+    setSubmitting(false)
   }
 
   return (
@@ -150,10 +175,11 @@ const StripePaymentButton = ({
         isLoading={submitting}
         data-testid={dataTestId}
       >
-        {t("placeOrder")}
+        {submitting ? t("processingPayment") : t("placeOrder")}
       </Button>
-      <ErrorMessage
+      <PaymentError
         error={errorMessage}
+        code={errorCode}
         data-testid="stripe-payment-error-message"
       />
     </>
@@ -195,9 +221,9 @@ const ManualTestPaymentButton = ({
         size="large"
         data-testid="submit-order-button"
       >
-        {t("placeOrder")}
+        {submitting ? t("processingPayment") : t("placeOrder")}
       </Button>
-      <ErrorMessage
+      <PaymentError
         error={errorMessage}
         data-testid="manual-payment-error-message"
       />

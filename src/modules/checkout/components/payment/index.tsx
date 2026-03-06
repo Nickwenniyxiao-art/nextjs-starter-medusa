@@ -5,7 +5,7 @@ import { isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import { Button, Container, Heading, Text, clx } from "@medusajs/ui"
-import ErrorMessage from "@modules/checkout/components/error-message"
+import PaymentError from "@modules/checkout/components/payment-error"
 import PaymentContainer, {
   StripeCardContainer,
 } from "@modules/checkout/components/payment-container"
@@ -39,6 +39,47 @@ const Payment = ({
   const pathname = usePathname()
 
   const isOpen = searchParams.get("step") === "payment"
+
+  const getPaymentMethodLabel = (providerId?: string) => {
+    if (!providerId) {
+      return t("paymentMethods.fallback")
+    }
+
+    if (
+      providerId === "pp_stripe_stripe" ||
+      providerId === "pp_medusa-payments_default"
+    ) {
+      return t("paymentMethods.creditCard")
+    }
+
+    if (providerId === "pp_stripe-ideal_stripe") {
+      return t("paymentMethods.ideal")
+    }
+
+    if (providerId === "pp_stripe-bancontact_stripe") {
+      return t("paymentMethods.bancontact")
+    }
+
+    if (providerId === "pp_paypal_paypal") {
+      return t("paymentMethods.paypal")
+    }
+
+    if (providerId === "pp_system_default") {
+      return t("paymentMethods.manual")
+    }
+
+    return paymentInfoMap[providerId]?.title || providerId
+  }
+
+  const localizedPaymentInfoMap = Object.fromEntries(
+    Object.entries(paymentInfoMap).map(([providerId, info]) => [
+      providerId,
+      {
+        ...info,
+        title: getPaymentMethodLabel(providerId),
+      },
+    ])
+  )
 
   const setPaymentMethod = async (method: string) => {
     setError(null)
@@ -136,7 +177,7 @@ const Payment = ({
       </div>
       <div>
         <div className={isOpen ? "block" : "hidden"}>
-          {!paidByGiftcard && availablePaymentMethods?.length && (
+          {!paidByGiftcard && availablePaymentMethods?.length > 0 && (
             <>
               <RadioGroup
                 value={selectedPaymentMethod}
@@ -148,14 +189,14 @@ const Payment = ({
                       <StripeCardContainer
                         paymentProviderId={paymentMethod.id}
                         selectedPaymentOptionId={selectedPaymentMethod}
-                        paymentInfoMap={paymentInfoMap}
+                        paymentInfoMap={localizedPaymentInfoMap}
                         setCardBrand={setCardBrand}
                         setError={setError}
                         setCardComplete={setCardComplete}
                       />
                     ) : (
                       <PaymentContainer
-                        paymentInfoMap={paymentInfoMap}
+                        paymentInfoMap={localizedPaymentInfoMap}
                         paymentProviderId={paymentMethod.id}
                         selectedPaymentOptionId={selectedPaymentMethod}
                       />
@@ -164,6 +205,20 @@ const Payment = ({
                 ))}
               </RadioGroup>
             </>
+          )}
+
+          {!paidByGiftcard && availablePaymentMethods?.length === 0 && (
+            <div
+              className="mt-4 rounded-rounded border border-ui-border-base p-4"
+              data-testid="payment-methods-empty-state"
+            >
+              <Text className="txt-medium-plus text-ui-fg-base">
+                {t("noPaymentMethodsTitle")}
+              </Text>
+              <Text className="txt-medium text-ui-fg-subtle mt-1">
+                {t("noPaymentMethodsDescription")}
+              </Text>
+            </div>
           )}
 
           {paidByGiftcard && (
@@ -180,7 +235,7 @@ const Payment = ({
             </div>
           )}
 
-          <ErrorMessage
+          <PaymentError
             error={error}
             data-testid="payment-method-error-message"
           />
@@ -197,7 +252,7 @@ const Payment = ({
             data-testid="submit-payment-button"
           >
             {!activeSession && isStripeLike(selectedPaymentMethod)
-              ? " Enter card details"
+              ? t("enterCardDetails")
               : t("review")}
           </Button>
         </div>
@@ -213,8 +268,7 @@ const Payment = ({
                   className="txt-medium text-ui-fg-subtle"
                   data-testid="payment-method-summary"
                 >
-                  {paymentInfoMap[activeSession?.provider_id]?.title ||
-                    activeSession?.provider_id}
+                  {getPaymentMethodLabel(activeSession?.provider_id)}
                 </Text>
               </div>
               <div className="flex flex-col w-1/3">
@@ -226,7 +280,7 @@ const Payment = ({
                   data-testid="payment-details-summary"
                 >
                   <Container className="flex items-center h-7 w-fit p-2 bg-ui-button-neutral-hover">
-                    {paymentInfoMap[selectedPaymentMethod]?.icon || (
+                    {localizedPaymentInfoMap[selectedPaymentMethod]?.icon || (
                       <CreditCard />
                     )}
                   </Container>
