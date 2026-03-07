@@ -143,6 +143,14 @@ const StripePaymentButton = ({
         error.code === "authentication_required"
       ) {
         setErrorMessage(t("paymentErrors.authenticationRequired"))
+      } else if (
+        error.type === "api_connection_error" ||
+        error.code === "network_error" ||
+        error.code === "timeout"
+      ) {
+        setErrorMessage(
+          t("paymentErrors.network")
+        )
       } else {
         setErrorMessage(error.message || t("paymentErrors.generic"))
       }

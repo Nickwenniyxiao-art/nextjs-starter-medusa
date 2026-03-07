@@ -238,7 +238,8 @@
         "incorrect_cvc": "The CVC code is incorrect. Please check and retry.",
         "processing_error": "We could not process your card. Please try again.",
         "authentication_required": "3D Secure verification is required. Please complete the popup challenge."
-      }
+      },
+      "network": "Please check your network connection and try again."
     },
     "progress": {
       "label": "Checkout progress",
@@ -247,7 +248,14 @@
       "review": "Review",
       "stepCount": "Step {current} of {total}"
     },
-    "useSavedAddress": "Use a saved address"
+    "useSavedAddress": "Use a saved address",
+    "errors": {
+      "apiUnavailable": "Payment service is temporarily unavailable",
+      "tryAgain": "Please refresh and try again",
+      "refresh": "Refresh",
+      "noPaymentForRegion": "Online payment is not available for this region yet",
+      "loadingPayment": "Loading payment methods..."
+    }
   },
   "order": {
     "thankYou": "Thank you for your order!",
@@ -270,6 +278,36 @@
       "fulfilled": "Fulfilled",
       "shipped": "Shipped",
       "canceled": "Canceled"
+    },
+    "items": "Items",
+    "quantity": "Quantity",
+    "subtotal": "Subtotal",
+    "shippingInfo": "Shipping information",
+    "paymentInfo": "Payment information",
+    "estimatedDelivery": "Estimated delivery",
+    "businessDays": "{days} business days",
+    "trackingNumber": "Tracking number",
+    "timeline": "Order timeline",
+    "cardEnding": "ending {last4}",
+    "manualPayment": "Manual payment",
+    "pendingConfirmation": "Pending confirmation",
+    "statusProgressTitle": "Order progress",
+    "timelineCreated": "Created",
+    "timelinePaid": "Paid",
+    "timelineShipped": "Shipped",
+    "timelineUpdated": "Updated",
+    "statusProgress": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered"
+    },
+    "paymentStatus": {
+      "authorized": "Authorized",
+      "captured": "Captured",
+      "refunded": "Refunded",
+      "pending": "Pending payment",
+      "pendingConfirmation": "Pending confirmation"
     }
   },
   "account": {

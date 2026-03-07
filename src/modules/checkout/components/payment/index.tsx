@@ -3,7 +3,7 @@
 import { RadioGroup } from "@headlessui/react"
 import { isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
-import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
+import { CheckCircleSolid, CreditCard, Loader } from "@medusajs/icons"
 import { Button, Container, Heading, Text, clx } from "@medusajs/ui"
 import PaymentError from "@modules/checkout/components/payment-error"
 import PaymentContainer, {
@@ -33,6 +33,7 @@ const Payment = ({
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
     activeSession?.provider_id ?? ""
   )
+  const [isSwitchingMethod, setIsSwitchingMethod] = useState(false)
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -84,10 +85,21 @@ const Payment = ({
   const setPaymentMethod = async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
-    if (isStripeLike(method)) {
+
+    if (!isStripeLike(method)) {
+      return
+    }
+
+    setIsSwitchingMethod(true)
+
+    try {
       await initiatePaymentSession(cart, {
         provider_id: method,
       })
+    } catch {
+      setError(t.has("errors.apiUnavailable") ? t("errors.apiUnavailable") : "Payment service is temporarily unavailable, please refresh and try again")
+    } finally {
+      setIsSwitchingMethod(false)
     }
   }
 
@@ -137,7 +149,12 @@ const Payment = ({
         )
       }
     } catch (err: any) {
-      setError(err.message)
+      setError(
+        err?.message ||
+          (t.has("errors.apiUnavailable")
+            ? t("errors.apiUnavailable")
+            : "Payment service is temporarily unavailable, please refresh and try again")
+      )
     } finally {
       setIsLoading(false)
     }
@@ -177,6 +194,13 @@ const Payment = ({
       </div>
       <div>
         <div className={isOpen ? "block" : "hidden"}>
+          {!paidByGiftcard && isSwitchingMethod && (
+            <div className="mt-4 flex items-center gap-2 text-ui-fg-subtle" data-testid="payment-method-loading">
+              <Loader className="animate-spin" />
+              <Text>{t.has("errors.loadingPayment") ? t("errors.loadingPayment") : "Loading payment methods..."}</Text>
+            </div>
+          )}
+
           {!paidByGiftcard && availablePaymentMethods?.length > 0 && (
             <>
               <RadioGroup
@@ -213,7 +237,7 @@ const Payment = ({
               data-testid="payment-methods-empty-state"
             >
               <Text className="txt-medium-plus text-ui-fg-base">
-                {t("noPaymentMethodsTitle")}
+                {t.has("errors.noPaymentForRegion") ? t("errors.noPaymentForRegion") : t("noPaymentMethodsTitle")}
               </Text>
               <Text className="txt-medium text-ui-fg-subtle mt-1">
                 {t("noPaymentMethodsDescription")}
