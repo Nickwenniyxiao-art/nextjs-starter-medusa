@@ -8,6 +8,8 @@ import {
   generateProductJsonLd,
 } from "@lib/util/structured-data"
 import { HttpTypes } from "@medusajs/types"
+import RelatedProducts from "@modules/products/components/related-products"
+import RecentlyViewed from "@modules/products/components/recently-viewed"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 300 // 5 minutes
@@ -120,6 +122,14 @@ export default async function ProductPage(props: Props) {
         region={region}
         countryCode={params.countryCode}
         images={images}
+      />
+      <RelatedProducts
+        product={pricedProduct}
+        countryCode={params.countryCode}
+      />
+      <RecentlyViewed
+        handle={pricedProduct.handle}
+        countryCode={params.countryCode}
       />
     </>
   )
