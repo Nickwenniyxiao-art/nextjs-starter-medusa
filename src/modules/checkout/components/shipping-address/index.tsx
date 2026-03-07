@@ -40,13 +40,19 @@ const ShippingAddress = ({
     [cart?.region]
   )
 
-  // check if customer has saved addresses that are in the current region
   const addressesInRegion = useMemo(
     () =>
       customer?.addresses.filter(
         (a) => a.country_code && countriesInRegion?.includes(a.country_code)
-      ),
+      ) || [],
     [customer?.addresses, countriesInRegion]
+  )
+
+  const defaultShippingAddress = useMemo(
+    () =>
+      addressesInRegion.find((address) => address.is_default_shipping) ||
+      addressesInRegion[0],
+    [addressesInRegion]
   )
 
   const setFormAddress = (
@@ -70,20 +76,35 @@ const ShippingAddress = ({
     email &&
       setFormData((prevState: Record<string, any>) => ({
         ...prevState,
-        email: email,
+        email,
       }))
   }
 
   useEffect(() => {
-    // Ensure cart is not null and has a shipping_address before setting form data
-    if (cart && cart.shipping_address) {
-      setFormAddress(cart?.shipping_address, cart?.email)
+    if (cart?.shipping_address) {
+      setFormAddress(cart.shipping_address, cart?.email)
     }
 
     if (cart && !cart.email && customer?.email) {
       setFormAddress(undefined, customer.email)
     }
-  }, [cart]) // Add cart as a dependency
+  }, [cart, customer?.email])
+
+  useEffect(() => {
+    const hasShippingAddress = !!cart?.shipping_address?.address_1
+
+    if (!hasShippingAddress && customer && defaultShippingAddress) {
+      setFormAddress(
+        defaultShippingAddress as HttpTypes.StoreCartAddress,
+        cart?.email || customer.email
+      )
+    }
+  }, [
+    cart?.shipping_address?.address_1,
+    cart?.email,
+    customer,
+    defaultShippingAddress,
+  ])
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -98,13 +119,11 @@ const ShippingAddress = ({
 
   return (
     <>
-      {customer && (addressesInRegion?.length || 0) > 0 && (
+      {customer && addressesInRegion.length > 0 && (
         <Container className="mb-6 flex flex-col gap-y-4 p-5">
-          <p className="text-small-regular">
-            {`Hi ${customer.first_name}, do you want to use one of your saved addresses?`}
-          </p>
+          <p className="text-small-regular">{t("useSavedAddress")}</p>
           <AddressSelect
-            addresses={customer.addresses}
+            addresses={addressesInRegion}
             addressInput={
               mapKeys(formData, (_, key) =>
                 key.replace("shipping_address.", "")
