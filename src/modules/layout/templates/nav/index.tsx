@@ -7,6 +7,7 @@ import { getLocale } from "@lib/data/locale-actions"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
+import LanguageSwitcher from "@modules/layout/components/language-switcher"
 import SideMenu from "@modules/layout/components/side-menu"
 
 export default async function Nav() {
@@ -51,6 +52,7 @@ export default async function Nav() {
               >
                 {t("account")}
               </LocalizedClientLink>
+              <LanguageSwitcher />
             </div>
             <Suspense
               fallback={
