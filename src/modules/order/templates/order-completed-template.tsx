@@ -23,7 +23,8 @@ const getPaymentSummary = (order: HttpTypes.StoreOrder, t: any) => {
   const last4 = (payment.data as Record<string, string> | undefined)?.card_last4
 
   if (last4) {
-    return `Visa ${t.has("cardEnding") ? t("cardEnding", { last4 }) : `ending ${last4}`}`
+    const brand = (payment.data as Record<string, string> | undefined)?.card_brand || "Card"
+    return `${brand} ${t.has("cardEnding") ? t("cardEnding", { last4 }) : `ending ${last4}`}`
   }
 
   return t.has("manualPayment") ? t("manualPayment") : "Manual payment"
