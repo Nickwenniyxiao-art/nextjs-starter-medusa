@@ -250,20 +250,27 @@
     "useSavedAddress": "Use a saved address"
   },
   "order": {
-    "confirmation": "Order Confirmation",
     "thankYou": "Thank you for your order!",
+    "orderConfirmed": "Order Confirmed",
     "orderNumber": "Order Number",
-    "confirmationEmail": "A confirmation email has been sent to {email}",
-    "status": "Order Status",
-    "statusPending": "Pending",
-    "statusProcessing": "Processing",
-    "statusShipped": "Shipped",
-    "statusDelivered": "Delivered",
-    "statusCancelled": "Cancelled",
-    "statusRefunded": "Refunded",
-    "trackOrder": "Track Order",
+    "orderDate": "Order Date",
+    "orderStatus": "Order Status",
+    "shippingAddress": "Shipping Address",
+    "paymentMethod": "Payment Method",
+    "orderTotal": "Order Total",
+    "noOrders": "No orders yet",
     "viewDetails": "View Details",
-    "continueShopping": "Continue Shopping"
+    "backToOverview": "Back to overview",
+    "confirmationEmail": "A confirmation email has been sent to {email}",
+    "continueShopping": "Continue shopping",
+    "noOrdersDescription": "You have not placed any orders yet.",
+    "status": {
+      "pending": "Pending",
+      "completed": "Completed",
+      "fulfilled": "Fulfilled",
+      "shipped": "Shipped",
+      "canceled": "Canceled"
+    }
   },
   "account": {
     "title": "My Account",

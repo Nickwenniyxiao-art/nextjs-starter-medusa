@@ -250,20 +250,27 @@
     "useSavedAddress": "使用保存的地址"
   },
   "order": {
-    "confirmation": "订单确认",
-    "thankYou": "感谢您的订购！",
-    "orderNumber": "订单号",
-    "confirmationEmail": "确认邮件已发送至 {email}",
-    "status": "订单状态",
-    "statusPending": "待付款",
-    "statusProcessing": "处理中",
-    "statusShipped": "已发货",
-    "statusDelivered": "已送达",
-    "statusCancelled": "已取消",
-    "statusRefunded": "已退款",
-    "trackOrder": "追踪物流",
+    "thankYou": "感谢您的订单！",
+    "orderConfirmed": "订单已确认",
+    "orderNumber": "订单编号",
+    "orderDate": "下单日期",
+    "orderStatus": "订单状态",
+    "shippingAddress": "收货地址",
+    "paymentMethod": "支付方式",
+    "orderTotal": "订单总额",
+    "noOrders": "暂无订单",
     "viewDetails": "查看详情",
-    "continueShopping": "继续购物"
+    "backToOverview": "返回订单列表",
+    "confirmationEmail": "确认邮件已发送至 {email}",
+    "continueShopping": "继续购物",
+    "noOrdersDescription": "您还没有下单记录。",
+    "status": {
+      "pending": "待处理",
+      "completed": "已完成",
+      "fulfilled": "已发货",
+      "shipped": "运输中",
+      "canceled": "已取消"
+    }
   },
   "account": {
     "title": "我的账户",

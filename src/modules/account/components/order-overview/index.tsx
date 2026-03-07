@@ -7,7 +7,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { HttpTypes } from "@medusajs/types"
 
 const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
-  const t = useTranslations("account")
+  const t = useTranslations("order")
 
   if (orders?.length) {
     return (
@@ -24,7 +24,7 @@ const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
       className="w-full rounded-rounded border border-dashed border-ui-border-base p-8 text-center"
       data-testid="no-orders-container"
     >
-      <h2 className="text-large-semi">{t("noOrdersTitle")}</h2>
+      <h2 className="text-large-semi">{t("noOrders")}</h2>
       <p className="mt-2 text-base-regular text-ui-fg-subtle">
         {t("noOrdersDescription")}
       </p>

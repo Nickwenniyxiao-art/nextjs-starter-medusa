@@ -1,14 +1,15 @@
 import { Heading } from "@medusajs/ui"
 import { cookies as nextCookies } from "next/headers"
+import { getLocale, getTranslations } from "next-intl/server"
 
 import CartTotals from "@modules/common/components/cart-totals"
 import Help from "@modules/order/components/help"
 import Items from "@modules/order/components/items"
 import OnboardingCta from "@modules/order/components/onboarding-cta"
-import OrderDetails from "@modules/order/components/order-details"
 import ShippingDetails from "@modules/order/components/shipping-details"
 import PaymentDetails from "@modules/order/components/payment-details"
 import { HttpTypes } from "@medusajs/types"
+import { convertToLocale } from "@lib/util/money"
 
 type OrderCompletedTemplateProps = {
   order: HttpTypes.StoreOrder
@@ -18,8 +19,16 @@ export default async function OrderCompletedTemplate({
   order,
 }: OrderCompletedTemplateProps) {
   const cookies = await nextCookies()
+  const [t, locale] = await Promise.all([getTranslations("order"), getLocale()])
 
   const isOnboarding = cookies.get("_medusa_onboarding")?.value === "true"
+  const orderStatusKey =
+    order.fulfillment_status === "fulfilled" ||
+    order.fulfillment_status === "shipped"
+      ? order.fulfillment_status
+      : order.status === "completed" || order.status === "canceled"
+      ? order.status
+      : "pending"
 
   return (
     <div className="py-6 min-h-[calc(100vh-64px)]">
@@ -33,16 +42,50 @@ export default async function OrderCompletedTemplate({
             level="h1"
             className="flex flex-col gap-y-3 text-ui-fg-base text-3xl mb-4"
           >
-            <span>Thank you!</span>
-            <span>Your order was placed successfully.</span>
+            <span>{t("thankYou")}</span>
+            <span>{t("orderConfirmed")}</span>
           </Heading>
-          <OrderDetails order={order} />
+
+          <div className="grid gap-3 sm:grid-cols-2 text-sm">
+            <div>
+              <p className="text-ui-fg-subtle">{t("orderNumber")}</p>
+              <p data-testid="order-id">#{order.display_id}</p>
+            </div>
+            <div>
+              <p className="text-ui-fg-subtle">{t("orderDate")}</p>
+              <p data-testid="order-date">
+                {new Date(order.created_at).toLocaleDateString(locale)}
+              </p>
+            </div>
+            <div>
+              <p className="text-ui-fg-subtle">{t("orderStatus")}</p>
+              <p data-testid="order-status">{t(`status.${orderStatusKey}`)}</p>
+            </div>
+            <div>
+              <p className="text-ui-fg-subtle">{t("orderTotal")}</p>
+              <p data-testid="order-total">
+                {convertToLocale({
+                  amount: order.total,
+                  currency_code: order.currency_code,
+                })}
+              </p>
+            </div>
+          </div>
+
           <Heading level="h2" className="flex flex-row text-3xl-regular">
-            Summary
+            {t("orderConfirmed")}
           </Heading>
           <Items order={order} />
           <CartTotals totals={order} />
+
+          <Heading level="h2" className="flex flex-row text-3xl-regular">
+            {t("shippingAddress")}
+          </Heading>
           <ShippingDetails order={order} />
+
+          <Heading level="h2" className="flex flex-row text-3xl-regular">
+            {t("paymentMethod")}
+          </Heading>
           <PaymentDetails order={order} />
           <Help />
         </div>

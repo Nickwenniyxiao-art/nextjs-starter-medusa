@@ -1,7 +1,7 @@
 "use client"
 
 import { Badge } from "@medusajs/ui"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { convertToLocale } from "@lib/util/money"
@@ -11,52 +11,24 @@ type OrderCardProps = {
   order: HttpTypes.StoreOrder
 }
 
-const STATUS_KEY_BY_ORDER_STATUS: Record<string, string> = {
-  pending: "pending",
-  completed: "completed",
-  archived: "archived",
-  canceled: "canceled",
-  requires_action: "requiresAction",
-}
-
-const STATUS_KEY_BY_FULFILLMENT: Record<string, string> = {
-  not_fulfilled: "notFulfilled",
-  partially_fulfilled: "partiallyFulfilled",
-  fulfilled: "fulfilled",
-  partially_shipped: "partiallyShipped",
-  shipped: "shipped",
-  partially_delivered: "partiallyDelivered",
-  delivered: "delivered",
-  canceled: "canceled",
-}
-
-const STATUS_KEY_BY_PAYMENT: Record<string, string> = {
-  not_paid: "notPaid",
-  awaiting: "awaiting",
-  captured: "paid",
-  partially_refunded: "partiallyRefunded",
-  refunded: "refunded",
-  canceled: "canceled",
-  requires_action: "requiresAction",
-}
-
 const resolveStatusKey = (order: HttpTypes.StoreOrder) => {
   if (
-    order.fulfillment_status &&
-    STATUS_KEY_BY_FULFILLMENT[order.fulfillment_status]
+    order.fulfillment_status === "fulfilled" ||
+    order.fulfillment_status === "shipped"
   ) {
-    return STATUS_KEY_BY_FULFILLMENT[order.fulfillment_status]
+    return order.fulfillment_status
   }
 
-  if (order.payment_status && STATUS_KEY_BY_PAYMENT[order.payment_status]) {
-    return STATUS_KEY_BY_PAYMENT[order.payment_status]
+  if (order.status === "completed" || order.status === "canceled") {
+    return order.status
   }
 
-  return STATUS_KEY_BY_ORDER_STATUS[order.status] ?? "pending"
+  return "pending"
 }
 
 const OrderCard = ({ order }: OrderCardProps) => {
-  const t = useTranslations("account")
+  const t = useTranslations("order")
+  const locale = useLocale()
   const statusKey = resolveStatusKey(order)
 
   return (
@@ -76,14 +48,14 @@ const OrderCard = ({ order }: OrderCardProps) => {
         <div>
           <p className="text-ui-fg-subtle">{t("orderDate")}</p>
           <p data-testid="order-created-at">
-            {new Date(order.created_at).toLocaleDateString()}
+            {new Date(order.created_at).toLocaleDateString(locale)}
           </p>
         </div>
 
         <div>
           <p className="text-ui-fg-subtle">{t("orderStatus")}</p>
           <Badge color="blue" size="2xsmall" data-testid="order-status">
-            {t(`orderStatusValues.${statusKey}`)}
+            {t(`status.${statusKey}`)}
           </Badge>
         </div>
 
