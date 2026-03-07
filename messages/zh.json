@@ -238,7 +238,8 @@
         "incorrect_cvc": "安全码不正确，请检查后重试。",
         "processing_error": "银行卡处理失败，请稍后重试。",
         "authentication_required": "需要完成 3D Secure 验证，请先完成弹窗挑战。"
-      }
+      },
+      "network": "请检查网络连接并重试。"
     },
     "progress": {
       "label": "结账进度",
@@ -247,7 +248,14 @@
       "review": "确认",
       "stepCount": "第 {current} / {total} 步"
     },
-    "useSavedAddress": "使用保存的地址"
+    "useSavedAddress": "使用保存的地址",
+    "errors": {
+      "apiUnavailable": "支付服务暂时不可用",
+      "tryAgain": "请刷新页面重试",
+      "refresh": "刷新",
+      "noPaymentForRegion": "该地区暂不支持在线支付",
+      "loadingPayment": "正在加载支付方式..."
+    }
   },
   "order": {
     "thankYou": "感谢您的订单！",
@@ -270,6 +278,36 @@
       "fulfilled": "已发货",
       "shipped": "运输中",
       "canceled": "已取消"
+    },
+    "items": "商品明细",
+    "quantity": "数量",
+    "subtotal": "小计",
+    "shippingInfo": "配送信息",
+    "paymentInfo": "支付信息",
+    "estimatedDelivery": "预计配送时间",
+    "businessDays": "{days} 个工作日",
+    "trackingNumber": "物流单号",
+    "timeline": "订单时间线",
+    "cardEnding": "尾号 {last4}",
+    "manualPayment": "线下支付",
+    "pendingConfirmation": "待确认",
+    "statusProgressTitle": "订单状态进度",
+    "timelineCreated": "已创建",
+    "timelinePaid": "已支付",
+    "timelineShipped": "已发货",
+    "timelineUpdated": "最近更新",
+    "statusProgress": {
+      "pending": "已下单",
+      "processing": "处理中",
+      "shipped": "已发货",
+      "delivered": "已送达"
+    },
+    "paymentStatus": {
+      "authorized": "已授权",
+      "captured": "已扣款",
+      "refunded": "已退款",
+      "pending": "待支付",
+      "pendingConfirmation": "待确认"
     }
   },
   "account": {
