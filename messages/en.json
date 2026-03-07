@@ -237,7 +237,15 @@
         "processing_error": "We could not process your card. Please try again.",
         "authentication_required": "3D Secure verification is required. Please complete the popup challenge."
       }
-    }
+    },
+    "progress": {
+      "label": "Checkout progress",
+      "shipping": "Shipping",
+      "payment": "Payment",
+      "review": "Review",
+      "stepCount": "Step {current} of {total}"
+    },
+    "useSavedAddress": "Use a saved address"
   },
   "order": {
     "confirmation": "Order Confirmation",

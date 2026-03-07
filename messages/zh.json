@@ -237,7 +237,15 @@
         "processing_error": "银行卡处理失败，请稍后重试。",
         "authentication_required": "需要完成 3D Secure 验证，请先完成弹窗挑战。"
       }
-    }
+    },
+    "progress": {
+      "label": "结账进度",
+      "shipping": "配送",
+      "payment": "支付",
+      "review": "确认",
+      "stepCount": "第 {current} / {total} 步"
+    },
+    "useSavedAddress": "使用保存的地址"
   },
   "order": {
     "confirmation": "订单确认",
