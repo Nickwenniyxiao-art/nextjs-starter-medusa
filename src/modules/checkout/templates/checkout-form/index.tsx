@@ -34,12 +34,12 @@ const CheckoutErrorBoundary = async () => {
       </p>
       <p className="mt-1 text-xs text-rose-500">
         {isZh
-          ? "Payment service is temporarily unavailable. Please refresh and try again."
-          : "支付服务暂时不可用，请刷新页面后重试。"}
+          ? "支付服务暂时不可用，请刷新页面后重试。"
+          : "Payment service is temporarily unavailable. Please refresh and try again."}
       </p>
 
       <a
-        href=""
+        href="."
         className="mt-6 inline-block rounded-md bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-700"
       >
         {t.has("errors.refresh") ? t("errors.refresh") : "Refresh"}
