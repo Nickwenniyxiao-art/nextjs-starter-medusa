@@ -167,7 +167,14 @@
     "couponApplied": "Coupon applied",
     "couponInvalid": "Invalid coupon code",
     "updateCart": "Update Cart",
-    "freeShippingNudge": "Add {amount} more for free shipping"
+    "freeShippingNudge": "Add {amount} more for free shipping",
+    "price": "Price",
+    "summary": "Summary",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInBenefit": "Sign in for a better experience.",
+    "signIn": "Sign in",
+    "emptyMessage": "You don't have anything in your cart. Let's change that, use the link below to start browsing our products.",
+    "exploreProducts": "Explore products"
   },
   "checkout": {
     "title": "Checkout",
@@ -400,7 +407,10 @@
       "paid": "Paid",
       "partiallyRefunded": "Partially refunded",
       "refunded": "Refunded"
-    }
+    },
+    "gotQuestions": "Got questions?",
+    "gotQuestionsDescription": "You can find frequently asked questions and answers on our customer service page.",
+    "customerService": "Customer Service"
   },
   "auth": {
     "login": "Login",
