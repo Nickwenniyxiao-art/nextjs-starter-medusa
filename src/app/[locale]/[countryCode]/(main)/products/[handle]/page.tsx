@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic"
 export const revalidate = 300 // 5 minutes
 
 type Props = {
-  params: Promise<{ countryCode: string; handle: string }>
+  params: Promise<{ countryCode: string; handle: string; locale: string }>
   searchParams: Promise<{ v_id?: string }>
 }
 
@@ -43,6 +43,7 @@ function getImagesForVariant(
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
   const { handle } = params
+  const locale = params.locale || "en"
   const region = await getRegion(params.countryCode)
 
   if (!region) {
@@ -58,12 +59,21 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     notFound()
   }
 
+  const title =
+    locale === "zh" && product.metadata?.zh_title
+      ? String(product.metadata.zh_title)
+      : product.title
+  const description =
+    locale === "zh" && product.metadata?.zh_description
+      ? String(product.metadata.zh_description)
+      : product.description || product.title
+
   return {
-    title: `${product.title} | NordHjem`,
-    description: `${product.title}`,
+    title: `${title} | NordHjem`,
+    description,
     openGraph: {
-      title: `${product.title} | NordHjem`,
-      description: `${product.title}`,
+      title: `${title} | NordHjem`,
+      description,
       images: product.thumbnail ? [product.thumbnail] : [],
     },
   }
@@ -71,6 +81,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function ProductPage(props: Props) {
   const params = await props.params
+  const locale = params.locale || "en"
   const region = await getRegion(params.countryCode)
   const searchParams = await props.searchParams
 
@@ -92,17 +103,21 @@ export default async function ProductPage(props: Props) {
   }
 
   const productJsonLd = generateProductJsonLd(pricedProduct)
+  const title =
+    locale === "zh" && pricedProduct.metadata?.zh_title
+      ? String(pricedProduct.metadata.zh_title)
+      : pricedProduct.title
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     {
-      name: "Home",
+      name: locale === "zh" ? "首页" : "Home",
       item: "https://nordhjem.store",
     },
     {
-      name: "Products",
+      name: locale === "zh" ? "所有商品" : "Products",
       item: "https://nordhjem.store/products",
     },
     {
-      name: pricedProduct.title,
+      name: title,
       item: `https://nordhjem.store/products/${pricedProduct.handle}`,
     },
   ])
