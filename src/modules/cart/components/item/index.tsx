@@ -69,8 +69,13 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           className="txt-medium-plus text-ui-fg-base"
           data-testid="product-title"
         >
-          {locale === "zh" && item.variant?.product?.metadata?.name_zh
-            ? String(item.variant.product.metadata.name_zh)
+          {locale === "zh" &&
+          ((item as any).product?.metadata?.name_zh ||
+            item.variant?.product?.metadata?.name_zh)
+            ? String(
+                (item as any).product?.metadata?.name_zh ||
+                  item.variant?.product?.metadata?.name_zh
+              )
             : item.product_title}
         </Text>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />

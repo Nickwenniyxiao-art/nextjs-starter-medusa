@@ -143,8 +143,13 @@ const CartDropdown = ({
                                     href={`/products/${item.product_handle}`}
                                     data-testid="product-link"
                                   >
-                                    {locale === "zh" && item.variant?.product?.metadata?.name_zh
-                                      ? String(item.variant.product.metadata.name_zh)
+                                    {locale === "zh" &&
+                                    ((item as any).product?.metadata?.name_zh ||
+                                      item.variant?.product?.metadata?.name_zh)
+                                      ? String(
+                                          (item as any).product?.metadata?.name_zh ||
+                                            item.variant?.product?.metadata?.name_zh
+                                        )
                                       : item.product_title}
                                   </LocalizedClientLink>
                                 </h3>

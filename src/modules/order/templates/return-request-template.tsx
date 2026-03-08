@@ -54,8 +54,13 @@ const ReturnRequestTemplate = ({
   const returnableItems = itemsWithInfo.filter((i) => i.is_returnable)
 
   const getItemName = (item: HttpTypes.StoreOrderLineItem) =>
-    locale === "zh" && item.variant?.product?.metadata?.name_zh
-      ? String(item.variant.product.metadata.name_zh)
+    locale === "zh" &&
+    ((item as any).product?.metadata?.name_zh ||
+      item.variant?.product?.metadata?.name_zh)
+      ? String(
+          (item as any).product?.metadata?.name_zh ||
+            item.variant?.product?.metadata?.name_zh
+        )
       : item.product_title
 
   const getItemVariantTitle = (item: HttpTypes.StoreOrderLineItem) =>
