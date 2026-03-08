@@ -11,6 +11,7 @@ import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 
 import ProductActionsWrapper from "./product-actions-wrapper"
+import ProductViewTracker from "@modules/products/components/product-view-tracker"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -31,6 +32,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
 
   return (
     <>
+      <ProductViewTracker
+        product={product}
+        currency={region.currency_code}
+      />
       <div
         className="content-container bg-[#FAFAF8] flex flex-col small:flex-row small:items-start py-6 relative"
         data-testid="product-container"

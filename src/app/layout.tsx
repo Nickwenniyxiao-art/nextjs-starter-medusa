@@ -1,5 +1,6 @@
 import { getBaseURL } from "@lib/util/env"
 import CrispChat from "@modules/common/components/crisp-chat"
+import { GA4Script } from "@lib/analytics/ga4"
 import { generateOrganizationJsonLd } from "@lib/util/structured-data"
 import { Metadata } from "next"
 import "styles/globals.css"
@@ -48,6 +49,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         />
         <main className="relative">{props.children}</main>
         <CrispChat />
+        <GA4Script />
       </body>
     </html>
   )

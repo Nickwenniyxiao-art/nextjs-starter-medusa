@@ -44,11 +44,13 @@ export default function CookieConsent() {
     }
 
     localStorage.setItem(CONSENT_KEY, JSON.stringify(fullConsent))
+    window.dispatchEvent(new Event("cookie-consent-update"))
     setVisible(false)
   }
 
   const savePreferences = () => {
     localStorage.setItem(CONSENT_KEY, JSON.stringify(consent))
+    window.dispatchEvent(new Event("cookie-consent-update"))
     setVisible(false)
   }
 
