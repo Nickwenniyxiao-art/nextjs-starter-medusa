@@ -4,6 +4,7 @@ import { listCategories } from "@lib/data/categories"
 import { Text, clx } from "@medusajs/ui"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import CrispTriggerLink from "@modules/layout/components/crisp-trigger-link"
 
 export default async function Footer() {
   const t = await getTranslations("footer")
@@ -49,12 +50,12 @@ export default async function Footer() {
                   </LocalizedClientLink>
                 </li>
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/account">
+                  <LocalizedClientLink className="hover:text-brass" href="/about">
                     {t("careers")}
                   </LocalizedClientLink>
                 </li>
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/account">
+                  <LocalizedClientLink className="hover:text-brass" href="/about">
                     {t("press")}
                   </LocalizedClientLink>
                 </li>
@@ -65,22 +66,22 @@ export default async function Footer() {
               <span className="txt-small-plus text-warm">{t("support")}</span>
               <ul className="grid grid-cols-1 gap-y-2 text-warm/80 txt-small">
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/account">
+                  <CrispTriggerLink className="hover:text-brass cursor-pointer text-warm/80">
                     {t("contactUs")}
-                  </LocalizedClientLink>
+                  </CrispTriggerLink>
                 </li>
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/account">
+                  <LocalizedClientLink className="hover:text-brass" href="/about">
                     {t("faq")}
                   </LocalizedClientLink>
                 </li>
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/account/orders">
+                  <LocalizedClientLink className="hover:text-brass" href="/legal/shipping-policy">
                     {t("shipping")}
                   </LocalizedClientLink>
                 </li>
                 <li>
-                  <LocalizedClientLink className="hover:text-brass" href="/account/orders">
+                  <LocalizedClientLink className="hover:text-brass" href="/legal/refund-policy">
                     {t("returns")}
                   </LocalizedClientLink>
                 </li>
@@ -113,6 +114,11 @@ export default async function Footer() {
                 <li>
                   <LocalizedClientLink className="hover:text-brass" href="/legal/shipping-policy">
                     {t("shippingPolicy")}
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink className="hover:text-brass" href="/legal/cookie-policy">
+                    {t("cookiePolicy")}
                   </LocalizedClientLink>
                 </li>
               </ul>

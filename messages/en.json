@@ -548,6 +548,24 @@
           "body": "Approved refunds are typically processed to the original payment method within several business days, depending on banking timelines."
         }
       }
+    },
+    "cookie": {
+      "title": "Cookie Policy",
+      "lastUpdated": "Last updated: March 1, 2026",
+      "sections": {
+        "whatAreCookies": {
+          "title": "1. What Are Cookies",
+          "body": "Cookies are small text files stored on your device when you visit a website. They help us recognize your browser, remember your preferences, and improve your experience. This is a placeholder policy — final legal text will be provided by our legal team."
+        },
+        "howWeUse": {
+          "title": "2. How We Use Cookies",
+          "body": "We use essential cookies to enable core features such as shopping cart functionality, authentication, and language preferences. We may also use analytics cookies to understand how visitors interact with our store. Detailed cookie categories and purposes will be documented in the final version of this policy."
+        },
+        "manage": {
+          "title": "3. Managing Your Cookie Preferences",
+          "body": "You can control cookies through your browser settings. Disabling certain cookies may affect your experience on our site. For questions about our cookie practices, please contact our support team via the chat widget on our website."
+        }
+      }
     }
   },
   "returns": {
@@ -618,6 +636,28 @@
       "active": "Active",
       "completed": "Completed",
       "canceled": "Canceled"
+    }
+  },
+  "about": {
+    "title": "About NordHjem",
+    "subtitle": "Nordic Minimalist Home — Powered by AI",
+    "sections": {
+      "story": {
+        "title": "Our Story",
+        "body": "NordHjem was born from a simple idea: everyone deserves a home that feels calm, intentional, and beautifully crafted. Inspired by the clean lines and functional elegance of Scandinavian design, we curate furniture and home accessories that transform everyday spaces into serene retreats. From Copenhagen to the world, we bring Nordic living philosophy to your doorstep."
+      },
+      "mission": {
+        "title": "Our Mission",
+        "body": "We believe great design should be accessible. Our mission is to make Nordic minimalist furniture available globally — with transparent pricing, thoughtful curation, and a seamless shopping experience. Every product in our catalog is selected for its craftsmanship, sustainability, and timeless aesthetic."
+      },
+      "ai": {
+        "title": "AI-Powered Commerce",
+        "body": "NordHjem is an AI-native independent store. From intelligent product recommendations to automated customer support, we leverage cutting-edge technology to deliver a shopping experience that is fast, personalized, and effortless. Our AI systems help us optimize everything from inventory management to multilingual content — so you can focus on finding pieces you love."
+      },
+      "values": {
+        "title": "What We Stand For",
+        "body": "Simplicity. Quality. Sustainability. These three pillars guide every decision at NordHjem. We partner with manufacturers who share our commitment to responsible production, and we design our platform to minimize waste — from packaging to pixels. Welcome home."
+      }
     }
   }
 }
