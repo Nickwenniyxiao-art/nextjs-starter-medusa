@@ -60,12 +60,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   const title =
-    locale === "zh" && product.metadata?.zh_title
-      ? String(product.metadata.zh_title)
+    locale === "zh" && product.metadata?.name_zh
+      ? String(product.metadata.name_zh)
       : product.title
   const description =
-    locale === "zh" && product.metadata?.zh_description
-      ? String(product.metadata.zh_description)
+    locale === "zh" && product.metadata?.description_zh
+      ? String(product.metadata.description_zh)
       : product.description || product.title
 
   return {
@@ -104,8 +104,8 @@ export default async function ProductPage(props: Props) {
 
   const productJsonLd = generateProductJsonLd(pricedProduct)
   const title =
-    locale === "zh" && pricedProduct.metadata?.zh_title
-      ? String(pricedProduct.metadata.zh_title)
+    locale === "zh" && pricedProduct.metadata?.name_zh
+      ? String(pricedProduct.metadata.name_zh)
       : pricedProduct.title
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     {

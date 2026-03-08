@@ -14,7 +14,7 @@ import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
@@ -25,6 +25,7 @@ const CartDropdown = ({
 }) => {
   const t = useTranslations("nav")
   const tCart = useTranslations("cart")
+  const locale = useLocale()
   const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
     undefined
   )
@@ -142,7 +143,9 @@ const CartDropdown = ({
                                     href={`/products/${item.product_handle}`}
                                     data-testid="product-link"
                                   >
-                                    {item.title}
+                                    {locale === "zh" && item.variant?.product?.metadata?.name_zh
+                                      ? String(item.variant.product.metadata.name_zh)
+                                      : item.product_title}
                                   </LocalizedClientLink>
                                 </h3>
                                 <LineItemOptions

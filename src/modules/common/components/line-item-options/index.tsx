@@ -2,7 +2,8 @@
 
 import { HttpTypes } from "@medusajs/types"
 import { Text } from "@medusajs/ui"
-import { useTranslations } from "next-intl"
+import { getLocalizedVariantTitle } from "@lib/util/get-localized-product"
+import { useLocale, useTranslations } from "next-intl"
 
 type LineItemOptionsProps = {
   variant: HttpTypes.StoreProductVariant | undefined
@@ -16,6 +17,7 @@ const LineItemOptions = ({
   "data-value": dataValue,
 }: LineItemOptionsProps) => {
   const t = useTranslations("product")
+  const locale = useLocale()
 
   return (
     <Text
@@ -23,7 +25,7 @@ const LineItemOptions = ({
       data-value={dataValue}
       className="inline-block txt-medium text-ui-fg-subtle w-full overflow-hidden text-ellipsis"
     >
-      {t("variantLabel")}: {variant?.title}
+      {t("variantLabel")}: {getLocalizedVariantTitle(variant, locale)}
     </Text>
   )
 }
