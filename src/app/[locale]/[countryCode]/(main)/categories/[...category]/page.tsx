@@ -10,7 +10,7 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 export const dynamic = "force-dynamic"
 export const revalidate = 300 // 5 minutes
 type Props = {
-  params: Promise<{ category: string[]; countryCode: string }>
+  params: Promise<{ category: string[]; countryCode: string; locale: string }>
   searchParams: Promise<{
     sortBy?: SortOptions
     page?: string
@@ -23,12 +23,22 @@ export async function generateStaticParams() {
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
+  const locale = params.locale || "en"
+
   try {
     const productCategory = await getCategoryByHandle(params.category)
 
-    const title = `${productCategory.name} | NordHjem`
+    const categoryName =
+      locale === "zh" && productCategory.metadata?.zh_name
+        ? String(productCategory.metadata.zh_name)
+        : productCategory.name
 
-    const description = productCategory.description ?? `${title} category.`
+    const title = `${categoryName} | NordHjem`
+
+    const description =
+      locale === "zh" && productCategory.metadata?.zh_description
+        ? String(productCategory.metadata.zh_description)
+        : productCategory.description ?? `${title} category.`
 
     return {
       title,
