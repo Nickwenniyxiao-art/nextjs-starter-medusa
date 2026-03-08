@@ -5,7 +5,7 @@ import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
 import { useActionState } from "react"
 import { useTranslations } from "next-intl"
-import { useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
@@ -15,7 +15,14 @@ const Login = ({ setCurrentView }: Props) => {
   const [message, formAction] = useActionState(login, null)
   const t = useTranslations("account")
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get("redirect")
+  const pathname = usePathname()
+
+  const redirectFromParams = searchParams.get("redirect")
+  const redirectFromPath = (() => {
+    const accountMatch = pathname?.match(/\/account\/(.+)/)
+    return accountMatch ? accountMatch[1] : null
+  })()
+  const redirectTo = redirectFromParams || redirectFromPath
 
   return (
     <div
