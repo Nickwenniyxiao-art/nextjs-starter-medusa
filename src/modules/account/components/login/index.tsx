@@ -5,6 +5,7 @@ import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
 import { useActionState } from "react"
 import { useTranslations } from "next-intl"
+import { useSearchParams } from "next/navigation"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
@@ -13,6 +14,8 @@ type Props = {
 const Login = ({ setCurrentView }: Props) => {
   const [message, formAction] = useActionState(login, null)
   const t = useTranslations("account")
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirect")
 
   return (
     <div
@@ -24,6 +27,7 @@ const Login = ({ setCurrentView }: Props) => {
         Sign in to access an enhanced shopping experience.
       </p>
       <form className="w-full" action={formAction}>
+        {redirectTo && <input type="hidden" name="redirect" value={redirectTo} />}
         <div className="flex flex-col w-full gap-y-2">
           <Input
             label={t("emailLabel")}

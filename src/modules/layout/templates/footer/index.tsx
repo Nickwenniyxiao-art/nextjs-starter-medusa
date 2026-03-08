@@ -90,6 +90,11 @@ export default async function Footer() {
                     {t("orderTracking")}
                   </LocalizedClientLink>
                 </li>
+                <li>
+                  <LocalizedClientLink className="hover:text-brass" href="/track-order">
+                    {t("trackOrder")}
+                  </LocalizedClientLink>
+                </li>
               </ul>
             </div>
 

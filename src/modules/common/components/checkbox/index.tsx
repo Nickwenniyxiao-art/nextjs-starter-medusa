@@ -6,7 +6,7 @@ type CheckboxProps = {
   onChange?: () => void
   label: string
   name?: string
-  'data-testid'?: string
+  "data-testid"?: string
 }
 
 const CheckboxWithLabel: React.FC<CheckboxProps> = ({
@@ -14,26 +14,26 @@ const CheckboxWithLabel: React.FC<CheckboxProps> = ({
   onChange,
   label,
   name,
-  'data-testid': dataTestId
+  "data-testid": dataTestId,
 }) => {
+  const id = name ? `checkbox-${name}` : "checkbox"
+
   return (
-    <div className="flex items-center space-x-2 ">
+    <div
+      className="flex items-center space-x-2 cursor-pointer"
+      onClick={onChange}
+      role="checkbox"
+      aria-checked={checked}
+      data-testid={dataTestId}
+    >
       <Checkbox
         className="text-base-regular flex items-center gap-x-2"
-        id="checkbox"
-        role="checkbox"
-        type="button"
+        id={id}
         checked={checked}
         aria-checked={checked}
-        onClick={onChange}
         name={name}
-        data-testid={dataTestId}
       />
-      <Label
-        htmlFor="checkbox"
-        className="!transform-none !txt-medium"
-        size="large"
-      >
+      <Label htmlFor={id} className="!transform-none !txt-medium cursor-pointer" size="large">
         {label}
       </Label>
     </div>
