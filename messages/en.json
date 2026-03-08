@@ -591,5 +591,33 @@
       "canceled": "Canceled",
       "partially_received": "Partially Received"
     }
+  },
+  "exchanges": {
+    "statusTitle": "Exchanges",
+    "exchangeLabel": "Exchange",
+    "submittedOn": "Submitted on",
+    "newItems": "New items",
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "canceled": "Canceled"
+    }
+  },
+  "claims": {
+    "statusTitle": "Claims",
+    "claimLabel": "Claim",
+    "submittedOn": "Submitted on",
+    "claimedItems": "Claimed items",
+    "replacementItems": "Replacement items",
+    "refundAmount": "Refund amount",
+    "type": {
+      "refund": "Refund",
+      "replace": "Replace"
+    },
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "canceled": "Canceled"
+    }
   }
 }

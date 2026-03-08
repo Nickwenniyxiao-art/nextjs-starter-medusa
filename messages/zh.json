@@ -591,5 +591,33 @@
       "canceled": "已取消",
       "partially_received": "部分签收"
     }
+  },
+  "exchanges": {
+    "statusTitle": "换货记录",
+    "exchangeLabel": "换货",
+    "submittedOn": "提交于",
+    "newItems": "新商品",
+    "status": {
+      "active": "处理中",
+      "completed": "已完成",
+      "canceled": "已取消"
+    }
+  },
+  "claims": {
+    "statusTitle": "索赔记录",
+    "claimLabel": "索赔",
+    "submittedOn": "提交于",
+    "claimedItems": "索赔商品",
+    "replacementItems": "替换商品",
+    "refundAmount": "退款金额",
+    "type": {
+      "refund": "退款",
+      "replace": "换货"
+    },
+    "status": {
+      "active": "处理中",
+      "completed": "已完成",
+      "canceled": "已取消"
+    }
   }
 }
