@@ -2,9 +2,10 @@
 
 import { XMark } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import { Badge, Text } from "@medusajs/ui"
+import { Badge, Button, Text } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Help from "@modules/order/components/help"
+import { hasReturnableItems } from "@lib/util/returns"
 import Items from "@modules/order/components/items"
 import OrderDetails from "@modules/order/components/order-details"
 import OrderSummary from "@modules/order/components/order-summary"
@@ -144,6 +145,27 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
         <Items order={order} />
         <ShippingDetails order={order} />
         <OrderSummary order={order} />
+        {hasReturnableItems(order) && (
+          <div className="rounded-lg border border-ui-border-base p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Text className="txt-medium-plus">
+                  {t.has("requestReturn") ? t("requestReturn") : "Request Return"}
+                </Text>
+                <Text className="text-sm text-ui-fg-subtle">
+                  {t.has("requestReturnDescription")
+                    ? t("requestReturnDescription")
+                    : "Return items from this order"}
+                </Text>
+              </div>
+              <LocalizedClientLink href={`/account/orders/return/${order.id}`}>
+                <Button variant="secondary" size="base">
+                  {t.has("startReturn") ? t("startReturn") : "Start Return"}
+                </Button>
+              </LocalizedClientLink>
+            </div>
+          </div>
+        )}
         <Help />
       </div>
     </div>

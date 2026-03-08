@@ -328,7 +328,10 @@
       "refunded": "已退款",
       "pending": "待支付",
       "pendingConfirmation": "待确认"
-    }
+    },
+    "requestReturn": "申请退货",
+    "requestReturnDescription": "退回此订单中的商品",
+    "startReturn": "开始退货"
   },
   "account": {
     "title": "我的账户",
@@ -546,5 +549,35 @@
         }
       }
     }
+  },
+  "returns": {
+    "title": "申请退货",
+    "backToOrder": "返回订单",
+    "backToOrders": "返回订单列表",
+    "orderLabel": "订单",
+    "selectItemsTitle": "选择退货商品",
+    "selectItemsDescription": "选择您要退回的商品及数量。",
+    "maxQuantity": "最多",
+    "continue": "下一步",
+    "back": "上一步",
+    "selectReasonTitle": "退货原因",
+    "selectReason": "请选择原因...",
+    "noReasonsConfigured": "暂未配置退货原因",
+    "notePlaceholder": "补充说明（可选）",
+    "selectShippingTitle": "退货运费方式",
+    "noShippingOptions": "暂无退货运费选项，请联系客服。",
+    "freeShipping": "免费",
+    "confirmTitle": "确认并提交",
+    "returnItems": "退货商品",
+    "reason": "原因",
+    "note": "备注",
+    "returnShipping": "退货运费",
+    "submitReturn": "提交退货申请",
+    "submitError": "提交退货申请失败",
+    "successTitle": "退货申请已提交",
+    "successDescription": "我们已收到您的退货申请，将尽快审核并与您联系。",
+    "errorTitle": "出错了",
+    "tryAgain": "重试",
+    "noReturnableItems": "此订单中没有可退货的商品。"
   }
 }
