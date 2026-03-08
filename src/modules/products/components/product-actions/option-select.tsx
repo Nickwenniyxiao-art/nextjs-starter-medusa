@@ -8,6 +8,7 @@ type OptionSelectProps = {
   updateOption: (title: string, value: string) => void
   title: string
   disabled: boolean
+  colorMap?: Record<string, string>
   "data-testid"?: string
 }
 
@@ -18,6 +19,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   title,
   "data-testid": dataTestId,
   disabled,
+  colorMap,
 }) => {
   const filteredOptions = (option.values ?? []).map((v) => v.value)
 
@@ -29,6 +31,8 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
         data-testid={dataTestId}
       >
         {filteredOptions.map((v) => {
+          const displayLabel = colorMap?.[v] ?? v
+
           return (
             <button
               onClick={() => updateOption(option.id, v)}
@@ -44,7 +48,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
               disabled={disabled}
               data-testid="option-button"
             >
-              {v}
+              {displayLabel}
             </button>
           )
         })}

@@ -1,8 +1,10 @@
 import { Text } from "@medusajs/ui"
 import { listProducts } from "@lib/data/products"
 import { getProductPrice } from "@lib/util/get-product-price"
+import { getLocalizedProductName } from "@lib/util/get-localized-product"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { getLocale } from "next-intl/server"
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
 
@@ -27,6 +29,7 @@ export default async function ProductPreview({
   const { cheapestPrice } = getProductPrice({
     product,
   })
+  const locale = await getLocale()
 
   return (
     <LocalizedClientLink href={`/products/${product.handle}`} className="group">
@@ -39,7 +42,7 @@ export default async function ProductPreview({
         />
         <div className="flex txt-compact-medium mt-4 justify-between">
           <Text className="text-ui-fg-subtle" data-testid="product-title">
-            {product.title}
+            {getLocalizedProductName(product, locale)}
           </Text>
           <div className="flex items-center gap-x-2">
             {cheapestPrice && <PreviewPrice price={cheapestPrice} />}

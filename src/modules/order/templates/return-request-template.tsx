@@ -11,7 +11,7 @@ import { ArrowLeftMini } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Button, Text } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 
 type Props = {
@@ -43,6 +43,7 @@ const ReturnRequestTemplate = ({
   returnShippingOptions,
 }: Props) => {
   const t = useTranslations("returns")
+  const locale = useLocale()
   const [step, setStep] = useState<Step>("select-items")
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([])
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState("")
@@ -51,6 +52,16 @@ const ReturnRequestTemplate = ({
 
   const itemsWithInfo = getItemsWithReturnInfo(order.items || [])
   const returnableItems = itemsWithInfo.filter((i) => i.is_returnable)
+
+  const getItemName = (item: HttpTypes.StoreOrderLineItem) =>
+    locale === "zh" && item.variant?.product?.metadata?.name_zh
+      ? String(item.variant.product.metadata.name_zh)
+      : item.product_title
+
+  const getItemVariantTitle = (item: HttpTypes.StoreOrderLineItem) =>
+    locale === "zh" && item.variant?.metadata?.color_zh
+      ? String(item.variant.metadata.color_zh)
+      : item.variant_title
 
   const toggleItem = (itemId: string) => {
     setSelectedItems((prev) => {
@@ -212,9 +223,9 @@ const ReturnRequestTemplate = ({
                       />
                     )}
                     <div>
-                      <Text className="txt-compact-medium">{item.product_title}</Text>
+                      <Text className="txt-compact-medium">{getItemName(item)}</Text>
                       <Text className="text-sm text-ui-fg-subtle">
-                        {item.variant_title}
+                        {getItemVariantTitle(item)}
                       </Text>
                     </div>
                   </div>
@@ -271,7 +282,7 @@ const ReturnRequestTemplate = ({
             return (
               <div key={sel.id} className="rounded-lg border border-ui-border-base p-4">
                 <Text className="mb-2 txt-compact-medium">
-                  {item.product_title} — {item.variant_title} × {sel.quantity}
+                  {getItemName(item)} — {getItemVariantTitle(item)} × {sel.quantity}
                 </Text>
 
                 {returnReasons.length > 0 ? (
@@ -382,9 +393,9 @@ const ReturnRequestTemplate = ({
                   className="flex justify-between border-b border-ui-border-base py-2 last:border-0"
                 >
                   <div>
-                    <Text className="text-sm">{item.product_title}</Text>
+                    <Text className="text-sm">{getItemName(item)}</Text>
                     <Text className="text-xs text-ui-fg-subtle">
-                      {item.variant_title} × {sel.quantity}
+                      {getItemVariantTitle(item)} × {sel.quantity}
                     </Text>
                     {reason && (
                       <Text className="text-xs text-ui-fg-subtle">

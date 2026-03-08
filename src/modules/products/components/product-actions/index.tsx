@@ -8,7 +8,7 @@ import Divider from "@modules/common/components/divider"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
 import { useParams, usePathname, useSearchParams } from "next/navigation"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
@@ -41,6 +41,7 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
   const t = useTranslations("product")
+  const locale = useLocale()
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -76,6 +77,30 @@ export default function ProductActions({
       return isEqual(variantOptions, options)
     })
   }, [product.variants, options])
+
+  const colorMap = useMemo(() => {
+    if (locale !== "zh" || !product.variants) {
+      return undefined
+    }
+
+    const map: Record<string, string> = {}
+
+    for (const variant of product.variants) {
+      if (!variant.metadata?.color_zh) {
+        continue
+      }
+
+      const colorOption = variant.options?.find(
+        (optionValue) => optionValue.option?.title === "Color"
+      )
+
+      if (colorOption?.value) {
+        map[colorOption.value] = String(variant.metadata.color_zh)
+      }
+    }
+
+    return Object.keys(map).length > 0 ? map : undefined
+  }, [locale, product.variants])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -153,6 +178,7 @@ export default function ProductActions({
                       title={option.title ?? ""}
                       data-testid="product-options"
                       disabled={!!disabled || isAdding}
+                      colorMap={option.title === "Color" ? colorMap : undefined}
                     />
                   </div>
                 )
