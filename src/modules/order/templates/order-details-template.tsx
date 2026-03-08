@@ -7,6 +7,8 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Help from "@modules/order/components/help"
 import { hasReturnableItems } from "@lib/util/returns"
 import ReturnStatus from "@modules/order/components/return-status"
+import ExchangeStatus from "@modules/order/components/exchange-status"
+import ClaimStatus from "@modules/order/components/claim-status"
 import Items from "@modules/order/components/items"
 import OrderDetails from "@modules/order/components/order-details"
 import OrderSummary from "@modules/order/components/order-summary"
@@ -154,6 +156,25 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
             />
           </div>
         )}
+
+        {(order as any).exchanges && (order as any).exchanges.length > 0 && (
+          <div className="rounded-lg border border-ui-border-base p-4">
+            <ExchangeStatus
+              exchanges={(order as any).exchanges}
+              currencyCode={order.currency_code}
+            />
+          </div>
+        )}
+
+        {(order as any).claims && (order as any).claims.length > 0 && (
+          <div className="rounded-lg border border-ui-border-base p-4">
+            <ClaimStatus
+              claims={(order as any).claims}
+              currencyCode={order.currency_code}
+            />
+          </div>
+        )}
+
         {hasReturnableItems(order) && (
           <div className="rounded-lg border border-ui-border-base p-4">
             <div className="flex items-center justify-between">
