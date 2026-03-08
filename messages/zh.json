@@ -167,7 +167,14 @@
     "couponApplied": "优惠券已使用",
     "couponInvalid": "无效的优惠码",
     "updateCart": "更新购物车",
-    "freeShippingNudge": "再添加 {amount} 即可享受免运费"
+    "freeShippingNudge": "再添加 {amount} 即可享受免运费",
+    "price": "单价",
+    "summary": "订单汇总",
+    "alreadyHaveAccount": "已有账户？",
+    "signInBenefit": "登录以获得更好的体验。",
+    "signIn": "登录",
+    "emptyMessage": "您的购物车中还没有商品。点击下方链接开始浏览我们的产品吧。",
+    "exploreProducts": "浏览商品"
   },
   "checkout": {
     "title": "结算",
@@ -400,7 +407,10 @@
       "paid": "已支付",
       "partiallyRefunded": "部分退款",
       "refunded": "已退款"
-    }
+    },
+    "gotQuestions": "有疑问？",
+    "gotQuestionsDescription": "您可以在我们的客户服务页面找到常见问题和答案。",
+    "customerService": "客户服务"
   },
   "auth": {
     "login": "登录",
