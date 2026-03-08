@@ -578,6 +578,18 @@
     "successDescription": "Your return request has been received. We will review it and get back to you shortly.",
     "errorTitle": "Something went wrong",
     "tryAgain": "Try again",
-    "noReturnableItems": "There are no items eligible for return in this order."
+    "noReturnableItems": "There are no items eligible for return in this order.",
+    "statusTitle": "Return Requests",
+    "returnLabel": "Return",
+    "submittedOn": "Submitted on",
+    "itemQuantity": "Qty",
+    "received": "Received",
+    "refundAmount": "Refund amount",
+    "status": {
+      "requested": "Requested",
+      "received": "Received",
+      "canceled": "Canceled",
+      "partially_received": "Partially Received"
+    }
   }
 }

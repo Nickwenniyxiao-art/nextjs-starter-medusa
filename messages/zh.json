@@ -578,6 +578,18 @@
     "successDescription": "我们已收到您的退货申请，将尽快审核并与您联系。",
     "errorTitle": "出错了",
     "tryAgain": "重试",
-    "noReturnableItems": "此订单中没有可退货的商品。"
+    "noReturnableItems": "此订单中没有可退货的商品。",
+    "statusTitle": "退货记录",
+    "returnLabel": "退货",
+    "submittedOn": "提交于",
+    "itemQuantity": "数量",
+    "received": "已签收",
+    "refundAmount": "退款金额",
+    "status": {
+      "requested": "已申请",
+      "received": "已签收",
+      "canceled": "已取消",
+      "partially_received": "部分签收"
+    }
   }
 }
