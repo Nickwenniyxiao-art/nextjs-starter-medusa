@@ -6,6 +6,7 @@ import { Badge, Button, Text } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Help from "@modules/order/components/help"
 import { hasReturnableItems } from "@lib/util/returns"
+import ReturnStatus from "@modules/order/components/return-status"
 import Items from "@modules/order/components/items"
 import OrderDetails from "@modules/order/components/order-details"
 import OrderSummary from "@modules/order/components/order-summary"
@@ -145,6 +146,14 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
         <Items order={order} />
         <ShippingDetails order={order} />
         <OrderSummary order={order} />
+        {(order as any).returns && (order as any).returns.length > 0 && (
+          <div className="rounded-lg border border-ui-border-base p-4">
+            <ReturnStatus
+              returns={(order as any).returns}
+              currencyCode={order.currency_code}
+            />
+          </div>
+        )}
         {hasReturnableItems(order) && (
           <div className="rounded-lg border border-ui-border-base p-4">
             <div className="flex items-center justify-between">
