@@ -1,5 +1,6 @@
 "use client"
 
+import { trackAddToCart } from "@lib/analytics/events"
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { HttpTypes } from "@medusajs/types"
@@ -7,12 +8,16 @@ import { Button } from "@medusajs/ui"
 import Divider from "@modules/common/components/divider"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
-import { useParams, usePathname, useSearchParams } from "next/navigation"
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
-import { useRouter } from "next/navigation"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -157,6 +162,16 @@ export default function ProductActions({
       variantId: selectedVariant.id,
       quantity: 1,
       countryCode,
+    })
+
+    trackAddToCart({
+      id: selectedVariant.id,
+      name: product.title,
+      price: selectedVariant?.calculated_price?.calculated_amount
+        ? selectedVariant.calculated_price.calculated_amount / 100
+        : undefined,
+      currency: countryCode === "us" ? "USD" : "USD",
+      quantity: 1,
     })
 
     setIsAdding(false)
