@@ -22,6 +22,13 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
   return {
     title: `${t("allProducts")} | NordHjem`,
     description: t("allProducts"),
+    openGraph: {
+      title: `${t("allProducts")} | NordHjem`,
+      description: t("allProducts"),
+    },
+    alternates: {
+      canonical: "https://nordhjem.store/store",
+    },
   }
 }
 

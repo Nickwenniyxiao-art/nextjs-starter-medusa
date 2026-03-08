@@ -3,11 +3,11 @@ import { notFound } from "next/navigation"
 
 import { getCollectionByHandle } from "@lib/data/collections"
 import { getLocalizedCollectionTitle } from "@lib/util/get-localized-product"
+import { generateBreadcrumbJsonLd } from "@lib/util/structured-data"
 import { StoreCollection } from "@medusajs/types"
 import CollectionTemplate from "@modules/collections/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { getLocale } from "next-intl/server"
-
 
 export const dynamic = "force-dynamic"
 export const revalidate = 300 // 5 minutes
@@ -35,13 +35,19 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   const collectionName = getLocalizedCollectionTitle(collection, locale)
+  const description =
+    locale === "zh" ? `${collectionName}系列` : `${collectionName} collection`
 
   return {
     title: `${collectionName} | NordHjem`,
-    description:
-      locale === "zh"
-        ? `${collectionName}系列`
-        : `${collectionName} collection`,
+    description,
+    openGraph: {
+      title: `${collectionName} | NordHjem`,
+      description,
+    },
+    alternates: {
+      canonical: `https://nordhjem.store/collections/${params.handle}`,
+    },
   }
 }
 
@@ -49,6 +55,7 @@ export default async function CollectionPage(props: Props) {
   const searchParams = await props.searchParams
   const params = await props.params
   const { sortBy, page } = searchParams
+  const locale = await getLocale()
 
   const collection = await getCollectionByHandle(params.handle).then(
     (collection: StoreCollection) => collection
@@ -58,12 +65,27 @@ export default async function CollectionPage(props: Props) {
     notFound()
   }
 
+  const collectionName = getLocalizedCollectionTitle(collection, locale)
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: locale === "zh" ? "首页" : "Home", item: "https://nordhjem.store" },
+    {
+      name: collectionName,
+      item: `https://nordhjem.store/collections/${params.handle}`,
+    },
+  ])
+
   return (
-    <CollectionTemplate
-      collection={collection}
-      page={page}
-      sortBy={sortBy}
-      countryCode={params.countryCode}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <CollectionTemplate
+        collection={collection}
+        page={page}
+        sortBy={sortBy}
+        countryCode={params.countryCode}
+      />
+    </>
   )
 }

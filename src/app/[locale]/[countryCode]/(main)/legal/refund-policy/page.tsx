@@ -1,4 +1,10 @@
+import { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
+
+export const metadata: Metadata = {
+  title: "Refund Policy | NordHjem",
+  description: "NordHjem refund and return policy — eligibility, process, and timelines.",
+}
 
 export default async function RefundPolicyPage() {
   const t = await getTranslations("legal.refund")
