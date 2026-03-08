@@ -34,15 +34,25 @@ export async function POST(req: NextRequest) {
 
   // 5. Build Telegram message
   const { content, type, user, session_id } = payload.data
-  const nickname = user?.nickname || "Anonymous"
-  const messageText = type === "text" ? content : `[${type}]`
+  const nickname = user?.nickname || "匿名用户"
+  const email = user?.email || "未知"
+  const messageText =
+    type === "text"
+      ? content
+      : type === "file"
+        ? "[文件]"
+        : type === "animation"
+          ? "[动图]"
+          : `[${type === "image" ? "图片" : type}]`
   const crispInboxUrl = `https://app.crisp.chat/website/${payload.website_id}/inbox/${session_id}/`
 
   const telegramText = [
-    `🔔 <b>New Crisp Message</b>`,
-    `👤 ${escapeHtml(nickname)}`,
-    `💬 ${escapeHtml(messageText)}`,
-    `🔗 <a href="${crispInboxUrl}">Open in Crisp</a>`,
+    `🗨️ <b>客服消息</b>`,
+    `👤 用户: ${escapeHtml(nickname)}`,
+    `📧 邮箱: ${escapeHtml(email)}`,
+    `💬 内容: ${escapeHtml(messageText)}`,
+    `---`,
+    `🔗 <a href="${crispInboxUrl}">回复请打开 Crisp Dashboard</a>`,
   ].join("\n")
 
   // 6. Send to Telegram with retry (1 retry on failure)
@@ -106,6 +116,7 @@ interface CrispWebhookPayload {
     user?: {
       nickname?: string
       user_id?: string
+      email?: string
     }
   }
   timestamp: number

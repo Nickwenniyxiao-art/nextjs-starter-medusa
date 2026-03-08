@@ -6,6 +6,26 @@ import { getBaseURL } from "@lib/util/env"
 import { routing } from "@/i18n/routing"
 import { MetadataRoute } from "next"
 
+/**
+ * Active market country codes for sitemap generation.
+ * Only these countries get product/category/collection/static URLs in sitemap.
+ * This prevents sitemap bloat from Medusa's ~250 registered countries.
+ */
+const ACTIVE_COUNTRIES = [
+  "us",
+  "ca",
+  "gb",
+  "de",
+  "fr",
+  "it",
+  "nl",
+  "no",
+  "dk",
+  "fi",
+  "es",
+  "au",
+] as const
+
 const CATEGORY_CHANGE_FREQUENCY: MetadataRoute.Sitemap[number]["changeFrequency"] =
   "weekly"
 const COLLECTION_CHANGE_FREQUENCY: MetadataRoute.Sitemap[number]["changeFrequency"] =
@@ -54,13 +74,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     listCollections(),
   ])
 
-  const countryCodes = Array.from(
+  const allCountryCodes = Array.from(
     new Set(
       (regions ?? [])
         .flatMap((region) => region.countries ?? [])
-        .map((country) => country.iso_2)
+        .map((country) => country.iso_2?.toLowerCase())
         .filter((iso2): iso2 is string => Boolean(iso2))
     )
+  )
+
+  // Filter to active markets only to keep sitemap under Google's 50,000 URL limit
+  const countryCodes = allCountryCodes.filter((code) =>
+    ACTIVE_COUNTRIES.includes(code as (typeof ACTIVE_COUNTRIES)[number])
   )
 
   const localeCountryPairs = routing.locales.flatMap((locale) =>
