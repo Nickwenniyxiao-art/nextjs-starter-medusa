@@ -25,6 +25,6 @@ export const convertToLocale = ({
         currency: currency_code,
         minimumFractionDigits,
         maximumFractionDigits,
-      }).format(amount / 100)
-    : (amount / 100).toFixed(2)
+      }).format(amount)
+    : amount.toFixed(2)
 }
