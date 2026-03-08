@@ -328,7 +328,10 @@
       "refunded": "Refunded",
       "pending": "Pending payment",
       "pendingConfirmation": "Pending confirmation"
-    }
+    },
+    "requestReturn": "Request Return",
+    "requestReturnDescription": "Return items from this order",
+    "startReturn": "Start Return"
   },
   "account": {
     "title": "My Account",
@@ -546,5 +549,35 @@
         }
       }
     }
+  },
+  "returns": {
+    "title": "Request Return",
+    "backToOrder": "Back to order",
+    "backToOrders": "Back to orders",
+    "orderLabel": "Order",
+    "selectItemsTitle": "Select items to return",
+    "selectItemsDescription": "Choose the items you would like to return and the quantity for each.",
+    "maxQuantity": "Max",
+    "continue": "Continue",
+    "back": "Back",
+    "selectReasonTitle": "Return reason",
+    "selectReason": "Select a reason...",
+    "noReasonsConfigured": "No return reasons configured",
+    "notePlaceholder": "Additional notes (optional)",
+    "selectShippingTitle": "Return shipping method",
+    "noShippingOptions": "No return shipping options available. Please contact support.",
+    "freeShipping": "Free",
+    "confirmTitle": "Review and submit",
+    "returnItems": "Items to return",
+    "reason": "Reason",
+    "note": "Note",
+    "returnShipping": "Return shipping",
+    "submitReturn": "Submit return request",
+    "submitError": "Failed to submit return request",
+    "successTitle": "Return request submitted",
+    "successDescription": "Your return request has been received. We will review it and get back to you shortly.",
+    "errorTitle": "Something went wrong",
+    "tryAgain": "Try again",
+    "noReturnableItems": "There are no items eligible for return in this order."
   }
 }
