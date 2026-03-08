@@ -68,13 +68,18 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       ? String(product.metadata.description_zh)
       : product.description || product.title
 
+  const ogDescription = description.slice(0, 160)
+
   return {
     title: `${title} | NordHjem`,
     description,
     openGraph: {
       title: `${title} | NordHjem`,
-      description,
+      description: ogDescription,
       images: product.thumbnail ? [product.thumbnail] : [],
+    },
+    alternates: {
+      canonical: `https://nordhjem.store/products/${handle}`,
     },
   }
 }

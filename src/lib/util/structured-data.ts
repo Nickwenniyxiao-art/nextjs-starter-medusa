@@ -71,5 +71,16 @@ export function generateOrganizationJsonLd() {
     "@type": "Organization",
     name: BRAND_NAME,
     url: "https://nordhjem.store",
+    logo: "https://nordhjem.store/logo.png",
+    sameAs: [],
+  }
+}
+
+export function generateWebSiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: BRAND_NAME,
+    url: "https://nordhjem.store",
   }
 }

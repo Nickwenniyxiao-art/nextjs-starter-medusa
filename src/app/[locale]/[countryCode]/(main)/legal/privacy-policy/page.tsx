@@ -1,4 +1,10 @@
+import { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | NordHjem",
+  description: "Learn how NordHjem collects, uses, and protects your personal information.",
+}
 
 export default async function PrivacyPolicyPage() {
   const t = await getTranslations("legal.privacy")

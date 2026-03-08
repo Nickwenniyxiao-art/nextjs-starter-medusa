@@ -3,9 +3,11 @@ import { getLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 
 import { getCategoryByHandle } from "@lib/data/categories"
+import {
+  generateBreadcrumbJsonLd,
+} from "@lib/util/structured-data"
 import CategoryTemplate from "@modules/categories/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-
 
 export const dynamic = "force-dynamic"
 export const revalidate = 300 // 5 minutes
@@ -43,8 +45,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     return {
       title,
       description,
+      openGraph: {
+        title,
+        description,
+      },
       alternates: {
-        canonical: `${params.category.join("/")}`,
+        canonical: `https://nordhjem.store/categories/${params.category.join("/")}`,
       },
     }
   } catch (error) {
@@ -64,14 +70,32 @@ export default async function CategoryPage(props: Props) {
   }
 
   const locale = await getLocale()
+  const categoryName =
+    locale === "zh" && productCategory.metadata?.zh_name
+      ? String(productCategory.metadata.zh_name)
+      : productCategory.name
+
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: locale === "zh" ? "首页" : "Home", item: "https://nordhjem.store" },
+    {
+      name: categoryName,
+      item: `https://nordhjem.store/categories/${params.category.join("/")}`,
+    },
+  ])
 
   return (
-    <CategoryTemplate
-      category={productCategory}
-      sortBy={sortBy}
-      page={page}
-      countryCode={params.countryCode}
-      locale={locale}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <CategoryTemplate
+        category={productCategory}
+        sortBy={sortBy}
+        page={page}
+        countryCode={params.countryCode}
+        locale={locale}
+      />
+    </>
   )
 }

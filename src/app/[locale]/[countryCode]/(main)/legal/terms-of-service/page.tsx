@@ -1,4 +1,10 @@
+import { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
+
+export const metadata: Metadata = {
+  title: "Terms of Service | NordHjem",
+  description: "Terms and conditions for using the NordHjem online store.",
+}
 
 export default async function TermsOfServicePage() {
   const t = await getTranslations("legal.terms")

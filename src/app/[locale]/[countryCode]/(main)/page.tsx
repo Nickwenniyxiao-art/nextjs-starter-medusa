@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
 import FeaturedProducts from "@modules/home/components/featured-products"
@@ -6,13 +7,29 @@ import Categories from "@modules/home/components/categories"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
+import { generateWebSiteJsonLd } from "@lib/util/structured-data"
 
-export async function generateMetadata() {
-  const t = await getTranslations("site")
+export async function generateMetadata(props: {
+  params: Promise<{ countryCode: string; locale: string }>
+}): Promise<Metadata> {
+  const params = await props.params
+  const locale = params.locale || "en"
+  const t = await getTranslations({ locale, namespace: "site" })
+
+  const title = t("name") + " | " + t("tagline")
+  const description = t("description")
 
   return {
-    title: t("name") + " — " + t("tagline"),
-    description: t("description"),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [{ url: "https://nordhjem.store/opengraph-image.jpg" }],
+    },
+    alternates: {
+      canonical: `https://nordhjem.store/${locale}/${params.countryCode}`,
+    },
   }
 }
 
@@ -36,6 +53,10 @@ export default async function Home(props: {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateWebSiteJsonLd()) }}
+      />
       <Hero />
       <Categories />
       <div className="py-12">
