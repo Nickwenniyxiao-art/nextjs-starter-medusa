@@ -1,10 +1,11 @@
+import { retrieveCustomer } from "@lib/data/customer"
 import { retrieveOrder } from "@lib/data/orders"
 import OrderDetailsTemplate from "@modules/order/templates/order-details-template"
 import { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 
 type Props = {
-  params: Promise<{ id: string }>
+  params: Promise<{ countryCode: string; id: string }>
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -23,6 +24,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function OrderDetailPage(props: Props) {
   const params = await props.params
+  const customer = await retrieveCustomer().catch(() => null)
+
+  if (!customer) {
+    redirect(
+      `/${params.countryCode}/account?redirect=orders/details/${params.id}`
+    )
+  }
+
   const order = await retrieveOrder(params.id).catch(() => null)
 
   if (!order) {

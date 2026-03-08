@@ -65,6 +65,11 @@ const Addresses = ({
       </div>
       {isOpen ? (
         <form action={formAction}>
+          <input
+            type="hidden"
+            name="same_as_billing"
+            value={sameAsBilling ? "on" : ""}
+          />
           <div className="pb-8">
             <ShippingAddress
               customer={customer}

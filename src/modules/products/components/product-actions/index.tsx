@@ -116,7 +116,7 @@ export default function ProductActions({
       params.delete("v_id")
     }
 
-    router.replace(pathname + "?" + params.toString())
+    router.push(pathname + "?" + params.toString(), { scroll: false })
   }, [selectedVariant, isValidVariant])
 
   // check if the selected variant is in stock

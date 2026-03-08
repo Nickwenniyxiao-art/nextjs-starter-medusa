@@ -107,6 +107,7 @@ export async function signup(_currentState: unknown, formData: FormData) {
 export async function login(_currentState: unknown, formData: FormData) {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
+  const redirectTo = formData.get("redirect") as string | null
 
   try {
     await sdk.auth
@@ -124,6 +125,16 @@ export async function login(_currentState: unknown, formData: FormData) {
     await transferCart()
   } catch (error: any) {
     return error.toString()
+  }
+
+  if (redirectTo) {
+    const safeRedirect = redirectTo.startsWith("/")
+      ? redirectTo
+      : `/${redirectTo}`
+
+    if (!safeRedirect.startsWith("//")) {
+      redirect(safeRedirect)
+    }
   }
 }
 

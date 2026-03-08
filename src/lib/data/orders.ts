@@ -6,9 +6,8 @@ import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { HttpTypes } from "@medusajs/types"
 
 export const retrieveOrder = async (id: string) => {
-  const headers = {
-    ...(await getAuthHeaders()),
-  }
+  const authHeaders = await getAuthHeaders()
+  const headers = authHeaders ? { ...authHeaders } : {}
 
   const next = {
     ...(await getCacheOptions("orders")),
