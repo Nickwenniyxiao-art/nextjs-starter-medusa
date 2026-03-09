@@ -111,7 +111,9 @@ const AccountNav = ({
 
                 {isAdminUser && (
                   <>
-                    <li className="px-8 pt-4 text-sm font-semibold">{adminT("admin")}</li>
+                    <li className="px-8 pt-4 text-sm font-semibold">
+                      {adminT("admin")}
+                    </li>
                     <li>
                       <LocalizedClientLink
                         href="/account/admin/orders"
@@ -156,6 +158,45 @@ const AccountNav = ({
                         <div className="flex items-center gap-x-2">
                           <Package size={20} />
                           <span>{adminT("finance")}</span>
+                        </div>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/finance/currencies"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-12"
+                      >
+                        <span>{adminT("currencyReport")}</span>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/finance/reconciliation"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-12"
+                      >
+                        <span>{adminT("reconciliation")}</span>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/finance/tax"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-12"
+                      >
+                        <span>{adminT("taxConfig")}</span>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/tickets"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                      >
+                        <div className="flex items-center gap-x-2">
+                          <Package size={20} />
+                          <span>{adminT("tickets")}</span>
                         </div>
                         <ChevronDown className="transform -rotate-90" />
                       </LocalizedClientLink>
@@ -236,25 +277,68 @@ const AccountNav = ({
 
               {isAdminUser && (
                 <>
-                  <li className="pt-4 text-sm font-semibold">{adminT("admin")}</li>
+                  <li className="pt-4 text-sm font-semibold">
+                    {adminT("admin")}
+                  </li>
                   <li>
                     <AccountNavLink href="/account/admin/orders" route={route!}>
                       {adminT("orderManagement")}
                     </AccountNavLink>
                   </li>
                   <li>
-                    <AccountNavLink href="/account/admin/inventory" route={route!}>
+                    <AccountNavLink
+                      href="/account/admin/inventory"
+                      route={route!}
+                    >
                       {adminT("inventory")}
                     </AccountNavLink>
                   </li>
                   <li>
-                    <AccountNavLink href="/account/admin/analytics" route={route!}>
+                    <AccountNavLink
+                      href="/account/admin/analytics"
+                      route={route!}
+                    >
                       {adminT("analytics")}
                     </AccountNavLink>
                   </li>
                   <li>
-                    <AccountNavLink href="/account/admin/finance" route={route!}>
+                    <AccountNavLink
+                      href="/account/admin/finance"
+                      route={route!}
+                    >
                       {adminT("finance")}
+                    </AccountNavLink>
+                  </li>
+                  <li className="ml-4">
+                    <AccountNavLink
+                      href="/account/admin/finance/currencies"
+                      route={route!}
+                    >
+                      {adminT("currencyReport")}
+                    </AccountNavLink>
+                  </li>
+                  <li className="ml-4">
+                    <AccountNavLink
+                      href="/account/admin/finance/reconciliation"
+                      route={route!}
+                    >
+                      {adminT("reconciliation")}
+                    </AccountNavLink>
+                  </li>
+                  <li className="ml-4">
+                    <AccountNavLink
+                      href="/account/admin/finance/tax"
+                      route={route!}
+                    >
+                      {adminT("taxConfig")}
+                    </AccountNavLink>
+                  </li>
+                  <li>
+                    <AccountNavLink
+                      href="/account/admin/tickets"
+                      route={route!}
+                    >
+                      {adminT("tickets")}
                     </AccountNavLink>
                   </li>
                 </>
