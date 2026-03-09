@@ -140,6 +140,15 @@ const AccountNav = ({
                     </li>
                     <li>
                       <LocalizedClientLink
+                        href="/account/admin/inventory/alerts"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-12"
+                      >
+                        <span>{adminT("inventoryAlerts")}</span>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
                         href="/account/admin/analytics"
                         className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
                       >
@@ -147,6 +156,24 @@ const AccountNav = ({
                           <Package size={20} />
                           <span>{adminT("analytics")}</span>
                         </div>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/analytics/reports"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-12"
+                      >
+                        <span>{adminT("customReports")}</span>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/analytics/funnel"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-12"
+                      >
+                        <span>{adminT("funnelAnalysis")}</span>
                         <ChevronDown className="transform -rotate-90" />
                       </LocalizedClientLink>
                     </li>
@@ -293,12 +320,36 @@ const AccountNav = ({
                       {adminT("inventory")}
                     </AccountNavLink>
                   </li>
+                  <li className="ml-4">
+                    <AccountNavLink
+                      href="/account/admin/inventory/alerts"
+                      route={route!}
+                    >
+                      {adminT("inventoryAlerts")}
+                    </AccountNavLink>
+                  </li>
                   <li>
                     <AccountNavLink
                       href="/account/admin/analytics"
                       route={route!}
                     >
                       {adminT("analytics")}
+                    </AccountNavLink>
+                  </li>
+                  <li className="ml-4">
+                    <AccountNavLink
+                      href="/account/admin/analytics/reports"
+                      route={route!}
+                    >
+                      {adminT("customReports")}
+                    </AccountNavLink>
+                  </li>
+                  <li className="ml-4">
+                    <AccountNavLink
+                      href="/account/admin/analytics/funnel"
+                      route={route!}
+                    >
+                      {adminT("funnelAnalysis")}
                     </AccountNavLink>
                   </li>
                   <li>

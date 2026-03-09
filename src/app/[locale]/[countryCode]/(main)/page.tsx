@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 
 import FeaturedProducts from "@modules/home/components/featured-products"
@@ -7,7 +8,7 @@ import Categories from "@modules/home/components/categories"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
-import { generateWebSiteJsonLd } from "@lib/util/structured-data"
+import { generateOrganizationJsonLd, generateWebSiteJsonLd } from "@lib/util/structured-data"
 
 export async function generateMetadata(props: {
   params: Promise<{ countryCode: string; locale: string }>
@@ -57,6 +58,10 @@ export default async function Home(props: {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(generateWebSiteJsonLd()) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateOrganizationJsonLd()) }}
+      />
       <Hero />
       <Categories />
       <div className="py-12">
@@ -68,10 +73,14 @@ export default async function Home(props: {
         <div className="content-container">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <img
+              <Image
                 src="/images/brand-story.jpg"
                 alt="NordHjem"
+                width={600}
+                height={450}
                 className="rounded-lg w-full object-cover aspect-[4/3]"
+                priority={false}
+                loading="lazy"
               />
             </div>
             <div>

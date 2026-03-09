@@ -3,9 +3,7 @@ import { getLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 
 import { getCategoryByHandle } from "@lib/data/categories"
-import {
-  generateBreadcrumbJsonLd,
-} from "@lib/util/structured-data"
+import { generateBreadcrumbJsonLd, generateItemListJsonLd } from "@lib/util/structured-data"
 import CategoryTemplate from "@modules/categories/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 
@@ -77,6 +75,7 @@ export default async function CategoryPage(props: Props) {
       ? String(productCategory.metadata.zh_name)
       : productCategory.name
 
+  const products = Array.isArray((productCategory as any).products) ? (productCategory as any).products : []
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     { name: locale === "zh" ? "首页" : "Home", item: "https://nordhjem.store" },
     {
@@ -84,12 +83,20 @@ export default async function CategoryPage(props: Props) {
       item: `https://nordhjem.store/categories/${params.category.join("/")}`,
     },
   ])
+  const itemListJsonLd = generateItemListJsonLd(
+    products.map((p: any) => ({ title: p.title || "", handle: p.handle || "" })),
+    productCategory.name || ""
+  )
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
       <CategoryTemplate
         category={productCategory}

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 
 import { getCollectionByHandle } from "@lib/data/collections"
 import { getLocalizedCollectionTitle } from "@lib/util/get-localized-product"
-import { generateBreadcrumbJsonLd } from "@lib/util/structured-data"
+import { generateBreadcrumbJsonLd, generateItemListJsonLd } from "@lib/util/structured-data"
 import { StoreCollection } from "@medusajs/types"
 import CollectionTemplate from "@modules/collections/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -68,6 +68,7 @@ export default async function CollectionPage(props: Props) {
   }
 
   const collectionName = getLocalizedCollectionTitle(collection, locale)
+  const products = collection.products || []
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     { name: locale === "zh" ? "首页" : "Home", item: "https://nordhjem.store" },
     {
@@ -75,12 +76,20 @@ export default async function CollectionPage(props: Props) {
       item: `https://nordhjem.store/collections/${params.handle}`,
     },
   ])
+  const itemListJsonLd = generateItemListJsonLd(
+    products.map((p) => ({ title: p.title || "", handle: p.handle || "" })),
+    collection.title || ""
+  )
 
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
       <CollectionTemplate
         collection={collection}
