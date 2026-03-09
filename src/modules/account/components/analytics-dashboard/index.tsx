@@ -10,8 +10,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
+import { Button, Text } from "@medusajs/ui"
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -21,6 +22,18 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
 export default function AnalyticsDashboard({ data }: { data: AnalyticsData }) {
   const t = useTranslations("admin")
   const [days, setDays] = useState<7 | 30 | 90>(30)
+  const [lastRefresh, setLastRefresh] = useState(new Date())
+  const [autoRefresh, setAutoRefresh] = useState(false)
+
+  useEffect(() => {
+    if (!autoRefresh) return
+    const interval = setInterval(() => {
+      setLastRefresh(new Date())
+      // In mock mode, this just updates the timestamp
+      // TODO: re-fetch data from server when live API is connected
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [autoRefresh])
 
   const trendData = useMemo(() => data.salesTrend.slice(-days), [data.salesTrend, days])
 
@@ -36,6 +49,19 @@ export default function AnalyticsDashboard({ data }: { data: AnalyticsData }) {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">{t("analytics")}</h1>
+      <div className="flex items-center gap-4 text-sm">
+        <label className="flex cursor-pointer items-center gap-2">
+          <input
+            type="checkbox"
+            checked={autoRefresh}
+            onChange={(e) => setAutoRefresh(e.target.checked)}
+          />
+          {t("autoRefresh")}
+        </label>
+        <Text className="text-ui-fg-subtle">
+          {t("lastUpdated")}: {lastRefresh.toLocaleTimeString()}
+        </Text>
+      </div>
       <p className="rounded border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">{t("mockDataNotice")}</p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -125,6 +151,25 @@ export default function AnalyticsDashboard({ data }: { data: AnalyticsData }) {
             <FunnelBar key={stage.stage} stage={stage} maxFunnel={maxFunnel} label={funnelLabels[stage.stage] || stage.stage} idx={idx} />
           ))}
         </div>
+      </div>
+      <div className="flex justify-end">
+        <Button
+          variant="secondary"
+          onClick={() => {
+            const header = "Date,Amount,Orders\n"
+            const rows = data.salesTrend
+              .slice(-days)
+              .map((d) => `${d.date},${d.amount},${d.orders}`)
+              .join("\n")
+            const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" })
+            const a = document.createElement("a")
+            a.href = URL.createObjectURL(blob)
+            a.download = `analytics_${days}d.csv`
+            a.click()
+          }}
+        >
+          {t("exportCsv")}
+        </Button>
       </div>
     </div>
   )

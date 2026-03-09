@@ -84,3 +84,22 @@ export function generateWebSiteJsonLd() {
     url: "https://nordhjem.store",
   }
 }
+
+
+export function generateItemListJsonLd(
+  products: { title: string; handle: string }[],
+  listName: string
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: listName,
+    numberOfItems: products.length,
+    itemListElement: products.slice(0, 50).map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: product.title,
+      url: `https://nordhjem.store/products/${product.handle}`,
+    })),
+  }
+}
