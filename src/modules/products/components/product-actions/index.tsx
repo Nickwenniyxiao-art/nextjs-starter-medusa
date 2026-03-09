@@ -17,6 +17,7 @@ import {
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
+import RestockNotification from "../restock-notification"
 import MobileActions from "./mobile-actions"
 
 type ProductActionsProps = {
@@ -205,26 +206,30 @@ export default function ProductActions({
 
         <ProductPrice product={product} variant={selectedVariant} />
 
-        <Button
-          onClick={handleAddToCart}
-          disabled={
-            !inStock ||
-            !selectedVariant ||
-            !!disabled ||
-            isAdding ||
-            !isValidVariant
-          }
-          variant="primary"
-          className="w-full h-10"
-          isLoading={isAdding}
-          data-testid="add-product-button"
-        >
-          {!selectedVariant
-            ? t("selectVariant")
-            : !inStock || !isValidVariant
-            ? t("outOfStock")
-            : t("addToCart")}
-        </Button>
+        {selectedVariant && !inStock ? (
+          <RestockNotification
+            variantId={selectedVariant.id}
+            userEmail={undefined}
+          />
+        ) : (
+          <Button
+            onClick={handleAddToCart}
+            disabled={
+              !selectedVariant ||
+              !!disabled ||
+              isAdding ||
+              !isValidVariant
+            }
+            variant="primary"
+            className="w-full h-10"
+            isLoading={isAdding}
+            data-testid="add-product-button"
+          >
+            {!selectedVariant
+              ? t("selectVariant")
+              : t("addToCart")}
+          </Button>
+        )}
         <MobileActions
           product={product}
           variant={selectedVariant}

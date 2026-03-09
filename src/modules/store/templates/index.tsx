@@ -11,14 +11,18 @@ const StoreTemplate = async ({
   sortBy,
   page,
   countryCode,
+  minPrice,
+  maxPrice,
 }: {
   sortBy?: SortOptions
   page?: string
   countryCode: string
+  minPrice?: string
+  maxPrice?: string
 }) => {
   const t = await getTranslations("store")
   const pageNumber = page ? parseInt(page) : 1
-  const sort = sortBy || "created_at"
+  const sort = sortBy || "recommended"
 
   return (
     <div
@@ -35,6 +39,8 @@ const StoreTemplate = async ({
             sortBy={sort}
             page={pageNumber}
             countryCode={countryCode}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
           />
         </Suspense>
       </div>
