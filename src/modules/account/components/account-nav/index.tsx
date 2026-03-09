@@ -16,12 +16,15 @@ import { resetCrispSession } from "@modules/common/components/crisp-chat"
 
 const AccountNav = ({
   customer,
+  isAdminUser = false,
 }: {
   customer: HttpTypes.StoreCustomer | null
+  isAdminUser?: boolean
 }) => {
   const route = usePathname()
   const { countryCode } = useParams() as { countryCode: string }
   const t = useTranslations("account")
+  const adminT = useTranslations("admin")
 
   const handleLogout = async () => {
     resetCrispSession()
@@ -105,6 +108,36 @@ const AccountNav = ({
                     <ChevronDown className="transform -rotate-90" />
                   </LocalizedClientLink>
                 </li>
+
+                {isAdminUser && (
+                  <>
+                    <li className="px-8 pt-4 text-sm font-semibold">{adminT("admin")}</li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/orders"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                      >
+                        <div className="flex items-center gap-x-2">
+                          <Package size={20} />
+                          <span>{adminT("orderManagement")}</span>
+                        </div>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/inventory"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                      >
+                        <div className="flex items-center gap-x-2">
+                          <Package size={20} />
+                          <span>{adminT("inventory")}</span>
+                        </div>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                  </>
+                )}
                 <li>
                   <button
                     type="button"
@@ -176,6 +209,22 @@ const AccountNav = ({
                   {t("afterSales")}
                 </AccountNavLink>
               </li>
+
+              {isAdminUser && (
+                <>
+                  <li className="pt-4 text-sm font-semibold">{adminT("admin")}</li>
+                  <li>
+                    <AccountNavLink href="/account/admin/orders" route={route!}>
+                      {adminT("orderManagement")}
+                    </AccountNavLink>
+                  </li>
+                  <li>
+                    <AccountNavLink href="/account/admin/inventory" route={route!}>
+                      {adminT("inventory")}
+                    </AccountNavLink>
+                  </li>
+                </>
+              )}
               <li className="text-grey-700">
                 <button
                   type="button"
