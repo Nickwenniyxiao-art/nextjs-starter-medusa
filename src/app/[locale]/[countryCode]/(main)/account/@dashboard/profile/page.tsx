@@ -9,15 +9,21 @@ import ProfilePassword from "@modules/account/components/profile-password"
 import { notFound } from "next/navigation"
 import { listRegions } from "@lib/data/regions"
 import { retrieveCustomer } from "@lib/data/customer"
+import { getTranslations } from "next-intl/server"
 
-export const metadata: Metadata = {
-  title: "Profile",
-  description: "View and edit your NordHjem profile.",
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("account")
+
+  return {
+    title: t("profile"),
+    description: t("profileDescription"),
+  }
 }
 
 export default async function Profile() {
   const customer = await retrieveCustomer()
   const regions = await listRegions()
+  const t = await getTranslations("account")
 
   if (!customer || !regions) {
     notFound()
@@ -26,12 +32,8 @@ export default async function Profile() {
   return (
     <div className="w-full" data-testid="profile-page-wrapper">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">Profile</h1>
-        <p className="text-base-regular">
-          View and update your profile information, including your name, email,
-          and phone number. You can also update your billing address, or change
-          your password.
-        </p>
+        <h1 className="text-2xl-semi">{t("profile")}</h1>
+        <p className="text-base-regular">{t("profileDescription")}</p>
       </div>
       <div className="flex flex-col gap-y-8 w-full">
         <ProfileName customer={customer} />
@@ -40,8 +42,8 @@ export default async function Profile() {
         <Divider />
         <ProfilePhone customer={customer} />
         <Divider />
-        {/* <ProfilePassword customer={customer} />
-        <Divider /> */}
+        <ProfilePassword customer={customer} />
+        <Divider />
         <ProfileBillingAddress customer={customer} regions={regions} />
       </div>
     </div>
@@ -51,4 +53,3 @@ export default async function Profile() {
 const Divider = () => {
   return <div className="w-full h-px bg-gray-200" />
 }
-;``
