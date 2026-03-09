@@ -13,15 +13,19 @@ export default async function CollectionTemplate({
   collection,
   page,
   countryCode,
+  minPrice,
+  maxPrice,
 }: {
   sortBy?: SortOptions
   collection: HttpTypes.StoreCollection
   page?: string
   countryCode: string
+  minPrice?: string
+  maxPrice?: string
 }) {
   const t = await getTranslations("collection")
   const pageNumber = page ? parseInt(page) : 1
-  const sort = sortBy || "created_at"
+  const sort = sortBy || "recommended"
 
   return (
     <div className="flex flex-col small:flex-row small:items-start py-6 content-container">
@@ -44,6 +48,8 @@ export default async function CollectionTemplate({
             page={pageNumber}
             collectionId={collection.id}
             countryCode={countryCode}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
           />
         </Suspense>
       </div>

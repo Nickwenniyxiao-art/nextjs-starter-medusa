@@ -46,5 +46,15 @@ export function sortProducts(
     })
   }
 
+  if (sortBy === "name_asc") {
+    sortedProducts.sort((a, b) => {
+      const nameA = (a.title || "").toLowerCase()
+      const nameB = (b.title || "").toLowerCase()
+      return nameA.localeCompare(nameB)
+    })
+  }
+
+  // "recommended" keeps the default API order (no sorting)
+
   return sortedProducts
 }

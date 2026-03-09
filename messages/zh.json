@@ -110,7 +110,14 @@
     "relatedProductsDescription": "您可能还喜欢这些产品。",
     "adding": "添加中...",
     "from": "起",
-    "originalPrice": "原价"
+    "originalPrice": "原价",
+    "notifyWhenAvailable": "到货通知",
+    "enterEmail": "输入您的邮箱",
+    "subscribe": "订阅",
+    "restockSubscribed": "已订阅！到货后我们会通知您。",
+    "restockError": "出了点问题，请重试。",
+    "invalidEmail": "请输入有效的邮箱地址。",
+    "cancel": "取消"
   },
   "collection": {
     "title": "商品系列",
@@ -494,7 +501,19 @@
     "sortBy": "排序方式",
     "latestArrivals": "最新上架",
     "priceLowToHigh": "价格：从低到高",
-    "priceHighToLow": "价格：从高到低"
+    "priceHighToLow": "价格：从高到低",
+    "recommended": "推荐",
+    "nameAZ": "名称 A-Z",
+    "priceRange": "价格区间",
+    "priceRange0to500": "$0 – $500",
+    "priceRange500to1000": "$500 – $1,000",
+    "priceRange1000to2000": "$1,000 – $2,000",
+    "priceRange2000to5000": "$2,000 – $5,000",
+    "priceRange5000plus": "$5,000+",
+    "min": "最低",
+    "max": "最高",
+    "apply": "筛选",
+    "clearFilter": "清除筛选"
   },
   "legal": {
     "privacy": {

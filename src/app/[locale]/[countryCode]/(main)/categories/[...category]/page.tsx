@@ -16,6 +16,8 @@ type Props = {
   searchParams: Promise<{
     sortBy?: SortOptions
     page?: string
+    min_price?: string
+    max_price?: string
   }>
 }
 
@@ -61,7 +63,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function CategoryPage(props: Props) {
   const searchParams = await props.searchParams
   const params = await props.params
-  const { sortBy, page } = searchParams
+  const { sortBy, page, min_price, max_price } = searchParams
 
   const productCategory = await getCategoryByHandle(params.category)
 
@@ -95,6 +97,8 @@ export default async function CategoryPage(props: Props) {
         page={page}
         countryCode={params.countryCode}
         locale={locale}
+        minPrice={min_price}
+        maxPrice={max_price}
       />
     </>
   )

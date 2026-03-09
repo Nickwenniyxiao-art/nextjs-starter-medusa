@@ -110,7 +110,14 @@
     "relatedProductsDescription": "You might also want to check out these products.",
     "adding": "Adding...",
     "from": "From",
-    "originalPrice": "Original"
+    "originalPrice": "Original",
+    "notifyWhenAvailable": "Notify When Available",
+    "enterEmail": "Enter your email",
+    "subscribe": "Subscribe",
+    "restockSubscribed": "Subscribed! We'll notify you when this item is back in stock.",
+    "restockError": "Something went wrong. Please try again.",
+    "invalidEmail": "Please enter a valid email address.",
+    "cancel": "Cancel"
   },
   "collection": {
     "title": "Collections",
@@ -494,7 +501,19 @@
     "sortBy": "Sort by",
     "latestArrivals": "Latest Arrivals",
     "priceLowToHigh": "Price: Low -> High",
-    "priceHighToLow": "Price: High -> Low"
+    "priceHighToLow": "Price: High -> Low",
+    "recommended": "Recommended",
+    "nameAZ": "Name A-Z",
+    "priceRange": "Price Range",
+    "priceRange0to500": "$0 – $500",
+    "priceRange500to1000": "$500 – $1,000",
+    "priceRange1000to2000": "$1,000 – $2,000",
+    "priceRange2000to5000": "$2,000 – $5,000",
+    "priceRange5000plus": "$5,000+",
+    "min": "Min",
+    "max": "Max",
+    "apply": "Go",
+    "clearFilter": "Clear filter"
   },
   "legal": {
     "privacy": {

@@ -4,7 +4,6 @@ import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 
-const PRODUCT_LIMIT = 12
 
 type PaginatedProductsParams = {
   limit: number
@@ -21,6 +20,8 @@ export default async function PaginatedProducts({
   categoryId,
   productsIds,
   countryCode,
+  minPrice,
+  maxPrice,
 }: {
   sortBy?: SortOptions
   page: number
@@ -28,6 +29,8 @@ export default async function PaginatedProducts({
   categoryId?: string
   productsIds?: string[]
   countryCode: string
+  minPrice?: string
+  maxPrice?: string
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 12,
@@ -58,13 +61,30 @@ export default async function PaginatedProducts({
   let {
     response: { products, count },
   } = await listProductsWithSort({
-    page,
-    queryParams,
+    page: 1,
+    queryParams: { ...queryParams, limit: 100 },
     sortBy,
     countryCode,
   })
 
-  const totalPages = Math.ceil(count / PRODUCT_LIMIT)
+  const minPriceNum = minPrice ? parseInt(minPrice) : undefined
+  const maxPriceNum = maxPrice ? parseInt(maxPrice) : undefined
+
+  if (minPriceNum !== undefined || maxPriceNum !== undefined) {
+    products = products.filter((product) => {
+      const price = product.variants?.[0]?.calculated_price?.calculated_amount
+      if (price == null) return false
+      if (minPriceNum !== undefined && price < minPriceNum) return false
+      if (maxPriceNum !== undefined && price > maxPriceNum) return false
+      return true
+    })
+    count = products.length
+  }
+
+  const limit = 12
+  const offset = (page - 1) * limit
+  products = products.slice(offset, offset + limit)
+  const totalPages = Math.ceil(count / limit)
 
   return (
     <>

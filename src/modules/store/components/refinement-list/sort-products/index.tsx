@@ -3,7 +3,7 @@
 import FilterRadioGroup from "@modules/common/components/filter-radio-group"
 import { useTranslations } from "next-intl"
 
-export type SortOptions = "price_asc" | "price_desc" | "created_at"
+export type SortOptions = "recommended" | "price_asc" | "price_desc" | "created_at" | "name_asc"
 
 type SortProductsProps = {
   sortBy: SortOptions
@@ -20,6 +20,10 @@ const SortProducts = ({
 
   const sortOptions = [
     {
+      value: "recommended" as const,
+      label: t("recommended"),
+    },
+    {
       value: "created_at" as const,
       label: t("latestArrivals"),
     },
@@ -30,6 +34,10 @@ const SortProducts = ({
     {
       value: "price_desc" as const,
       label: t("priceHighToLow"),
+    },
+    {
+      value: "name_asc" as const,
+      label: t("nameAZ"),
     },
   ]
 
