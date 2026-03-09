@@ -427,7 +427,36 @@
     },
     "gotQuestions": "Got questions?",
     "gotQuestionsDescription": "You can find frequently asked questions and answers on our customer service page.",
-    "customerService": "Customer Service"
+    "customerService": "Customer Service",
+    "afterSales": "After-Sales",
+    "afterSalesDescription": "View your return, exchange, and claim history.",
+    "afterSalesAll": "All",
+    "afterSalesReturns": "Returns",
+    "afterSalesExchanges": "Exchanges",
+    "afterSalesClaims": "Claims",
+    "noAfterSales": "No after-sales records yet.",
+    "afterSalesOrderLink": "Order",
+    "afterSalesItems": "{count} items",
+    "passwordLabel": "Password",
+    "passwordDescription": "Manage your account password",
+    "oldPassword": "Current password",
+    "newPasswordLabel": "New password",
+    "confirmPasswordLabel": "Confirm new password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "incorrectPassword": "Current password is incorrect",
+    "passwordUpdateFailed": "Failed to update password. Please try again.",
+    "passwordUpdated": "Password updated successfully",
+    "passwordNotShown": "Password is not shown for security reasons",
+    "signedInAs": "Signed in as:",
+    "completed": "Completed",
+    "saved": "Saved",
+    "recentOrders": "Recent orders",
+    "noRecentOrders": "No recent orders",
+    "profileDescription": "View and update your profile information, including your name, email, and phone number.",
+    "previousPage": "← Previous",
+    "nextPage": "Next →",
+    "pageIndicator": "Page {page}"
   },
   "trackOrder": {
     "title": "Track Your Order",
@@ -657,7 +686,13 @@
       "received": "Received",
       "canceled": "Canceled",
       "partially_received": "Partially Received"
-    }
+    },
+    "uploadImages": "Upload images (optional)",
+    "uploadImagesDescription": "Add photos of the items you want to return (max 3 images)",
+    "maxFileSize": "Max 5MB per image",
+    "tooManyImages": "Maximum 3 images allowed",
+    "imageTooLarge": "Image exceeds 5MB limit",
+    "removeImage": "Remove"
   },
   "exchanges": {
     "statusTitle": "Exchanges",
@@ -668,7 +703,10 @@
       "active": "Active",
       "completed": "Completed",
       "canceled": "Canceled"
-    }
+    },
+    "originalItems": "Original items",
+    "contactSupport": "Contact Support",
+    "exchangeProgress": "Exchange in progress"
   },
   "claims": {
     "statusTitle": "Claims",
@@ -685,7 +723,11 @@
       "active": "Active",
       "completed": "Completed",
       "canceled": "Canceled"
-    }
+    },
+    "claimReason": "Reason",
+    "claimNote": "Note",
+    "contactSupport": "Contact Support",
+    "claimProgress": "Claim in progress"
   },
   "about": {
     "title": "About NordHjem",

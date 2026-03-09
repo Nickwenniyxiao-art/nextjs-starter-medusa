@@ -93,6 +93,19 @@ const AccountNav = ({
                   </LocalizedClientLink>
                 </li>
                 <li>
+                  <LocalizedClientLink
+                    href="/account/after-sales"
+                    className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                    data-testid="after-sales-link"
+                  >
+                    <div className="flex items-center gap-x-2">
+                      <Package size={20} />
+                      <span>{t("afterSales")}</span>
+                    </div>
+                    <ChevronDown className="transform -rotate-90" />
+                  </LocalizedClientLink>
+                </li>
+                <li>
                   <button
                     type="button"
                     className="flex items-center justify-between py-4 border-b border-gray-200 px-8 w-full"
@@ -152,6 +165,15 @@ const AccountNav = ({
                   data-testid="orders-link"
                 >
                   {t("ordersLabel")}
+                </AccountNavLink>
+              </li>
+              <li>
+                <AccountNavLink
+                  href="/account/after-sales"
+                  route={route!}
+                  data-testid="after-sales-link"
+                >
+                  {t("afterSales")}
                 </AccountNavLink>
               </li>
               <li className="text-grey-700">

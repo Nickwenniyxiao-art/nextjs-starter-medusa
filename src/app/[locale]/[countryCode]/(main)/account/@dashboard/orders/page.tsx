@@ -74,16 +74,16 @@ export default async function Orders(props: Props) {
                 href={`?page=${currentPage - 1}`}
                 className="text-sm text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               >
-                {t("orders") === "订单历史" ? "← 上一页" : "← Previous"}
+                {t("previousPage")}
               </a>
             ) : (
               <span className="text-sm text-ui-fg-disabled">
-                {t("orders") === "订单历史" ? "← 上一页" : "← Previous"}
+                {t("previousPage")}
               </span>
             )}
 
             <span className="text-sm text-ui-fg-subtle">
-              {t("orders") === "订单历史" ? `第 ${currentPage} 页` : `Page ${currentPage}`}
+              {t("pageIndicator", { page: currentPage })}
             </span>
 
             {hasNextPage ? (
@@ -91,11 +91,11 @@ export default async function Orders(props: Props) {
                 href={`?page=${currentPage + 1}`}
                 className="text-sm text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               >
-                {t("orders") === "订单历史" ? "下一页 →" : "Next →"}
+                {t("nextPage")}
               </a>
             ) : (
               <span className="text-sm text-ui-fg-disabled">
-                {t("orders") === "订单历史" ? "下一页 →" : "Next →"}
+                {t("nextPage")}
               </span>
             )}
           </div>

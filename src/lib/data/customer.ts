@@ -59,6 +59,89 @@ export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
   return updateRes
 }
 
+export const updateCustomerPassword = async (
+  currentState: Record<string, unknown>,
+  formData: FormData
+): Promise<{
+  success: boolean
+  error: string | null
+  translations?: Record<string, string>
+}> => {
+  const oldPassword = formData.get("old_password") as string
+  const newPassword = formData.get("new_password") as string
+  const confirmPassword = formData.get("confirm_password") as string
+  const t = (currentState.translations as Record<string, string>) || {}
+
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return {
+      success: false,
+      error: t.passwordUpdateFailed || "Invalid input",
+      translations: t,
+    }
+  }
+
+  if (newPassword !== confirmPassword) {
+    return {
+      success: false,
+      error: t.passwordMismatch || "Passwords do not match",
+      translations: t,
+    }
+  }
+
+  if (newPassword.length < 8) {
+    return {
+      success: false,
+      error: t.passwordTooShort || "Password must be at least 8 characters",
+      translations: t,
+    }
+  }
+
+  try {
+    const customer = await retrieveCustomer()
+
+    if (!customer?.email) {
+      return {
+        success: false,
+        error: t.passwordUpdateFailed || "Unable to update",
+        translations: t,
+      }
+    }
+
+    await sdk.auth.login("customer", "emailpass", {
+      email: customer.email,
+      password: oldPassword,
+    })
+
+    const headers = {
+      ...(await getAuthHeaders()),
+    }
+
+    try {
+      await (sdk.auth as any).updateProvider("customer", "emailpass", {
+        password: newPassword,
+      })
+    } catch {
+      await sdk.client.fetch("/auth/customer/emailpass/update", {
+        method: "POST",
+        body: { password: newPassword },
+        headers,
+      })
+    }
+
+    return { success: true, error: null, translations: t }
+  } catch (error: any) {
+    const message = error?.message || ""
+
+    return {
+      success: false,
+      error: message.includes("Unauthorized")
+        ? t.incorrectPassword || "Current password is incorrect"
+        : t.passwordUpdateFailed || "Failed to update password",
+      translations: t,
+    }
+  }
+}
+
 export async function signup(_currentState: unknown, formData: FormData) {
   const password = formData.get("password") as string
   const customerForm = {

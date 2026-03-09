@@ -35,7 +35,12 @@ type Step =
   | "success"
   | "error"
 
-const steps: Step[] = ["select-items", "select-reason", "select-shipping", "confirm"]
+const steps: Step[] = [
+  "select-items",
+  "select-reason",
+  "select-shipping",
+  "confirm",
+]
 
 const RETURN_REASON_ZH: Record<string, string> = {
   "wrong-size": "尺寸不合适",
@@ -43,12 +48,12 @@ const RETURN_REASON_ZH: Record<string, string> = {
   "material-unsatisfactory": "材质不满意",
   "shipping-damage": "运输损坏",
   "wrong-item": "错发商品",
-  "size": "尺寸不合适",
-  "color": "颜色差异",
-  "quality": "质量问题",
-  "damaged": "运输损坏",
-  "wrong_item": "错发商品",
-  "other": "其他原因",
+  size: "尺寸不合适",
+  color: "颜色差异",
+  quality: "质量问题",
+  damaged: "运输损坏",
+  wrong_item: "错发商品",
+  other: "其他原因",
 }
 
 const getReturnReasonZh = (value: string): string | undefined => {
@@ -57,6 +62,17 @@ const getReturnReasonZh = (value: string): string | undefined => {
     RETURN_REASON_ZH[value.toLowerCase().replace(/\s+/g, "-")]
   )
 }
+
+const MAX_IMAGES = 3
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024
+
+const fileToBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result))
+    reader.onerror = () => reject(new Error("Failed to read image"))
+    reader.readAsDataURL(file)
+  })
 
 const ReturnRequestTemplate = ({
   order,
@@ -70,6 +86,8 @@ const ReturnRequestTemplate = ({
   const [selectedShippingOptionId, setSelectedShippingOptionId] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
+  const [images, setImages] = useState<File[]>([])
+  const [imageError, setImageError] = useState("")
 
   const itemsWithInfo = getItemsWithReturnInfo(order.items || [])
   const returnableItems = itemsWithInfo.filter((i) => i.is_returnable)
@@ -119,18 +137,67 @@ const ReturnRequestTemplate = ({
     )
   }
 
+  const handleImageSelect = (files: FileList | null) => {
+    if (!files) return
+
+    setImageError("")
+    const nextImages = [...images]
+
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith("image/")) {
+        setImageError(t("imageTooLarge"))
+        continue
+      }
+
+      if (file.size > MAX_IMAGE_SIZE) {
+        setImageError(t("imageTooLarge"))
+        continue
+      }
+
+      if (nextImages.length >= MAX_IMAGES) {
+        setImageError(t("tooManyImages"))
+        break
+      }
+
+      nextImages.push(file)
+    }
+
+    setImages(nextImages)
+  }
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, idx) => idx !== index))
+  }
+
   const handleSubmit = async () => {
     setSubmitting(true)
     setErrorMessage("")
 
+    const imagePayload =
+      images.length > 0
+        ? await Promise.all(images.map((file) => fileToBase64(file)))
+        : []
+
     const result = await createReturnRequest({
       order_id: order.id,
-      items: selectedItems.map((s) => ({
-        id: s.id,
-        quantity: s.quantity,
-        ...(s.reason_id ? { reason_id: s.reason_id } : {}),
-        ...(s.note ? { note: s.note } : {}),
-      })),
+      items: selectedItems.map((s) => {
+        const baseNote = s.note?.trim() || ""
+        const imageMarker =
+          imagePayload.length > 0
+            ? `\n[Images attached: ${imagePayload.length}]\n${imagePayload.join(
+                "\n"
+              )}`
+            : ""
+
+        return {
+          id: s.id,
+          quantity: s.quantity,
+          ...(s.reason_id ? { reason_id: s.reason_id } : {}),
+          ...(baseNote || imageMarker
+            ? { note: `${baseNote}${imageMarker}`.trim() }
+            : {}),
+        }
+      }),
       return_shipping: {
         option_id: selectedShippingOptionId,
       },
@@ -177,7 +244,9 @@ const ReturnRequestTemplate = ({
         <div className="rounded-lg border border-ui-border-base p-6 text-center">
           <Text className="mb-2 txt-xlarge">✓</Text>
           <Text className="mb-2 txt-medium-plus">{t("successTitle")}</Text>
-          <Text className="mb-4 text-ui-fg-subtle">{t("successDescription")}</Text>
+          <Text className="mb-4 text-ui-fg-subtle">
+            {t("successDescription")}
+          </Text>
           <LocalizedClientLink href="/account/orders">
             <Button variant="secondary">{t("backToOrders")}</Button>
           </LocalizedClientLink>
@@ -223,7 +292,9 @@ const ReturnRequestTemplate = ({
           <div
             key={s}
             className={`h-1 flex-1 rounded-full ${
-              idx <= steps.indexOf(step) ? "bg-ui-fg-interactive" : "bg-ui-border-base"
+              idx <= steps.indexOf(step)
+                ? "bg-ui-fg-interactive"
+                : "bg-ui-border-base"
             }`}
           />
         ))}
@@ -232,7 +303,9 @@ const ReturnRequestTemplate = ({
       {step === "select-items" && (
         <div className="flex flex-col gap-y-3">
           <Text className="txt-medium-plus">{t("selectItemsTitle")}</Text>
-          <Text className="text-sm text-ui-fg-subtle">{t("selectItemsDescription")}</Text>
+          <Text className="text-sm text-ui-fg-subtle">
+            {t("selectItemsDescription")}
+          </Text>
 
           {returnableItems.map((item) => {
             const selected = selectedItems.find((s) => s.id === item.id)
@@ -257,7 +330,9 @@ const ReturnRequestTemplate = ({
                       />
                     )}
                     <div>
-                      <Text className="txt-compact-medium">{getItemName(item)}</Text>
+                      <Text className="txt-compact-medium">
+                        {getItemName(item)}
+                      </Text>
                       <Text className="text-sm text-ui-fg-subtle">
                         {getItemVariantTitle(item)}
                       </Text>
@@ -272,7 +347,10 @@ const ReturnRequestTemplate = ({
                         value={selected.quantity}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) =>
-                          updateItemQuantity(item.id, Number.parseInt(e.target.value, 10))
+                          updateItemQuantity(
+                            item.id,
+                            Number.parseInt(e.target.value, 10)
+                          )
                         }
                         className="mt-1 rounded border border-ui-border-base px-2 py-1 text-sm"
                       >
@@ -314,9 +392,13 @@ const ReturnRequestTemplate = ({
             }
 
             return (
-              <div key={sel.id} className="rounded-lg border border-ui-border-base p-4">
+              <div
+                key={sel.id}
+                className="rounded-lg border border-ui-border-base p-4"
+              >
                 <Text className="mb-2 txt-compact-medium">
-                  {getItemName(item)} — {getItemVariantTitle(item)} × {sel.quantity}
+                  {getItemName(item)} — {getItemVariantTitle(item)} ×{" "}
+                  {sel.quantity}
                 </Text>
 
                 {returnReasons.length > 0 ? (
@@ -353,11 +435,60 @@ const ReturnRequestTemplate = ({
             )
           })}
 
+          <div className="rounded-lg border border-ui-border-base p-4">
+            <Text className="txt-compact-medium">{t("uploadImages")}</Text>
+            <Text className="mb-3 text-sm text-ui-fg-subtle">
+              {t("uploadImagesDescription")}
+            </Text>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                handleImageSelect(e.target.files)
+                e.currentTarget.value = ""
+              }}
+              className="mb-2 w-full rounded border border-dashed border-ui-border-strong p-3 text-sm"
+            />
+            <Text className="text-xs text-ui-fg-subtle">
+              {t("maxFileSize")}
+            </Text>
+            {imageError && (
+              <Text className="mt-2 text-sm text-ui-fg-error">
+                {imageError}
+              </Text>
+            )}
+
+            {images.length > 0 && (
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                {images.map((file, index) => (
+                  <div key={`${file.name}-${index}`} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      className="h-20 w-full rounded object-cover"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-1 top-1 rounded bg-black/70 px-1 text-xs text-white"
+                      onClick={() => removeImage(index)}
+                      aria-label={t("removeImage")}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="mt-2 flex gap-2">
             <Button variant="secondary" onClick={() => setStep("select-items")}>
               {t("back")}
             </Button>
-            <Button onClick={() => setStep("select-shipping")}>{t("continue")}</Button>
+            <Button onClick={() => setStep("select-shipping")}>
+              {t("continue")}
+            </Button>
           </div>
         </div>
       )}
@@ -392,17 +523,24 @@ const ReturnRequestTemplate = ({
             ))
           ) : (
             <div className="rounded-lg border border-ui-border-base p-4">
-              <Text className="text-sm text-ui-fg-muted">{t("noShippingOptions")}</Text>
+              <Text className="text-sm text-ui-fg-muted">
+                {t("noShippingOptions")}
+              </Text>
             </div>
           )}
 
           <div className="mt-2 flex gap-2">
-            <Button variant="secondary" onClick={() => setStep("select-reason")}>
+            <Button
+              variant="secondary"
+              onClick={() => setStep("select-reason")}
+            >
               {t("back")}
             </Button>
             <Button
               onClick={() => setStep("confirm")}
-              disabled={returnShippingOptions.length > 0 && !selectedShippingOptionId}
+              disabled={
+                returnShippingOptions.length > 0 && !selectedShippingOptionId
+              }
             >
               {t("continue")}
             </Button>
@@ -456,15 +594,19 @@ const ReturnRequestTemplate = ({
               <Text className="txt-compact-medium">{t("returnShipping")}</Text>
               <Text className="text-sm text-ui-fg-subtle">
                 {
-                  returnShippingOptions.find((o) => o.id === selectedShippingOptionId)
-                    ?.name
+                  returnShippingOptions.find(
+                    (o) => o.id === selectedShippingOptionId
+                  )?.name
                 }
               </Text>
             </div>
           )}
 
           <div className="mt-2 flex gap-2">
-            <Button variant="secondary" onClick={() => setStep("select-shipping")}>
+            <Button
+              variant="secondary"
+              onClick={() => setStep("select-shipping")}
+            >
               {t("back")}
             </Button>
             <Button onClick={handleSubmit} isLoading={submitting}>

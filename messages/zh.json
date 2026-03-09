@@ -427,7 +427,36 @@
     },
     "gotQuestions": "有疑问？",
     "gotQuestionsDescription": "您可以在我们的客户服务页面找到常见问题和答案。",
-    "customerService": "客户服务"
+    "customerService": "客户服务",
+    "afterSales": "售后记录",
+    "afterSalesDescription": "查看退货、换货和索赔记录。",
+    "afterSalesAll": "全部",
+    "afterSalesReturns": "退货",
+    "afterSalesExchanges": "换货",
+    "afterSalesClaims": "索赔",
+    "noAfterSales": "暂无售后记录。",
+    "afterSalesOrderLink": "订单",
+    "afterSalesItems": "{count} 件商品",
+    "passwordLabel": "密码",
+    "passwordDescription": "管理账户密码",
+    "oldPassword": "当前密码",
+    "newPasswordLabel": "新密码",
+    "confirmPasswordLabel": "确认新密码",
+    "passwordMismatch": "两次输入的密码不一致",
+    "passwordTooShort": "密码至少需要 8 个字符",
+    "incorrectPassword": "当前密码不正确",
+    "passwordUpdateFailed": "密码更新失败，请重试。",
+    "passwordUpdated": "密码更新成功",
+    "passwordNotShown": "出于安全原因不显示密码",
+    "signedInAs": "登录账号：",
+    "completed": "已完成",
+    "saved": "已保存",
+    "recentOrders": "最近订单",
+    "noRecentOrders": "暂无最近订单",
+    "profileDescription": "查看和更新个人信息，包括姓名、邮箱和电话号码。",
+    "previousPage": "← 上一页",
+    "nextPage": "下一页 →",
+    "pageIndicator": "第 {page} 页"
   },
   "trackOrder": {
     "title": "订单查询",
@@ -657,7 +686,13 @@
       "received": "已签收",
       "canceled": "已取消",
       "partially_received": "部分签收"
-    }
+    },
+    "uploadImages": "上传图片（可选）",
+    "uploadImagesDescription": "添加退货商品照片（最多3张）",
+    "maxFileSize": "每张图片最大 5MB",
+    "tooManyImages": "最多上传 3 张图片",
+    "imageTooLarge": "图片超过 5MB 限制",
+    "removeImage": "移除"
   },
   "exchanges": {
     "statusTitle": "换货记录",
@@ -668,7 +703,10 @@
       "active": "处理中",
       "completed": "已完成",
       "canceled": "已取消"
-    }
+    },
+    "originalItems": "原商品",
+    "contactSupport": "联系客服",
+    "exchangeProgress": "换货处理中"
   },
   "claims": {
     "statusTitle": "索赔记录",
@@ -685,7 +723,11 @@
       "active": "处理中",
       "completed": "已完成",
       "canceled": "已取消"
-    }
+    },
+    "claimReason": "原因",
+    "claimNote": "备注",
+    "contactSupport": "联系客服",
+    "claimProgress": "索赔处理中"
   },
   "about": {
     "title": "关于 NordHjem",
