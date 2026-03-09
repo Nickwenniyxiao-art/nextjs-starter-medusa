@@ -136,6 +136,30 @@ const AccountNav = ({
                         <ChevronDown className="transform -rotate-90" />
                       </LocalizedClientLink>
                     </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/analytics"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                      >
+                        <div className="flex items-center gap-x-2">
+                          <Package size={20} />
+                          <span>{adminT("analytics")}</span>
+                        </div>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/finance"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                      >
+                        <div className="flex items-center gap-x-2">
+                          <Package size={20} />
+                          <span>{adminT("finance")}</span>
+                        </div>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
                   </>
                 )}
                 <li>
@@ -221,6 +245,16 @@ const AccountNav = ({
                   <li>
                     <AccountNavLink href="/account/admin/inventory" route={route!}>
                       {adminT("inventory")}
+                    </AccountNavLink>
+                  </li>
+                  <li>
+                    <AccountNavLink href="/account/admin/analytics" route={route!}>
+                      {adminT("analytics")}
+                    </AccountNavLink>
+                  </li>
+                  <li>
+                    <AccountNavLink href="/account/admin/finance" route={route!}>
+                      {adminT("finance")}
                     </AccountNavLink>
                   </li>
                 </>

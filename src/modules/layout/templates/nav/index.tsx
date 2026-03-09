@@ -9,9 +9,11 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import CartButton from "@modules/layout/components/cart-button"
 import LanguageSwitcher from "@modules/layout/components/language-switcher"
 import SideMenu from "@modules/layout/components/side-menu"
+import { getBrandConfig } from "@/config/brands"
 
 export default async function Nav() {
   const t = await getTranslations("nav")
+  const brand = getBrandConfig()
 
   const [regions, locales, currentLocale] = await Promise.all([
     listRegions().then((regions: StoreRegion[]) => regions),
@@ -39,7 +41,7 @@ export default async function Nav() {
               className="text-xl md:text-2xl font-heading text-forest hover:text-brass transition-colors tracking-wide"
               data-testid="nav-store-link"
             >
-              NordHjem
+              {brand.name}
             </LocalizedClientLink>
           </div>
 
