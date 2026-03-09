@@ -120,7 +120,17 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
         {trackingNumber && (
           <div className="rounded-lg border border-ui-border-base p-4">
             <Text className="txt-medium-plus">{t.has("trackingNumber") ? t("trackingNumber") : "Tracking number"}</Text>
-            <Text className="text-ui-fg-subtle" data-testid="tracking-number">{trackingNumber}</Text>
+            <div className="mt-1 flex items-center gap-x-2">
+              <Text className="text-ui-fg-subtle" data-testid="tracking-number">{trackingNumber}</Text>
+              <a
+                href={`https://www.17track.net/${locale === "zh" ? "zh-cn" : "en"}/track#nums=${trackingNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-ui-fg-interactive underline hover:text-ui-fg-interactive-hover"
+              >
+                {t.has("trackShipment") ? t("trackShipment") : "Track Shipment"}
+              </a>
+            </div>
           </div>
         )}
 

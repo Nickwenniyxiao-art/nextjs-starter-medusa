@@ -37,6 +37,27 @@ type Step =
 
 const steps: Step[] = ["select-items", "select-reason", "select-shipping", "confirm"]
 
+const RETURN_REASON_ZH: Record<string, string> = {
+  "wrong-size": "尺寸不合适",
+  "color-difference": "颜色差异",
+  "material-unsatisfactory": "材质不满意",
+  "shipping-damage": "运输损坏",
+  "wrong-item": "错发商品",
+  "size": "尺寸不合适",
+  "color": "颜色差异",
+  "quality": "质量问题",
+  "damaged": "运输损坏",
+  "wrong_item": "错发商品",
+  "other": "其他原因",
+}
+
+const getReturnReasonZh = (value: string): string | undefined => {
+  return (
+    RETURN_REASON_ZH[value] ||
+    RETURN_REASON_ZH[value.toLowerCase().replace(/\s+/g, "-")]
+  )
+}
+
 const ReturnRequestTemplate = ({
   order,
   returnReasons,
@@ -122,7 +143,15 @@ const ReturnRequestTemplate = ({
       return
     }
 
-    setErrorMessage(result.error || t("submitError"))
+    if (result.error === "RETURN_API_UNAVAILABLE") {
+      setErrorMessage(
+        t.has("apiUnavailable")
+          ? t("apiUnavailable")
+          : "Return requests are currently unavailable. Please contact customer support."
+      )
+    } else {
+      setErrorMessage(result.error || t("submitError"))
+    }
     setStep("error")
   }
 
@@ -299,7 +328,11 @@ const ReturnRequestTemplate = ({
                     <option value="">{t("selectReason")}</option>
                     {returnReasons.map((reason) => (
                       <option key={reason.id} value={reason.id}>
-                        {reason.label || reason.value}
+                        {locale === "zh"
+                          ? getReturnReasonZh(reason.value) ||
+                            reason.label ||
+                            reason.value
+                          : reason.label || reason.value}
                       </option>
                     ))}
                   </select>

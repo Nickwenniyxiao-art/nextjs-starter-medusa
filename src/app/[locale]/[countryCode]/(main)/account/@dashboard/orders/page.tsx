@@ -8,8 +8,11 @@ import TransferRequestForm from "@modules/account/components/transfer-request-fo
 import { getTranslations } from "next-intl/server"
 import { retrieveCustomer } from "@lib/data/customer"
 
+const ORDERS_PER_PAGE = 10
+
 type Props = {
   params: Promise<{ countryCode: string }>
+  searchParams: Promise<{ page?: string }>
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,6 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Orders(props: Props) {
   const params = await props.params
+  const searchParams = await props.searchParams
   const customer = await retrieveCustomer().catch(() => null)
   const t = await getTranslations("account")
 
@@ -30,18 +34,29 @@ export default async function Orders(props: Props) {
     redirect(`/${params.countryCode}/account?redirect=orders`)
   }
 
-  const orders = await listOrders()
+  const parsedPage = Number.parseInt(searchParams.page || "1", 10)
+  const currentPage = Number.isNaN(parsedPage) ? 1 : Math.max(1, parsedPage)
+  const offset = (currentPage - 1) * ORDERS_PER_PAGE
+
+  const orders = await listOrders(ORDERS_PER_PAGE, offset)
 
   if (!orders || orders.length === 0) {
-    return (
-      <div className="w-full" data-testid="orders-page-wrapper">
-        <div className="mb-8 flex flex-col gap-y-4">
-          <h1 className="text-2xl-semi">{t("orders")}</h1>
-          <p className="text-base-regular">{t("noOrdersYet")}</p>
+    if (currentPage === 1) {
+      return (
+        <div className="w-full" data-testid="orders-page-wrapper">
+          <div className="mb-8 flex flex-col gap-y-4">
+            <h1 className="text-2xl-semi">{t("orders")}</h1>
+            <p className="text-base-regular">{t("noOrdersYet")}</p>
+          </div>
         </div>
-      </div>
-    )
+      )
+    }
+
+    redirect(`/${params.countryCode}/account/orders`)
   }
+
+  const hasNextPage = orders.length === ORDERS_PER_PAGE
+  const hasPrevPage = currentPage > 1
 
   return (
     <div className="w-full" data-testid="orders-page-wrapper">
@@ -51,6 +66,41 @@ export default async function Orders(props: Props) {
       </div>
       <div>
         <OrderOverview orders={orders} />
+
+        {(hasPrevPage || hasNextPage) && (
+          <div className="mt-8 flex items-center justify-center gap-4">
+            {hasPrevPage ? (
+              <a
+                href={`?page=${currentPage - 1}`}
+                className="text-sm text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+              >
+                {t("orders") === "订单历史" ? "← 上一页" : "← Previous"}
+              </a>
+            ) : (
+              <span className="text-sm text-ui-fg-disabled">
+                {t("orders") === "订单历史" ? "← 上一页" : "← Previous"}
+              </span>
+            )}
+
+            <span className="text-sm text-ui-fg-subtle">
+              {t("orders") === "订单历史" ? `第 ${currentPage} 页` : `Page ${currentPage}`}
+            </span>
+
+            {hasNextPage ? (
+              <a
+                href={`?page=${currentPage + 1}`}
+                className="text-sm text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+              >
+                {t("orders") === "订单历史" ? "下一页 →" : "Next →"}
+              </a>
+            ) : (
+              <span className="text-sm text-ui-fg-disabled">
+                {t("orders") === "订单历史" ? "下一页 →" : "Next →"}
+              </span>
+            )}
+          </div>
+        )}
+
         <Divider className="my-16" />
         <TransferRequestForm />
       </div>
