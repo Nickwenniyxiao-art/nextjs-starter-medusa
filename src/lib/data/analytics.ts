@@ -41,7 +41,7 @@ export interface AnalyticsData {
   funnel: FunnelStage[]
 }
 
-export const USE_MOCK = true
+const USE_MOCK = true
 
 function generateMockSalesTrend(days: number): SalesTrendPoint[] {
   const points: SalesTrendPoint[] = []
@@ -182,16 +182,4 @@ export async function getFinanceData(page: number = 1, pageSize: number = 20): P
   // return { overview: overview.data, monthly: monthly.data, transactions: txns.data, totalTransactions: txns.count }
 
   return MOCK_FINANCE
-}
-
-export async function exportFinanceCsvData(): Promise<Transaction[]> {
-  if (USE_MOCK) {
-    return MOCK_FINANCE.transactions
-  }
-
-  const res = await adminFetch<{ data: Transaction[] }>("/admin/finance/export", {
-    query: { format: "csv" },
-  })
-
-  return res.data
 }

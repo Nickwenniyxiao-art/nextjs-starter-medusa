@@ -1,6 +1,6 @@
 "use client"
 
-import { FinanceData, Transaction, USE_MOCK } from "@lib/data/analytics"
+import { FinanceData, Transaction } from "@lib/data/analytics"
 import { Badge, Button } from "@medusajs/ui"
 import {
   Bar,
@@ -34,19 +34,7 @@ export default function FinanceDashboard({ data, page, pageSize }: Props) {
   const totalPages = Math.max(1, Math.ceil(data.totalTransactions / pageSize))
   const { locale, countryCode } = useParams() as { locale: string; countryCode: string }
 
-  const exportCsv = async () => {
-    if (!USE_MOCK) {
-      const res = await fetch("/admin/finance/export?format=csv")
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `finance-transactions-${new Date().toISOString().slice(0, 10)}.csv`
-      a.click()
-      URL.revokeObjectURL(url)
-      return
-    }
-
+  const exportCsv = () => {
     const rows = [
       [t("orderNumber"), t("date"), t("amount"), t("currency"), t("status")],
       ...data.transactions.map((txn) => [
