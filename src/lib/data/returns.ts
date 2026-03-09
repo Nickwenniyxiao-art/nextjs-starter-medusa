@@ -109,9 +109,19 @@ export async function createReturnRequest(
 
     return { success: true, error: null }
   } catch (err: any) {
+    const status = err?.status || err?.response?.status
+    const message = err?.message || ""
+
+    if (status === 404 || message.includes("Not Found")) {
+      return {
+        success: false,
+        error: "RETURN_API_UNAVAILABLE",
+      }
+    }
+
     return {
       success: false,
-      error: err?.message || "Failed to create return request",
+      error: message || "RETURN_REQUEST_FAILED",
     }
   }
 }
