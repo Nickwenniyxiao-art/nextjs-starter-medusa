@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { cookies } from "next/headers"
 
 import { listCartOptions, retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
@@ -10,6 +11,7 @@ import ErrorBoundary from "@modules/common/components/error-boundary"
 import Footer from "@modules/layout/templates/footer"
 import Nav from "@modules/layout/templates/nav"
 import FreeShippingPriceNudge from "@modules/shipping/components/free-shipping-price-nudge"
+import { getBrandConfig } from "@/config/brands"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nordhjem.store"),
@@ -28,6 +30,8 @@ export const metadata: Metadata = {
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
+  const cookieStore = await cookies()
+  const brand = getBrandConfig(cookieStore.get("nordhjem-brand")?.value)
   const customer = await retrieveCustomer()
   const cart = await retrieveCart()
   let shippingOptions: StoreCartShippingOption[] = []
