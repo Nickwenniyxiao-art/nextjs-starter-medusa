@@ -274,7 +274,14 @@
       "refresh": "Refresh",
       "noPaymentForRegion": "Online payment is not available for this region yet",
       "loadingPayment": "Loading payment methods..."
-    }
+    },
+    "giftCard.title": "Gift Card",
+    "giftCard.placeholder": "Enter gift card code",
+    "giftCard.invalidCode": "Invalid gift card code",
+    "giftCard.error": "Could not apply gift card",
+    "giftCard.remove": "Remove",
+    "giftCardDiscount": "Gift Card",
+    "paymentErrors.recoveryHint": "Don't worry — your information has been saved. Please check your card details and try again, or use a different payment method."
   },
   "order": {
     "thankYou": "Thank you for your order!",
@@ -543,7 +550,15 @@
     "min": "Min",
     "max": "Max",
     "apply": "Go",
-    "clearFilter": "Clear filter"
+    "clearFilter": "Clear filter",
+    "filterColor": "Color",
+    "filterMaterial": "Material",
+    "searchResultsFor": "Search results for \"{query}\"",
+    "searchResultsHint": "Showing products matching your search",
+    "noResultsForQuery": "No results found for \"{query}\"",
+    "noProducts": "No products found",
+    "emptyResultsHint": "Try adjusting your filters or browse our collections",
+    "browseCategories": "Browse Categories"
   },
   "legal": {
     "privacy": {
@@ -764,7 +779,16 @@
         "title": "What We Stand For",
         "body": "Simplicity. Quality. Sustainability. These three pillars guide every decision at NordHjem. We partner with manufacturers who share our commitment to responsible production, and we design our platform to minimize waste — from packaging to pixels. Welcome home."
       }
-    }
+    },
+    "team.title": "Our Team",
+    "values.sustainability.title": "Sustainability",
+    "values.sustainability.description": "Eco-friendly materials and responsible manufacturing",
+    "values.simplicity.title": "Simplicity",
+    "values.simplicity.description": "Clean lines and intentional design choices",
+    "values.warmth.title": "Warmth",
+    "values.warmth.description": "Creating spaces that feel like home",
+    "values.quality.title": "Quality",
+    "values.quality.description": "Craftsmanship that stands the test of time"
   },
   "admin": {
     "admin": "Admin",
@@ -1005,6 +1029,29 @@
     "logType_return": "Return",
     "runningTotal": "Balance",
     "healthyStock": "Healthy Stock",
-    "viewLogs": "Logs"
+    "viewLogs": "Logs",
+    "cmsManagement": "Content Management",
+    "cmsNewPost": "New Post",
+    "cmsBlogPosts": "Blog Posts",
+    "cmsLandingPages": "Landing Pages",
+    "cmsTitle": "Title",
+    "cmsStatus": "Status",
+    "cmsUpdated": "Updated",
+    "cmsActions": "Actions",
+    "cmsPublished": "Published",
+    "cmsDraft": "Draft",
+    "cmsEdit": "Edit",
+    "cmsDelete": "Delete"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Nordic living inspiration, design tips, and home décor guides",
+    "allPosts": "All Posts",
+    "readMore": "Read More",
+    "readingTime": "{minutes} min read",
+    "showingAll": "Showing all {count} posts",
+    "backToBlog": "Back to Blog",
+    "home": "Home",
+    "publishedBy": "Published by {author}"
   }
 }

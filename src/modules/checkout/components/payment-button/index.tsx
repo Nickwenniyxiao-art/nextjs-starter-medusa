@@ -3,7 +3,7 @@
 import { isManual, isStripeLike } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
+import { Button, Text } from "@medusajs/ui"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
 import React, { useState } from "react"
 import { useTranslations } from "next-intl"
@@ -177,7 +177,7 @@ const StripePaymentButton = ({
   return (
     <>
       <Button
-        disabled={disabled || notReady}
+        disabled={disabled || submitting || notReady}
         onClick={handlePayment}
         size="large"
         isLoading={submitting}
@@ -190,6 +190,11 @@ const StripePaymentButton = ({
         code={errorCode}
         data-testid="stripe-payment-error-message"
       />
+      {errorMessage && (
+        <div className="mt-3 p-3 bg-amber-50 rounded-md border border-amber-200">
+          <Text className="text-amber-700 text-sm">{t("paymentErrors.recoveryHint")}</Text>
+        </div>
+      )}
     </>
   )
 }

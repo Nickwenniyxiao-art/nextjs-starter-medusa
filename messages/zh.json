@@ -274,7 +274,14 @@
       "refresh": "刷新",
       "noPaymentForRegion": "该地区暂不支持在线支付",
       "loadingPayment": "正在加载支付方式..."
-    }
+    },
+    "giftCard.title": "礼品卡",
+    "giftCard.placeholder": "输入礼品卡代码",
+    "giftCard.invalidCode": "无效的礼品卡代码",
+    "giftCard.error": "无法应用礼品卡",
+    "giftCard.remove": "移除",
+    "giftCardDiscount": "礼品卡",
+    "paymentErrors.recoveryHint": "请放心——您的信息已保存。请检查卡片信息后重试，或使用其他支付方式。"
   },
   "order": {
     "thankYou": "感谢您的订单！",
@@ -543,7 +550,15 @@
     "min": "最低",
     "max": "最高",
     "apply": "筛选",
-    "clearFilter": "清除筛选"
+    "clearFilter": "清除筛选",
+    "filterColor": "颜色",
+    "filterMaterial": "材质",
+    "searchResultsFor": "「{query}」的搜索结果",
+    "searchResultsHint": "显示与您搜索匹配的商品",
+    "noResultsForQuery": "未找到「{query}」的结果",
+    "noProducts": "未找到商品",
+    "emptyResultsHint": "尝试调整筛选条件或浏览我们的系列",
+    "browseCategories": "浏览分类"
   },
   "legal": {
     "privacy": {
@@ -764,7 +779,16 @@
         "title": "我们的价值观",
         "body": "简约。品质。可持续。这三大支柱指引着 NordHjem 的每一个决策。我们与共享负责任生产理念的制造商合作，并致力于从包装到每一个像素都减少浪费。欢迎回家。"
       }
-    }
+    },
+    "team.title": "我们的团队",
+    "values.sustainability.title": "可持续",
+    "values.sustainability.description": "环保材料与负责任的生产方式",
+    "values.simplicity.title": "简约",
+    "values.simplicity.description": "简洁线条与有意识的设计选择",
+    "values.warmth.title": "温暖",
+    "values.warmth.description": "创造有家的感觉的空间",
+    "values.quality.title": "品质",
+    "values.quality.description": "经得起时间考验的工艺"
   },
   "admin": {
     "admin": "管理",
@@ -1005,6 +1029,29 @@
     "logType_return": "退货入库",
     "runningTotal": "余额",
     "healthyStock": "正常库存",
-    "viewLogs": "日志"
+    "viewLogs": "日志",
+    "cmsManagement": "内容管理",
+    "cmsNewPost": "新建文章",
+    "cmsBlogPosts": "博客文章",
+    "cmsLandingPages": "落地页",
+    "cmsTitle": "标题",
+    "cmsStatus": "状态",
+    "cmsUpdated": "更新时间",
+    "cmsActions": "操作",
+    "cmsPublished": "已发布",
+    "cmsDraft": "草稿",
+    "cmsEdit": "编辑",
+    "cmsDelete": "删除"
+  },
+  "blog": {
+    "title": "博客",
+    "subtitle": "北欧生活灵感、设计技巧和家居装饰指南",
+    "allPosts": "所有文章",
+    "readMore": "阅读更多",
+    "readingTime": "{minutes} 分钟阅读",
+    "showingAll": "共 {count} 篇文章",
+    "backToBlog": "返回博客",
+    "home": "首页",
+    "publishedBy": "作者：{author}"
   }
 }
