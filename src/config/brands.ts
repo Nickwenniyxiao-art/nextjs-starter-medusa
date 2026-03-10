@@ -55,3 +55,7 @@ export const getBrandBySlug = (slug?: string | null): Brand => {
 
   return brands.find((brand) => brand.slug === slug) ?? getDefaultBrand()
 }
+
+export const getBrandConfig = (slug?: string | null): Brand => {
+  return getBrandBySlug(slug)
+}

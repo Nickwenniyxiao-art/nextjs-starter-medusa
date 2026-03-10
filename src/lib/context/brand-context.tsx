@@ -10,6 +10,7 @@ type BrandContextValue = {
 }
 
 const STORAGE_KEY = "nordhjem-brand"
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 
 const BrandContext = createContext<BrandContextValue | null>(null)
 
@@ -23,27 +24,40 @@ const applyBrandCssVariables = (brand: Brand) => {
   root.style.setProperty("--brand-font", `'${brand.fontFamily}', sans-serif`)
 }
 
-export function BrandProvider({ children }: { children: ReactNode }) {
-  const [currentBrand, setCurrentBrand] = useState<Brand>(() => getDefaultBrand())
+const persistBrandSlug = (slug: string) => {
+  if (typeof window === "undefined") return
+
+  window.localStorage.setItem(STORAGE_KEY, slug)
+  document.cookie = `${STORAGE_KEY}=${slug}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`
+}
+
+export function BrandProvider({
+  children,
+  brand,
+}: {
+  children: ReactNode
+  brand?: Brand
+}) {
+  const [currentBrand, setCurrentBrand] = useState<Brand>(() => brand ?? getDefaultBrand())
 
   useEffect(() => {
     const savedSlug = window.localStorage.getItem(STORAGE_KEY)
-    const initialBrand = getBrandBySlug(savedSlug)
+    const initialBrand = getBrandBySlug(savedSlug ?? brand?.slug)
 
     setCurrentBrand(initialBrand)
     applyBrandCssVariables(initialBrand)
 
     if (!savedSlug || savedSlug !== initialBrand.slug) {
-      window.localStorage.setItem(STORAGE_KEY, initialBrand.slug)
+      persistBrandSlug(initialBrand.slug)
     }
-  }, [])
+  }, [brand?.slug])
 
   const switchBrand = (slug: string) => {
     const nextBrand = getBrandBySlug(slug)
 
     setCurrentBrand(nextBrand)
     applyBrandCssVariables(nextBrand)
-    window.localStorage.setItem(STORAGE_KEY, nextBrand.slug)
+    persistBrandSlug(nextBrand.slug)
   }
 
   const value = useMemo(
