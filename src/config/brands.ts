@@ -1,62 +1,57 @@
-export interface BrandConfig {
+export type Brand = {
   id: string
   name: string
-  tagline: string
+  slug: string
   logo: string
-  favicon: string
   primaryColor: string
   secondaryColor: string
   accentColor: string
-  domain: string
-  salesChannelId?: string
-  fonts: {
-    heading: string
-    body: string
-    cjk: string
-  }
+  fontFamily: string
+  description: string
 }
 
-const brands: Record<string, BrandConfig> = {
-  nordhjem: {
-    id: "nordhjem",
+export const brands: Brand[] = [
+  {
+    id: "brand-nordhjem",
     name: "NordHjem",
-    tagline: "Nordic Minimalist Living",
-    logo: "/images/nordhjem-logo.svg",
-    favicon: "/favicon.ico",
-    primaryColor: "#2C3E2D",
-    secondaryColor: "#FAFAF8",
-    accentColor: "#B8956A",
-    domain: "nordhjem.store",
-    fonts: {
-      heading: "DM Serif Display",
-      body: "Inter",
-      cjk: "Noto Sans SC",
-    },
+    slug: "nordhjem",
+    logo: "NH",
+    primaryColor: "#2C3E50",
+    secondaryColor: "#ECF0F1",
+    accentColor: "#3498DB",
+    fontFamily: "Inter",
+    description: "Nordic minimal furniture and warm living essentials.",
   },
-}
+  {
+    id: "brand-placeholder-1",
+    name: "Atelier Oak",
+    slug: "atelier-oak",
+    logo: "AO",
+    primaryColor: "#5D4037",
+    secondaryColor: "#F4ECE6",
+    accentColor: "#A1887F",
+    fontFamily: "Inter",
+    description: "Placeholder brand for artisanal oak furniture.",
+  },
+  {
+    id: "brand-placeholder-2",
+    name: "Lumen Casa",
+    slug: "lumen-casa",
+    logo: "LC",
+    primaryColor: "#1E3A5F",
+    secondaryColor: "#EDF4FF",
+    accentColor: "#4DA3FF",
+    fontFamily: "Inter",
+    description: "Placeholder brand for modern bright interiors.",
+  },
+]
 
-const DEFAULT_BRAND = "nordhjem"
+export const getDefaultBrand = (): Brand => brands[0]
 
-export function getBrandConfig(hostname?: string, brandParam?: string): BrandConfig {
-  if (brandParam && brands[brandParam]) {
-    return brands[brandParam]
+export const getBrandBySlug = (slug?: string | null): Brand => {
+  if (!slug) {
+    return getDefaultBrand()
   }
 
-  if (hostname) {
-    const found = Object.values(brands).find(
-      (brand) => hostname === brand.domain || hostname.endsWith(`.${brand.domain}`)
-    )
-
-    if (found) {
-      return found
-    }
-  }
-
-  return brands[DEFAULT_BRAND]
+  return brands.find((brand) => brand.slug === slug) ?? getDefaultBrand()
 }
-
-export function getAllBrands(): BrandConfig[] {
-  return Object.values(brands)
-}
-
-export default brands

@@ -48,6 +48,11 @@ module.exports = {
           light: "#D4B88C",
           dark: "#96774F",
         },
+        brand: {
+          primary: "var(--brand-primary)",
+          secondary: "var(--brand-secondary)",
+          accent: "var(--brand-accent)",
+        },
       },
       borderRadius: {
         none: "0px",
@@ -88,6 +93,7 @@ module.exports = {
           "system-ui",
           "sans-serif",
         ],
+        brand: ["var(--brand-font)"],
       },
       keyframes: {
         ring: {

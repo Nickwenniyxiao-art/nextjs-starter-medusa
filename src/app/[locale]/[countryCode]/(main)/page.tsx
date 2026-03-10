@@ -2,12 +2,9 @@ import { Metadata } from "next"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 
-import FeaturedProducts from "@modules/home/components/featured-products"
-import Hero from "@modules/home/components/hero"
-import Categories from "@modules/home/components/categories"
+import BrandHomeContent from "@modules/home/components/brand-home-content"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { listCollections } from "@lib/data/collections"
-import { getRegion } from "@lib/data/regions"
 import { generateOrganizationJsonLd, generateWebSiteJsonLd } from "@lib/util/structured-data"
 
 export async function generateMetadata(props: {
@@ -34,21 +31,14 @@ export async function generateMetadata(props: {
   }
 }
 
-export default async function Home(props: {
-  params: Promise<{ countryCode: string }>
-}) {
-  const params = await props.params
+export default async function Home() {
   const t = await getTranslations("home")
-
-  const { countryCode } = params
-
-  const region = await getRegion(countryCode)
 
   const { collections } = await listCollections({
     fields: "id, handle, title",
   })
 
-  if (!collections || !region) {
+  if (!collections) {
     return null
   }
 
@@ -62,13 +52,7 @@ export default async function Home(props: {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(generateOrganizationJsonLd()) }}
       />
-      <Hero />
-      <Categories />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts collections={collections} region={region} />
-        </ul>
-      </div>
+      <BrandHomeContent collections={collections} />
       <section className="py-20 px-6 bg-white">
         <div className="content-container">
           <div className="grid md:grid-cols-2 gap-12 items-center">
