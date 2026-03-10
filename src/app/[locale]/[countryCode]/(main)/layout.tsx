@@ -1,10 +1,8 @@
 import { Metadata } from "next"
-import { headers } from "next/headers"
 
-import { getBrandConfig } from "@/config/brands"
 import { listCartOptions, retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
-import { BrandProvider } from "@lib/util/brand-context"
+import { BrandProvider } from "@lib/context/brand-context"
 import { StoreCartShippingOption } from "@medusajs/types"
 import CartMismatchBanner from "@modules/layout/components/cart-mismatch-banner"
 import CookieConsent from "@modules/common/components/cookie-consent"
@@ -29,9 +27,6 @@ export const metadata: Metadata = {
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
-  const headersList = await headers()
-  const hostname = headersList.get("host") || ""
-  const brand = getBrandConfig(hostname)
   const customer = await retrieveCustomer()
   const cart = await retrieveCart()
   let shippingOptions: StoreCartShippingOption[] = []
@@ -43,7 +38,7 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
   }
 
   return (
-    <BrandProvider brand={brand}>
+    <BrandProvider>
       <Nav />
       {customer && cart && (
         <CartMismatchBanner customer={customer} cart={cart} />

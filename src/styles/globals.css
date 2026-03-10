@@ -9,6 +9,10 @@
     --color-brass: #B8956A;
     --bg-color: #FAFAF8;
     --text-color: #2C3E2D;
+    --brand-primary: #2C3E50;
+    --brand-secondary: #ECF0F1;
+    --brand-accent: #3498DB;
+    --brand-font: 'Inter', sans-serif;
   }
 
   html {
@@ -21,7 +25,7 @@
   }
 
   body {
-    font-family: var(--font-sans-en), var(--font-sans-zh), system-ui, sans-serif;
+    font-family: var(--brand-font), var(--font-sans-en), var(--font-sans-zh), system-ui, sans-serif;
   }
 }
 
