@@ -2,11 +2,13 @@ import { convertToLocale } from "@lib/util/money"
 import { Heading } from "@medusajs/ui"
 import ItemsPreviewTemplate from "@modules/cart/templates/preview"
 import DiscountCode from "@modules/checkout/components/discount-code"
+import GiftCardInput from "@modules/checkout/components/gift-card-input"
 import Divider from "@modules/common/components/divider"
 import { useTranslations } from "next-intl"
 
 const CheckoutSummary = ({ cart }: { cart: any }) => {
   const t = useTranslations("cart")
+  const checkoutT = useTranslations("checkout")
 
   return (
     <div className="sticky top-0 flex flex-col-reverse small:flex-col gap-y-8 py-8 small:py-0 ">
@@ -56,6 +58,14 @@ const CheckoutSummary = ({ cart }: { cart: any }) => {
             </div>
           </div>
           <div className="h-px w-full border-b border-gray-200 my-4" />
+          {(cart as any)?.gift_cards?.length > 0 && (
+            <div className="flex items-center justify-between text-green-600 mb-2">
+              <span>{checkoutT("giftCardDiscount")}</span>
+              <span data-testid="cart-gift-card">
+                -{convertToLocale({ amount: (cart as any).gift_card_total || 0, currency_code: cart.currency_code })}
+              </span>
+            </div>
+          )}
           <div className="flex items-center justify-between text-ui-fg-base mb-2 txt-medium ">
             <span>{t("total")}</span>
             <span
@@ -74,6 +84,7 @@ const CheckoutSummary = ({ cart }: { cart: any }) => {
         <ItemsPreviewTemplate cart={cart} />
         <div className="my-6">
           <DiscountCode cart={cart} />
+          <GiftCardInput cart={cart} />
         </div>
       </div>
     </div>

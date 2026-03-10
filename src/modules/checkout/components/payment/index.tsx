@@ -14,6 +14,15 @@ import { useTranslations } from "next-intl"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 
+const PAYMENT_ICONS: Record<string, string> = {
+  "pp_stripe_stripe": "💳",
+  "pp_stripe-ideal_stripe": "🏦",
+  "pp_stripe-bancontact_stripe": "🏦",
+  "pp_paypal_paypal": "🅿️",
+  "pp_system_default": "🧪",
+  "pp_medusa-payments_default": "💳",
+}
+
 const Payment = ({
   cart,
   availablePaymentMethods,
@@ -77,7 +86,7 @@ const Payment = ({
       providerId,
       {
         ...info,
-        title: getPaymentMethodLabel(providerId),
+        title: `${PAYMENT_ICONS[providerId] || "💳"} ${getPaymentMethodLabel(providerId)}`,
       },
     ])
   )

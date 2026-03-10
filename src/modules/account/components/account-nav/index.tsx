@@ -22,7 +22,8 @@ const AccountNav = ({
   isAdminUser?: boolean
 }) => {
   const route = usePathname()
-  const { countryCode } = useParams() as { countryCode: string }
+  const { countryCode, locale } = useParams() as { countryCode: string; locale: string }
+  const isZh = locale?.startsWith("zh")
   const t = useTranslations("account")
   const adminT = useTranslations("admin")
 
@@ -228,6 +229,19 @@ const AccountNav = ({
                         <ChevronDown className="transform -rotate-90" />
                       </LocalizedClientLink>
                     </li>
+                    <li>
+                      <LocalizedClientLink
+                        href="/account/admin/cms"
+                        className="flex items-center justify-between py-4 border-b border-gray-200 px-8"
+                        data-testid="admin-cms-link"
+                      >
+                        <div className="flex items-center gap-x-2">
+                          <Package size={20} />
+                          <span>{isZh ? "内容管理" : "CMS"}</span>
+                        </div>
+                        <ChevronDown className="transform -rotate-90" />
+                      </LocalizedClientLink>
+                    </li>
                   </>
                 )}
                 <li>
@@ -390,6 +404,15 @@ const AccountNav = ({
                       route={route!}
                     >
                       {adminT("tickets")}
+                    </AccountNavLink>
+                  </li>
+                  <li>
+                    <AccountNavLink
+                      href="/account/admin/cms"
+                      route={route!}
+                      data-testid="admin-cms-link"
+                    >
+                      {isZh ? "内容管理" : "CMS"}
                     </AccountNavLink>
                   </li>
                 </>

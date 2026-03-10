@@ -3,6 +3,7 @@ import { getRegion } from "@lib/data/regions"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import EmptyResults from "@modules/store/components/empty-results"
 
 
 type PaginatedProductsParams = {
@@ -22,6 +23,7 @@ export default async function PaginatedProducts({
   countryCode,
   minPrice,
   maxPrice,
+  searchQuery,
 }: {
   sortBy?: SortOptions
   page: number
@@ -31,6 +33,7 @@ export default async function PaginatedProducts({
   countryCode: string
   minPrice?: string
   maxPrice?: string
+  searchQuery?: string
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 12,
@@ -67,6 +70,14 @@ export default async function PaginatedProducts({
     countryCode,
   })
 
+
+  if (searchQuery?.trim()) {
+    const q = searchQuery.toLowerCase()
+    products = products.filter((product) =>
+      product.title?.toLowerCase().includes(q)
+    )
+    count = products.length
+  }
   const minPriceNum = minPrice ? parseInt(minPrice) : undefined
   const maxPriceNum = maxPrice ? parseInt(maxPrice) : undefined
 
@@ -85,6 +96,10 @@ export default async function PaginatedProducts({
   const offset = (page - 1) * limit
   products = products.slice(offset, offset + limit)
   const totalPages = Math.ceil(count / limit)
+
+  if (products.length === 0) {
+    return <EmptyResults query={searchQuery} />
+  }
 
   return (
     <>
