@@ -12,6 +12,8 @@ jobs:
   lint-and-typecheck:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: "pk_test_placeholder"
 
     steps:
       - name: Checkout
@@ -22,6 +24,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Setup Yarn
+        run: corepack enable
+
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
@@ -31,10 +36,10 @@ jobs:
             ${{ runner.os }}-node-modules-
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Lint
-        run: npm run lint
+        run: yarn lint
 
       - name: Type check
-        run: npx tsc --noEmit || true
+        run: yarn tsc --noEmit || true
