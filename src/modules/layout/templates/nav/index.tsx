@@ -11,7 +11,6 @@ import LanguageSwitcher from "@modules/layout/components/language-switcher"
 import SideMenu from "@modules/layout/components/side-menu"
 import SearchButton from "@modules/layout/components/search-button"
 import { getDefaultBrand } from "@/config/brands"
-import BrandSwitcher from "@modules/layout/components/brand-switcher"
 
 export default async function Nav() {
   const t = await getTranslations("nav")
@@ -45,7 +44,6 @@ export default async function Nav() {
             >
               {brand.name}
             </LocalizedClientLink>
-            <BrandSwitcher />
           </div>
 
           <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">

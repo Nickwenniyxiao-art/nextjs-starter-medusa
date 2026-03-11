@@ -2,10 +2,15 @@ import { Metadata } from "next"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
 
-import BrandHomeContent from "@modules/home/components/brand-home-content"
+import Hero from "@modules/home/components/hero"
+import FeaturedProducts from "@modules/home/components/featured-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { listCollections } from "@lib/data/collections"
-import { generateOrganizationJsonLd, generateWebSiteJsonLd } from "@lib/util/structured-data"
+import { getRegion } from "@lib/data/regions"
+import {
+  generateOrganizationJsonLd,
+  generateWebSiteJsonLd,
+} from "@lib/util/structured-data"
 
 export async function generateMetadata(props: {
   params: Promise<{ countryCode: string; locale: string }>
@@ -31,14 +36,20 @@ export async function generateMetadata(props: {
   }
 }
 
-export default async function Home() {
+export default async function Home(props: {
+  params: Promise<{ countryCode: string; locale: string }>
+}) {
+  const params = await props.params
   const t = await getTranslations("home")
 
-  const { collections } = await listCollections({
-    fields: "id, handle, title",
-  })
+  const [region, { collections }] = await Promise.all([
+    getRegion(params.countryCode),
+    listCollections({
+      fields: "id, handle, title",
+    }),
+  ])
 
-  if (!collections) {
+  if (!collections || !region) {
     return null
   }
 
@@ -46,13 +57,20 @@ export default async function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateWebSiteJsonLd()) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateWebSiteJsonLd()),
+        }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(generateOrganizationJsonLd()) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateOrganizationJsonLd()),
+        }}
       />
-      <BrandHomeContent collections={collections} />
+      <Hero />
+      <ul>
+        <FeaturedProducts collections={collections} region={region} />
+      </ul>
       <section className="py-20 px-6 bg-white">
         <div className="content-container">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -71,7 +89,9 @@ export default async function Home() {
               <h2 className="text-2xl md:text-3xl font-heading text-[#2C3E2D] mb-6">
                 {t("brandStory")}
               </h2>
-              <p className="text-[#2C3E2D]/70 leading-relaxed mb-8">{t("brandStoryText")}</p>
+              <p className="text-[#2C3E2D]/70 leading-relaxed mb-8">
+                {t("brandStoryText")}
+              </p>
               <LocalizedClientLink
                 href="/about"
                 className="inline-block border border-[#2C3E2D] text-[#2C3E2D] px-8 py-3 hover:bg-[#2C3E2D] hover:text-white transition-colors"
