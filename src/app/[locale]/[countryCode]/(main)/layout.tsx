@@ -1,9 +1,6 @@
 import { Metadata } from "next"
-import { cookies } from "next/headers"
-
 import { listCartOptions, retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
-import { BrandProvider } from "@lib/context/brand-context"
 import { StoreCartShippingOption } from "@medusajs/types"
 import CartMismatchBanner from "@modules/layout/components/cart-mismatch-banner"
 import CookieConsent from "@modules/common/components/cookie-consent"
@@ -11,7 +8,6 @@ import ErrorBoundary from "@modules/common/components/error-boundary"
 import Footer from "@modules/layout/templates/footer"
 import Nav from "@modules/layout/templates/nav"
 import FreeShippingPriceNudge from "@modules/shipping/components/free-shipping-price-nudge"
-import { getBrandConfig } from "@/config/brands"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nordhjem.store"),
@@ -30,8 +26,6 @@ export const metadata: Metadata = {
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
-  const cookieStore = await cookies()
-  const brand = getBrandConfig(cookieStore.get("nordhjem-brand")?.value)
   const customer = await retrieveCustomer()
   const cart = await retrieveCart()
   let shippingOptions: StoreCartShippingOption[] = []
@@ -43,24 +37,22 @@ export default async function PageLayout(props: { children: React.ReactNode }) {
   }
 
   return (
-    <BrandProvider brand={brand}>
-      <ErrorBoundary>
-        <Nav />
-        {customer && cart && (
-          <CartMismatchBanner customer={customer} cart={cart} />
-        )}
+    <ErrorBoundary>
+      <Nav />
+      {customer && cart && (
+        <CartMismatchBanner customer={customer} cart={cart} />
+      )}
 
-        {cart && (
-          <FreeShippingPriceNudge
-            variant="popup"
-            cart={cart}
-            shippingOptions={shippingOptions}
-          />
-        )}
-        {props.children}
-        <Footer />
-        <CookieConsent />
-      </ErrorBoundary>
-    </BrandProvider>
+      {cart && (
+        <FreeShippingPriceNudge
+          variant="popup"
+          cart={cart}
+          shippingOptions={shippingOptions}
+        />
+      )}
+      {props.children}
+      <Footer />
+      <CookieConsent />
+    </ErrorBoundary>
   )
 }
