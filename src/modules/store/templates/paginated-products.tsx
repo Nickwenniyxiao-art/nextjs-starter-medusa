@@ -6,7 +6,6 @@ import { Pagination } from "@modules/store/components/pagination"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import EmptyResults from "@modules/store/components/empty-results"
 
-
 type PaginatedProductsParams = {
   limit: number
   collection_id?: string[]
@@ -27,6 +26,8 @@ export default async function PaginatedProducts({
   minPrice,
   maxPrice,
   searchQuery,
+  colors,
+  materials,
 }: {
   sortBy?: SortOptions
   page: number
@@ -37,6 +38,8 @@ export default async function PaginatedProducts({
   minPrice?: string
   maxPrice?: string
   searchQuery?: string
+  colors?: string
+  materials?: string
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 12,
@@ -97,6 +100,30 @@ export default async function PaginatedProducts({
       return true
     })
   }
+
+  if (colors) {
+    const colorList = colors.split(",").map((c) => c.trim().toLowerCase())
+    products = products.filter((product) => {
+      const opts = product.options || []
+      const colorOpt = opts.find((o: any) => o.title?.toLowerCase() === "color")
+      if (!colorOpt) return false
+      const vals = colorOpt.values?.map((v: any) => v.value?.toLowerCase()) || []
+      return colorList.some((c) => vals.includes(c))
+    })
+  }
+
+  if (materials) {
+    const materialList = materials.split(",").map((m) => m.trim().toLowerCase())
+    products = products.filter((product) => {
+      const opts = product.options || []
+      const matOpt = opts.find((o: any) => o.title?.toLowerCase() === "material")
+      if (!matOpt) return false
+      const vals = matOpt.values?.map((v: any) => v.value?.toLowerCase()) || []
+      return materialList.some((m) => vals.includes(m))
+    })
+  }
+
+  count = products.length
 
   const totalPages = Math.ceil(count / 12)
 
