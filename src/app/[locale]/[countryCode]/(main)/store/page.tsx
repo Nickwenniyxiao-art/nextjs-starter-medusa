@@ -17,6 +17,6 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 export default async function StorePage(props: Params) {
   const params = await props.params
   const searchParams = await props.searchParams
-  const { sortBy, page, min_price, max_price, q } = searchParams
-  return <StoreTemplate sortBy={sortBy} page={page} countryCode={params.countryCode} minPrice={min_price} maxPrice={max_price} searchQuery={q} />
+  const { sortBy, page, min_price, max_price, q, colors, materials } = searchParams
+  return <StoreTemplate sortBy={sortBy} page={page} countryCode={params.countryCode} minPrice={min_price} maxPrice={max_price} searchQuery={q} colors={colors} materials={materials} />
 }
