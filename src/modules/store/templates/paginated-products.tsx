@@ -1,4 +1,5 @@
-import { PRODUCT_LIST_FIELDS, listProducts } from "@lib/data/products"
+import { PRODUCT_LIST_FIELDS } from "@lib/data/product-fields"
+import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
