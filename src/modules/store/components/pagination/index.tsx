@@ -1,6 +1,7 @@
 "use client"
 
 import { clx } from "@medusajs/ui"
+import { useEffect, useTransition } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 export function Pagination({
@@ -15,6 +16,18 @@ export function Pagination({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    const productGrid = document.querySelector('[data-testid="products-list"]')
+
+    if (!productGrid) {
+      return
+    }
+
+    productGrid.classList.toggle("opacity-50", isPending)
+    productGrid.classList.toggle("pointer-events-none", isPending)
+  }, [isPending])
 
   // Helper function to generate an array of numbers within a range
   const arrayRange = (start: number, stop: number) =>
@@ -24,7 +37,9 @@ export function Pagination({
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams)
     params.set("page", newPage.toString())
-    router.push(`${pathname}?${params.toString()}`)
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`, { scroll: false })
+    })
   }
 
   // Function to render a page button
@@ -108,7 +123,14 @@ export function Pagination({
   // Render the component
   return (
     <div className="flex justify-center w-full mt-12">
-      <div className="flex gap-3 items-end" data-testid={dataTestid}>{renderPageButtons()}</div>
+      <div className="flex gap-3 items-end" data-testid={dataTestid}>
+        {renderPageButtons()}
+        {isPending && (
+          <span className="text-sm text-ui-fg-muted" aria-live="polite">
+            Loading...
+          </span>
+        )}
+      </div>
     </div>
   )
 }
