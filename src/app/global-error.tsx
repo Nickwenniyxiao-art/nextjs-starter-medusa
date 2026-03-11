@@ -1,6 +1,8 @@
 "use client"
 
+import { sentry } from "@lib/sentry"
 import Link from "next/link"
+import { useEffect } from "react"
 
 type GlobalErrorProps = {
   error: Error & { digest?: string }
@@ -8,7 +10,9 @@ type GlobalErrorProps = {
 }
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
-  console.error("Global error boundary:", error)
+  useEffect(() => {
+    sentry.captureException(error)
+  }, [error])
 
   return (
     <html lang="en">
