@@ -42,7 +42,7 @@ const CrispChat = () => {
     const websiteId = process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID
     if (!websiteId) return
 
-    const locale = detectLocale(pathname)
+    const locale = detectLocale(pathname ?? "")
 
     // Initialize Crisp globals
     window.$crisp = window.$crisp || []

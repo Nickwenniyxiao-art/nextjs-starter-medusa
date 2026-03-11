@@ -45,7 +45,7 @@ export default function ProductActions({
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
-  const countryCode = useParams().countryCode as string
+  const countryCode = useParams()!.countryCode as string
   const t = useTranslations("product")
   const locale = useLocale()
 
@@ -109,7 +109,7 @@ export default function ProductActions({
   }, [locale, product.variants])
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParams?.toString())
     const value = isValidVariant ? selectedVariant?.id : null
 
     if (params.get("v_id") === value) {

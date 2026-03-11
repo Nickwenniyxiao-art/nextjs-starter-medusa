@@ -17,7 +17,7 @@ const Login = ({ setCurrentView }: Props) => {
   const searchParams = useSearchParams()
   const pathname = usePathname()
 
-  const redirectFromParams = searchParams.get("redirect")
+  const redirectFromParams = searchParams?.get("redirect")
   const redirectFromPath = (() => {
     const accountMatch = pathname?.match(/\/account\/(.+)/)
     return accountMatch ? accountMatch[1] : null

@@ -14,7 +14,7 @@ export default function InventoryTable({ items, count, page, pageSize }: { items
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [search, setSearch] = useState(searchParams.get("q") || "")
+  const [search, setSearch] = useState(searchParams?.get("q") || "")
   const [tab, setTab] = useState<"stock" | "restock">("stock")
   const [open, setOpen] = useState(false)
   const [current, setCurrent] = useState<any>(null)
@@ -31,7 +31,7 @@ export default function InventoryTable({ items, count, page, pageSize }: { items
 
   const totalPages = Math.max(1, Math.ceil(count / pageSize))
   const updateParam = (next: Record<string, string | undefined>) => {
-    const p = new URLSearchParams(searchParams)
+    const p = new URLSearchParams(searchParams ?? undefined)
     Object.entries(next).forEach(([k, v]) => (v ? p.set(k, v) : p.delete(k)))
     router.push(`${pathname}?${p.toString()}`)
   }

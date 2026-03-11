@@ -10,7 +10,7 @@ const Review = ({ cart }: { cart: any }) => {
   const t = useTranslations("checkout")
   const searchParams = useSearchParams()
 
-  const isOpen = searchParams.get("step") === "review"
+  const isOpen = searchParams?.get("step") === "review"
 
   const paidByGiftcard =
     cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
@@ -42,11 +42,13 @@ const Review = ({ cart }: { cart: any }) => {
               <Text className="txt-medium-plus text-ui-fg-base mb-1">
                 {t.rich("termsAgree", {
                   terms: (chunks) => (
+                    // eslint-disable-next-line @next/next/no-html-link-for-pages
                     <a href="/terms" className="underline">
                       {chunks}
                     </a>
                   ),
                   privacy: (chunks) => (
+                    // eslint-disable-next-line @next/next/no-html-link-for-pages
                     <a href="/privacy" className="underline">
                       {chunks}
                     </a>

@@ -36,7 +36,7 @@ export default function AdminSidebar() {
       </h2>
       <nav className="space-y-1">
         {adminNav.map((item) => {
-          const active = isActivePath(pathname, item.href)
+          const active = isActivePath(pathname ?? "", item.href)
 
           if (item.external) {
             return (
@@ -68,7 +68,7 @@ export default function AdminSidebar() {
               {item.children && (
                 <div className="mt-1 space-y-1 pl-3">
                   {item.children.map((child) => {
-                    const childActive = isActivePath(pathname, child.href)
+                    const childActive = isActivePath(pathname ?? "", child.href)
 
                     return (
                       <LocalizedClientLink
