@@ -48,7 +48,7 @@ const Payment = ({
   const router = useRouter()
   const pathname = usePathname()
 
-  const isOpen = searchParams.get("step") === "payment"
+  const isOpen = searchParams?.get("step") === "payment"
 
   const getPaymentMethodLabel = (providerId?: string) => {
     if (!providerId) {
@@ -120,7 +120,7 @@ const Payment = ({
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams)
+      const params = new URLSearchParams(searchParams ?? undefined)
       params.set(name, value)
 
       return params.toString()

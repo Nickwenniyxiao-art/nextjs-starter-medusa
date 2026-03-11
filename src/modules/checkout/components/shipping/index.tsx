@@ -109,18 +109,18 @@ const Shipping: React.FC<ShippingProps> = ({
   const router = useRouter()
   const pathname = usePathname()
 
-  const isOpen = searchParams.get("step") === "delivery"
+  const isOpen = searchParams?.get("step") === "delivery"
   const countryCode = cart?.shipping_address?.country_code?.toLowerCase()
 
   const _shippingMethods = availableShippingMethods?.filter(
     (sm) =>
-      sm.service_zone?.fulfillment_set?.type !== "pickup" &&
+      (sm as any).service_zone?.fulfillment_set?.type !== "pickup" &&
       optionMatchesCountry(sm, countryCode)
   )
 
   const _pickupMethods = availableShippingMethods?.filter(
     (sm) =>
-      sm.service_zone?.fulfillment_set?.type === "pickup" &&
+      (sm as any).service_zone?.fulfillment_set?.type === "pickup" &&
       optionMatchesCountry(sm, countryCode)
   )
 
@@ -410,7 +410,7 @@ const Shipping: React.FC<ShippingProps> = ({
                               </span>
                               <span className="text-base-regular text-ui-fg-muted">
                                 {formatAddress(
-                                  option.service_zone?.fulfillment_set?.location
+                                  (option as any).service_zone?.fulfillment_set?.location
                                     ?.address
                                 )}
                               </span>

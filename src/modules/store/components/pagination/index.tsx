@@ -35,7 +35,7 @@ export function Pagination({
 
   // Function to handle page changes
   const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(searchParams)
+    const params = new URLSearchParams(searchParams ?? undefined)
     params.set("page", newPage.toString())
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`, { scroll: false })

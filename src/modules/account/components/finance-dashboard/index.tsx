@@ -116,7 +116,7 @@ export default function FinanceDashboard({ data, page, pageSize }: Props) {
   }
 
   const updatePage = (nextPage: number) => {
-    const p = new URLSearchParams(searchParams)
+    const p = new URLSearchParams(searchParams ?? undefined)
     p.set("page", String(nextPage))
     router.push(`${pathname}?${p.toString()}`)
   }

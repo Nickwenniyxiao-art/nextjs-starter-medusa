@@ -21,7 +21,7 @@ export function generateProductJsonLd(product: HttpTypes.StoreProduct) {
     imageUrls.unshift(product.thumbnail)
   }
 
-  const uniqueImageUrls = [...new Set(imageUrls)]
+  const uniqueImageUrls = Array.from(new Set(imageUrls))
 
   return {
     "@context": "https://schema.org",

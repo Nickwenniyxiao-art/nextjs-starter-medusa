@@ -16,7 +16,7 @@ export default function LocaleSwitcher() {
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const newLocale = e.target.value
-    const segments = pathname.split("/")
+    const segments = (pathname ?? "").split("/")
     segments[1] = newLocale
     const newPath = segments.join("/")
     router.push(newPath)

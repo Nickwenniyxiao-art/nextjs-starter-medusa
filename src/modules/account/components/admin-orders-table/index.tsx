@@ -30,7 +30,7 @@ export default function AdminOrdersTable({
     countryCode: string
   }
   const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [search, setSearch] = useState(searchParams.get("q") || "")
+  const [search, setSearch] = useState(searchParams?.get("q") || "")
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [batchStatusOpen, setBatchStatusOpen] = useState(false)
   const [batchStatus, setBatchStatus] = useState("")
@@ -44,7 +44,7 @@ export default function AdminOrdersTable({
     orders.length > 0 && orders.every((o) => selected.has(o.id))
 
   const updateParam = (next: Record<string, string | undefined>) => {
-    const p = new URLSearchParams(searchParams)
+    const p = new URLSearchParams(searchParams ?? undefined)
     Object.entries(next).forEach(([k, v]) => {
       if (!v) p.delete(k)
       else p.set(k, v)

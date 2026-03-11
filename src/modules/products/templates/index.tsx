@@ -33,7 +33,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <>
       <ProductViewTracker
-        product={product}
+        product={product as any}
         currency={region.currency_code}
       />
       <div
@@ -53,7 +53,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
             fallback={
               <ProductActions
                 disabled={true}
-                product={product}
+                product={product as any}
                 region={region}
               />
             }

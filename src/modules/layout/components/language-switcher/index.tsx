@@ -16,7 +16,7 @@ export default function LanguageSwitcher() {
   const nextLocale = locale === "zh" ? "en" : "zh"
 
   const handleSwitch = () => {
-    const segments = pathname.split("/")
+    const segments = (pathname ?? "").split("/")
     segments[1] = nextLocale
     router.push(segments.join("/"))
   }

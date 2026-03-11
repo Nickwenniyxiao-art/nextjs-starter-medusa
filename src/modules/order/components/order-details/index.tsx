@@ -30,11 +30,11 @@ const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
 
   return (
     <div>
-      <Text>{t("confirmationEmail", { email: order.email })}</Text>
+      <Text>{t("confirmationEmail", { email: order.email ?? "" })}</Text>
       <Text className="mt-2">
         {t("orderDate")}:{" "}
         <span data-testid="order-date">
-          {new Date(order.created_at).toLocaleDateString(locale)}
+          {new Date(order.created_at ?? Date.now()).toLocaleDateString(locale)}
         </span>
       </Text>
       <Text className="mt-2 text-ui-fg-interactive">
