@@ -258,7 +258,8 @@
         "processing_error": "银行卡处理失败，请稍后重试。",
         "authentication_required": "需要完成 3D Secure 验证，请先完成弹窗挑战。"
       },
-      "network": "请检查网络连接并重试。"
+      "network": "请检查网络连接并重试。",
+      "recoveryHint": "请放心——您的信息已保存。请检查卡片信息后重试，或使用其他支付方式。"
     },
     "progress": {
       "label": "结账进度",
@@ -275,13 +276,14 @@
       "noPaymentForRegion": "该地区暂不支持在线支付",
       "loadingPayment": "正在加载支付方式..."
     },
-    "giftCard.title": "礼品卡",
-    "giftCard.placeholder": "输入礼品卡代码",
-    "giftCard.invalidCode": "无效的礼品卡代码",
-    "giftCard.error": "无法应用礼品卡",
-    "giftCard.remove": "移除",
     "giftCardDiscount": "礼品卡",
-    "paymentErrors.recoveryHint": "请放心——您的信息已保存。请检查卡片信息后重试，或使用其他支付方式。"
+    "giftCard": {
+      "title": "礼品卡",
+      "placeholder": "输入礼品卡代码",
+      "invalidCode": "无效的礼品卡代码",
+      "error": "无法应用礼品卡",
+      "remove": "移除"
+    }
   },
   "order": {
     "thankYou": "感谢您的订单！",
@@ -780,15 +782,27 @@
         "body": "简约。品质。可持续。这三大支柱指引着 NordHjem 的每一个决策。我们与共享负责任生产理念的制造商合作，并致力于从包装到每一个像素都减少浪费。欢迎回家。"
       }
     },
-    "team.title": "我们的团队",
-    "values.sustainability.title": "可持续",
-    "values.sustainability.description": "环保材料与负责任的生产方式",
-    "values.simplicity.title": "简约",
-    "values.simplicity.description": "简洁线条与有意识的设计选择",
-    "values.warmth.title": "温暖",
-    "values.warmth.description": "创造有家的感觉的空间",
-    "values.quality.title": "品质",
-    "values.quality.description": "经得起时间考验的工艺"
+    "team": {
+      "title": "我们的团队"
+    },
+    "values": {
+      "sustainability": {
+        "title": "可持续",
+        "description": "环保材料与负责任的生产方式"
+      },
+      "simplicity": {
+        "title": "简约",
+        "description": "简洁线条与有意识的设计选择"
+      },
+      "warmth": {
+        "title": "温暖",
+        "description": "创造有家的感觉的空间"
+      },
+      "quality": {
+        "title": "品质",
+        "description": "经得起时间考验的工艺"
+      }
+    }
   },
   "admin": {
     "admin": "管理",

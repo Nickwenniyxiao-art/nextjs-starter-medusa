@@ -258,7 +258,8 @@
         "processing_error": "We could not process your card. Please try again.",
         "authentication_required": "3D Secure verification is required. Please complete the popup challenge."
       },
-      "network": "Please check your network connection and try again."
+      "network": "Please check your network connection and try again.",
+      "recoveryHint": "Don't worry — your information has been saved. Please check your card details and try again, or use a different payment method."
     },
     "progress": {
       "label": "Checkout progress",
@@ -275,13 +276,14 @@
       "noPaymentForRegion": "Online payment is not available for this region yet",
       "loadingPayment": "Loading payment methods..."
     },
-    "giftCard.title": "Gift Card",
-    "giftCard.placeholder": "Enter gift card code",
-    "giftCard.invalidCode": "Invalid gift card code",
-    "giftCard.error": "Could not apply gift card",
-    "giftCard.remove": "Remove",
     "giftCardDiscount": "Gift Card",
-    "paymentErrors.recoveryHint": "Don't worry — your information has been saved. Please check your card details and try again, or use a different payment method."
+    "giftCard": {
+      "title": "Gift Card",
+      "placeholder": "Enter gift card code",
+      "invalidCode": "Invalid gift card code",
+      "error": "Could not apply gift card",
+      "remove": "Remove"
+    }
   },
   "order": {
     "thankYou": "Thank you for your order!",
@@ -780,15 +782,27 @@
         "body": "Simplicity. Quality. Sustainability. These three pillars guide every decision at NordHjem. We partner with manufacturers who share our commitment to responsible production, and we design our platform to minimize waste — from packaging to pixels. Welcome home."
       }
     },
-    "team.title": "Our Team",
-    "values.sustainability.title": "Sustainability",
-    "values.sustainability.description": "Eco-friendly materials and responsible manufacturing",
-    "values.simplicity.title": "Simplicity",
-    "values.simplicity.description": "Clean lines and intentional design choices",
-    "values.warmth.title": "Warmth",
-    "values.warmth.description": "Creating spaces that feel like home",
-    "values.quality.title": "Quality",
-    "values.quality.description": "Craftsmanship that stands the test of time"
+    "team": {
+      "title": "Our Team"
+    },
+    "values": {
+      "sustainability": {
+        "title": "Sustainability",
+        "description": "Eco-friendly materials and responsible manufacturing"
+      },
+      "simplicity": {
+        "title": "Simplicity",
+        "description": "Clean lines and intentional design choices"
+      },
+      "warmth": {
+        "title": "Warmth",
+        "description": "Creating spaces that feel like home"
+      },
+      "quality": {
+        "title": "Quality",
+        "description": "Craftsmanship that stands the test of time"
+      }
+    }
   },
   "admin": {
     "admin": "Admin",
