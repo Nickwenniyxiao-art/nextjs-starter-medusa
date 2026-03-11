@@ -1,5 +1,6 @@
 const checkEnvVariables = require("./check-env-variables")
 const createNextIntlPlugin = require("next-intl/plugin")
+const { withSentryConfig } = require("@sentry/nextjs")
 
 checkEnvVariables()
 
@@ -82,4 +83,17 @@ const nextConfig = {
   },
 }
 
-module.exports = withNextIntl(nextConfig)
+module.exports = withSentryConfig(
+  withNextIntl(nextConfig),
+  {
+    silent: true,
+    org: "huan-xiao-5d",
+    project: "nordhjem-storefront",
+  },
+  {
+    hideSourceMaps: true,
+    transpileClientSDK: true,
+    tunnelRoute: "/monitoring",
+    reactComponentAnnotation: { enabled: false },
+  }
+)
