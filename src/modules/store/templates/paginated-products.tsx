@@ -1,4 +1,4 @@
-import { listProductsWithSort } from "@lib/data/products"
+import { PRODUCT_LIST_FIELDS, listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
@@ -12,6 +12,8 @@ type PaginatedProductsParams = {
   category_id?: string[]
   id?: string[]
   order?: string
+  q?: string
+  fields?: string
 }
 
 export default async function PaginatedProducts({
@@ -37,6 +39,7 @@ export default async function PaginatedProducts({
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 12,
+    fields: PRODUCT_LIST_FIELDS,
   }
 
   if (collectionId) {
@@ -51,8 +54,20 @@ export default async function PaginatedProducts({
     queryParams["id"] = productsIds
   }
 
+  if (searchQuery?.trim()) {
+    queryParams["q"] = searchQuery.trim()
+  }
+
   if (sortBy === "created_at") {
-    queryParams["order"] = "created_at"
+    queryParams["order"] = "-created_at"
+  }
+
+  if (sortBy === "price_asc") {
+    queryParams["order"] = "variants.calculated_price"
+  }
+
+  if (sortBy === "price_desc") {
+    queryParams["order"] = "-variants.calculated_price"
   }
 
   const region = await getRegion(countryCode)
@@ -63,21 +78,12 @@ export default async function PaginatedProducts({
 
   let {
     response: { products, count },
-  } = await listProductsWithSort({
-    page: 1,
-    queryParams: { ...queryParams, limit: 100 },
-    sortBy,
+  } = await listProducts({
+    pageParam: page,
+    queryParams,
     countryCode,
   })
 
-
-  if (searchQuery?.trim()) {
-    const q = searchQuery.toLowerCase()
-    products = products.filter((product) =>
-      product.title?.toLowerCase().includes(q)
-    )
-    count = products.length
-  }
   const minPriceNum = minPrice ? parseInt(minPrice) : undefined
   const maxPriceNum = maxPrice ? parseInt(maxPrice) : undefined
 
@@ -89,13 +95,9 @@ export default async function PaginatedProducts({
       if (maxPriceNum !== undefined && price > maxPriceNum) return false
       return true
     })
-    count = products.length
   }
 
-  const limit = 12
-  const offset = (page - 1) * limit
-  products = products.slice(offset, offset + limit)
-  const totalPages = Math.ceil(count / limit)
+  const totalPages = Math.ceil(count / 12)
 
   if (products.length === 0) {
     return <EmptyResults query={searchQuery} />
