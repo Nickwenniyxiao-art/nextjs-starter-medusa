@@ -1,0 +1,10 @@
+{
+  "name": "nordhjem-e2e-monitor",
+  "private": true,
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  }
+}
