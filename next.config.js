@@ -1,12 +1,6 @@
 const checkEnvVariables = require("./check-env-variables")
 const createNextIntlPlugin = require("next-intl/plugin")
-const withSentryConfig = (() => {
-  try {
-    return require("@sentry/nextjs").withSentryConfig
-  } catch {
-    return (config) => config
-  }
-})()
+const { withSentryConfig } = require("@sentry/nextjs")
 
 checkEnvVariables()
 
