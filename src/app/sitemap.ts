@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { listCategories } from "@lib/data/categories"
 import { listCollections } from "@lib/data/collections"
 import { listProducts } from "@lib/data/products"
