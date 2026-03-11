@@ -1,125 +1,104 @@
-<p align="center">
-  <a href="https://www.medusajs.com">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/59018053/229103275-b5e482bb-4601-46e6-8142-244f531cebdb.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    <img alt="Medusa logo" src="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    </picture>
-  </a>
-</p>
+# NordHjem Storefront
 
-<h1 align="center">
-  Medusa Next.js Starter Template
-</h1>
+NordHjem 北欧电商平台前端，基于 [Next.js 14](https://nextjs.org/) + [Medusa.js v2 Storefront](https://docs.medusajs.com/storefront) 构建。
 
-<p align="center">
-Combine Medusa's modules for your commerce backend with the newest Next.js 15 features for a performant storefront.</p>
+## 技术栈
 
-<p align="center">
-  <a href="https://github.com/medusajs/medusa/blob/master/CONTRIBUTING.md">
-    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="PRs welcome!" />
-  </a>
-  <a href="https://discord.gg/xpCwq3Kfn8">
-    <img src="https://img.shields.io/badge/chat-on%20discord-7289DA.svg" alt="Discord Chat" />
-  </a>
-  <a href="https://twitter.com/intent/follow?screen_name=medusajs">
-    <img src="https://img.shields.io/twitter/follow/medusajs.svg?label=Follow%20@medusajs" alt="Follow @medusajs" />
-  </a>
-</p>
+| 组件 | 技术 |
+|------|------|
+| 框架 | Next.js 14 (App Router) |
+| 语言 | TypeScript |
+| 样式 | Tailwind CSS |
+| 国际化 | next-intl (en / zh / da) |
+| 包管理 | Yarn 4 (Corepack) |
+| CI | GitHub Actions (build-and-check) |
+| 部署 | PM2 (port 8000) + Nginx 反向代理 |
 
-### Prerequisites
+## 目录结构
 
-To use the [Next.js Starter Template](https://medusajs.com/nextjs-commerce/), you should have a Medusa server running locally on port 9000.
-For a quick setup, run:
-
-```shell
-npx create-medusa-app@latest
+```
+nextjs-starter-medusa/
+├── src/
+│   ├── app/              # Next.js App Router 页面
+│   ├── modules/          # 业务模块组件
+│   ├── lib/              # 工具函数、API 客户端
+│   └── styles/           # 全局样式
+├── messages/             # i18n 翻译文件 (en.json / zh.json / da.json)
+├── public/               # 静态资源
+├── docs/                 # 项目文档
+├── .github/workflows/    # CI 配置
+├── deploy_frontend.sh    # 标准化部署脚本
+├── next.config.js        # Next.js 配置
+├── tailwind.config.js    # Tailwind 配置
+├── .env.example          # 环境变量模板
+├── .env.template         # 完整环境变量说明
+└── README.md
 ```
 
-Check out [create-medusa-app docs](https://docs.medusajs.com/learn/installation) for more details and troubleshooting.
+## 快速开始
 
-# Overview
+### 前置条件
 
-The Medusa Next.js Starter is built with:
+- Node.js >= 20
+- Corepack 已启用 (`corepack enable`)
+- 后端 Medusa 服务运行中
 
-- [Next.js](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Typescript](https://www.typescriptlang.org/)
-- [Medusa](https://medusajs.com/)
+### 本地开发
 
-Features include:
+```bash
+# 1. 克隆仓库
+git clone https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa.git
+cd nextjs-starter-medusa
 
-- Full ecommerce support:
-  - Product Detail Page
-  - Product Overview Page
-  - Product Collections
-  - Cart
-  - Checkout with Stripe
-  - User Accounts
-  - Order Details
-- Full Next.js 15 support:
-  - App Router
-  - Next fetching/caching
-  - Server Components
-  - Server Actions
-  - Streaming
-  - Static Pre-Rendering
+# 2. 复制环境变量
+cp .env.example .env.local
+# 编辑 .env.local 填入实际值
 
-# Quickstart
+# 3. 安装依赖
+corepack enable
+yarn install
 
-### Setting up the environment variables
-
-Navigate into your projects directory and get your environment variables ready:
-
-```shell
-cd nextjs-starter-medusa/
-mv .env.template .env.local
-```
-
-### Install dependencies
-
-Use Yarn to install all dependencies.
-
-```shell
-yarn
-```
-
-### Start developing
-
-You are now ready to start up your project.
-
-```shell
+# 4. 启动开发服务器
 yarn dev
 ```
 
-### Open the code and start customizing
+访问 http://localhost:8000
 
-Your site is now running at http://localhost:8000!
+### 生产部署
 
-# Payment integrations
-
-By default this starter supports the following payment integrations
-
-- [Stripe](https://stripe.com/)
-
-To enable the integrations you need to add the following to your `.env.local` file:
-
-```shell
-NEXT_PUBLIC_STRIPE_KEY=<your-stripe-public-key>
+```bash
+# 使用标准化部署脚本
+./deploy_frontend.sh              # 部署 main 最新代码
+./deploy_frontend.sh <commit>     # 部署指定版本
 ```
 
-You'll also need to setup the integrations in your Medusa server. See the [Medusa documentation](https://docs.medusajs.com) for more information on how to configure [Stripe](https://docs.medusajs.com/resources/commerce-modules/payment/payment-provider/stripe#main).
+部署脚本自动执行：拉代码 → 安装依赖 → 构建 → 重启 PM2 → 健康检查 → 失败自动回滚。
 
-# Resources
+## 环境变量
 
-## Learn more about Medusa
+详见 `.env.template`，主要配置项：
 
-- [Website](https://www.medusajs.com/)
-- [GitHub](https://github.com/medusajs)
-- [Documentation](https://docs.medusajs.com/)
+| 变量 | 说明 |
+|------|------|
+| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | 后端 API 地址 |
+| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | Medusa 可发布密钥 |
+| `NEXT_PUBLIC_BASE_URL` | 前端访问地址 |
+| `NEXT_PUBLIC_DEFAULT_REGION` | 默认区域 (dk) |
+| `NEXT_PUBLIC_STRIPE_KEY` | Stripe 公钥 |
 
-## Learn more about Next.js
+## CI/CD
 
-- [Website](https://nextjs.org/)
-- [GitHub](https://github.com/vercel/next.js)
-- [Documentation](https://nextjs.org/docs)
+- **CI**: GitHub Actions — 每次 PR / push 到 `main` 自动执行 install → lint → typecheck → build
+- **CD**: 通过 `deploy_frontend.sh` 脚本执行
+- **分支保护**: 必须 CI 通过 + 1 名 Reviewer 批准才能合并
+
+## 国际化
+
+支持三种语言，翻译文件在 `messages/` 目录：
+- `en.json` — English
+- `zh.json` — 中文
+- `da.json` — Dansk
+
+## 相关仓库
+
+- 后端 Medusa: [nordhjem-medusa-backend](https://github.com/Nickwenniyxiao-art/nordhjem-medusa-backend)
