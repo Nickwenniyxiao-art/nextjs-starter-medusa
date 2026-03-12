@@ -1,6 +1,7 @@
 import { PRODUCT_LIST_FIELDS } from "@lib/data/product-fields"
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import { sortProducts } from "@lib/util/sort-products"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -27,7 +28,6 @@ export default async function PaginatedProducts({
   maxPrice,
   searchQuery,
   colors,
-  materials,
 }: {
   sortBy?: SortOptions
   page: number
@@ -39,10 +39,9 @@ export default async function PaginatedProducts({
   maxPrice?: string
   searchQuery?: string
   colors?: string
-  materials?: string
 }) {
   const queryParams: PaginatedProductsParams = {
-    limit: 12,
+    limit: 100,
     fields: PRODUCT_LIST_FIELDS,
   }
 
@@ -62,18 +61,6 @@ export default async function PaginatedProducts({
     queryParams["q"] = searchQuery.trim()
   }
 
-  if (sortBy === "created_at") {
-    queryParams["order"] = "-created_at"
-  }
-
-  if (sortBy === "price_asc") {
-    queryParams["order"] = "variants.calculated_price"
-  }
-
-  if (sortBy === "price_desc") {
-    queryParams["order"] = "-variants.calculated_price"
-  }
-
   const region = await getRegion(countryCode)
 
   if (!region) {
@@ -87,6 +74,11 @@ export default async function PaginatedProducts({
     queryParams,
     countryCode,
   })
+
+  // Client-side sort (Medusa v2 Store API does not support sort by calculated_price)
+  if (sortBy && sortBy !== "recommended") {
+    products = sortProducts(products, sortBy)
+  }
 
   const minPriceNum = minPrice ? parseInt(minPrice) : undefined
   const maxPriceNum = maxPrice ? parseInt(maxPrice) : undefined
@@ -112,20 +104,12 @@ export default async function PaginatedProducts({
     })
   }
 
-  if (materials) {
-    const materialList = materials.split(",").map((m) => m.trim().toLowerCase())
-    products = products.filter((product) => {
-      const opts = product.options || []
-      const matOpt = opts.find((o: any) => o.title?.toLowerCase() === "material")
-      if (!matOpt) return false
-      const vals = matOpt.values?.map((v: any) => v.value?.toLowerCase()) || []
-      return materialList.some((m) => vals.includes(m))
-    })
-  }
-
   count = products.length
 
-  const totalPages = Math.ceil(count / 12)
+  const ITEMS_PER_PAGE = 12
+  const startIndex = (page - 1) * ITEMS_PER_PAGE
+  products = products.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(count / ITEMS_PER_PAGE)
 
   if (products.length === 0) {
     return <EmptyResults query={searchQuery} />
