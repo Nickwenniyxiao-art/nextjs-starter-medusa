@@ -1,0 +1,64 @@
+name: 🔄 Sync Production Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: '同步目标环境'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - test
+          - staging
+          - both
+
+jobs:
+  sync:
+    name: "🔄 Sync → ${{ github.event.inputs.target }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync production data to target environment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 12m
+          script: |
+            set -e
+            echo "=== Syncing production data to ${{ github.event.inputs.target }} ==="
+            
+            # Upload and run the sync script
+            if [ -f /opt/nordhjem/scripts/sync-prod-to-env.sh ]; then
+              chmod +x /opt/nordhjem/scripts/sync-prod-to-env.sh
+              /opt/nordhjem/scripts/sync-prod-to-env.sh ${{ github.event.inputs.target }}
+            else
+              echo "❌ sync script not found at /opt/nordhjem/scripts/"
+              exit 1
+            fi
+
+      - name: Run seed script (ensure admin + test products)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 5m
+          script: |
+            set -e
+            chmod +x /opt/nordhjem/scripts/seed-env.sh 2>/dev/null || true
+            
+            TARGET="${{ github.event.inputs.target }}"
+            
+            if [ "$TARGET" = "test" ] || [ "$TARGET" = "both" ]; then
+              /opt/nordhjem/scripts/seed-env.sh test 9001 "pk_fb2107b3fac8df5420bf0dfc4b0ceea7c2dec6600fbc331eec4f91138bc0ba23"
+            fi
+            
+            if [ "$TARGET" = "staging" ] || [ "$TARGET" = "both" ]; then
+              /opt/nordhjem/scripts/seed-env.sh staging 9002 "pk_64112cda99be1a3e9cdc3d722df9d3dfbbcd19759306897a6dafd4c7e068ebe3"
+            fi
