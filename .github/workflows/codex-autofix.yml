@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn install
+          yarn install --mode=skip-build 2>/dev/null || yarn install --no-immutable || true
 
       - name: Run Codex to fix the issue
         uses: openai/codex-action@main
