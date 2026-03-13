@@ -1,43 +1,23 @@
-name: CD
+name: CD Pipeline
 
 on:
   push:
-    branches: [develop, staging, main]
+    branches: [develop]
 
 concurrency:
-  group: deploy-${{ github.ref_name }}
+  group: pipeline-frontend
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  # ============================================================
+  # Stage 1: 部署到测试环境
+  # ============================================================
+  deploy-test:
+    name: "🚀 Deploy → Test"
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
-      - name: Determine environment
-        id: env
-        run: |
-          if [ "${{ github.ref_name }}" = "develop" ]; then
-            echo "target=test" >> $GITHUB_OUTPUT
-            echo "port=8001" >> $GITHUB_OUTPUT
-            echo "pm2_name=storefront-test" >> $GITHUB_OUTPUT
-            echo "dir=/opt/nordhjem/storefront-test" >> $GITHUB_OUTPUT
-            echo "branch=develop" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref_name }}" = "staging" ]; then
-            echo "target=staging" >> $GITHUB_OUTPUT
-            echo "port=8002" >> $GITHUB_OUTPUT
-            echo "pm2_name=storefront-staging" >> $GITHUB_OUTPUT
-            echo "dir=/opt/nordhjem/storefront-staging" >> $GITHUB_OUTPUT
-            echo "branch=staging" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref_name }}" = "main" ]; then
-            echo "target=production" >> $GITHUB_OUTPUT
-            echo "port=8000" >> $GITHUB_OUTPUT
-            echo "pm2_name=storefront" >> $GITHUB_OUTPUT
-            echo "dir=/opt/nordhjem/storefront" >> $GITHUB_OUTPUT
-            echo "branch=main" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Deploy via SSH
+      - name: Deploy to test environment
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -46,27 +26,22 @@ jobs:
           command_timeout: 10m
           script: |
             set -e
-            cd ${{ steps.env.outputs.dir }}
-
-            echo "=== Pulling latest code (${{ steps.env.outputs.branch }}) ==="
-            git fetch origin ${{ steps.env.outputs.branch }}
-            git reset --hard origin/${{ steps.env.outputs.branch }}
-
+            cd /opt/nordhjem/storefront-test
+            echo "=== Pulling latest (develop) ==="
+            git fetch origin develop
+            git reset --hard origin/develop
             echo "=== Installing dependencies ==="
             corepack enable
             yarn install
-
             echo "=== Building ==="
             yarn build
-
-            echo "=== Restarting PM2 process ==="
-            PORT=${{ steps.env.outputs.port }} pm2 restart ${{ steps.env.outputs.pm2_name }} --update-env || \
-              PORT=${{ steps.env.outputs.port }} pm2 start npm --name ${{ steps.env.outputs.pm2_name }} -- start
+            echo "=== Restarting PM2 ==="
+            PORT=8001 pm2 restart storefront-test --update-env || \
+              PORT=8001 pm2 start npm --name storefront-test -- start
             pm2 save
+            echo "=== Deploy to test complete ==="
 
-            echo "=== Deploy complete: ${{ steps.env.outputs.target }} ==="
-
-      - name: Health check
+      - name: Health check (test)
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -74,18 +49,207 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           command_timeout: 2m
           script: |
-            echo "=== Waiting for app to start ==="
             sleep 10
             for i in 1 2 3 4 5; do
-              STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:${{ steps.env.outputs.port }} 2>/dev/null || echo "000")
-              if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
-                echo "Health check passed (HTTP $STATUS)"
+              STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8001 2>/dev/null || echo "000")
+              if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ]; then
+                echo "✅ Test env health check passed (HTTP $STATUS)"
                 exit 0
               fi
               echo "Attempt $i: HTTP $STATUS, waiting 10s..."
               sleep 10
             done
-            echo "Health check failed after 5 attempts"
-            # Show PM2 logs for debugging
-            pm2 logs ${{ steps.env.outputs.pm2_name }} --lines 20 --nostream 2>/dev/null || true
+            echo "❌ Health check failed"
+            pm2 logs storefront-test --lines 20 --nostream 2>/dev/null || true
+            exit 1
+
+  # ============================================================
+  # Stage 2: 在测试环境跑 E2E
+  # ============================================================
+  e2e-test:
+    name: "🧪 E2E → Test"
+    needs: deploy-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install E2E dependencies
+        working-directory: e2e-monitor
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: e2e-monitor
+        run: npx playwright install chromium --with-deps
+
+      - name: Run E2E tests against test environment
+        working-directory: e2e-monitor
+        env:
+          BASE_URL: http://${{ secrets.DEPLOY_HOST }}:8001
+          API_URL: http://${{ secrets.DEPLOY_HOST }}:9001
+        run: npx playwright test
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report-test
+          path: e2e-monitor/playwright-report/
+          retention-days: 30
+
+  # ============================================================
+  # Stage 3: E2E 通过 → 自动部署到预生产环境
+  # ============================================================
+  deploy-staging:
+    name: "🚀 Deploy → Staging"
+    needs: e2e-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy to staging environment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            set -e
+            cd /opt/nordhjem/storefront-staging
+            echo "=== Pulling latest (develop) ==="
+            git fetch origin develop
+            git reset --hard origin/develop
+            echo "=== Installing dependencies ==="
+            corepack enable
+            yarn install
+            echo "=== Building ==="
+            yarn build
+            echo "=== Restarting PM2 ==="
+            PORT=8002 pm2 restart storefront-staging --update-env || \
+              PORT=8002 pm2 start npm --name storefront-staging -- start
+            pm2 save
+            echo "=== Deploy to staging complete ==="
+
+      - name: Health check (staging)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 2m
+          script: |
+            sleep 10
+            for i in 1 2 3 4 5; do
+              STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8002 2>/dev/null || echo "000")
+              if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ]; then
+                echo "✅ Staging env health check passed (HTTP $STATUS)"
+                exit 0
+              fi
+              echo "Attempt $i: HTTP $STATUS, waiting 10s..."
+              sleep 10
+            done
+            echo "❌ Health check failed"
+            pm2 logs storefront-staging --lines 20 --nostream 2>/dev/null || true
+            exit 1
+
+  # ============================================================
+  # Stage 4: 在预生产环境跑 E2E
+  # ============================================================
+  e2e-staging:
+    name: "🧪 E2E → Staging"
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install E2E dependencies
+        working-directory: e2e-monitor
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: e2e-monitor
+        run: npx playwright install chromium --with-deps
+
+      - name: Run E2E tests against staging environment
+        working-directory: e2e-monitor
+        env:
+          BASE_URL: http://${{ secrets.DEPLOY_HOST }}:8002
+          API_URL: http://${{ secrets.DEPLOY_HOST }}:9002
+        run: npx playwright test
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report-staging
+          path: e2e-monitor/playwright-report/
+          retention-days: 30
+
+  # ============================================================
+  # Stage 5: 预生产 E2E 通过 → 手动审批 → 部署到生产
+  # ============================================================
+  deploy-production:
+    name: "🚀 Deploy → Production"
+    needs: e2e-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Deploy to production
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            set -e
+            cd /opt/nordhjem/storefront
+            echo "=== Pulling latest (develop) ==="
+            git fetch origin develop
+            git reset --hard origin/develop
+            echo "=== Installing dependencies ==="
+            corepack enable
+            yarn install
+            echo "=== Building ==="
+            yarn build
+            echo "=== Restarting PM2 ==="
+            PORT=8000 pm2 restart storefront --update-env || \
+              PORT=8000 pm2 start npm --name storefront -- start
+            pm2 save
+            echo "=== Deploy to production complete ==="
+
+      - name: Health check (production)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 2m
+          script: |
+            sleep 10
+            for i in 1 2 3 4 5; do
+              STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8000 2>/dev/null || echo "000")
+              if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ]; then
+                echo "✅ Production health check passed (HTTP $STATUS)"
+                exit 0
+              fi
+              echo "Attempt $i: HTTP $STATUS, waiting 10s..."
+              sleep 10
+            done
+            echo "❌ Health check failed"
+            pm2 logs storefront --lines 20 --nostream 2>/dev/null || true
             exit 1
