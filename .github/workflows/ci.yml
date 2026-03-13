@@ -16,7 +16,7 @@ jobs:
       NEXT_PUBLIC_MEDUSA_BACKEND_URL: "http://localhost:9000"
       NEXT_PUBLIC_BASE_URL: "http://localhost:8000"
       NEXT_PUBLIC_DEFAULT_REGION: "dk"
-      YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+      YARN_ENABLE_IMMUTABLE_INSTALLS: "true"
 
     steps:
       - name: Checkout
