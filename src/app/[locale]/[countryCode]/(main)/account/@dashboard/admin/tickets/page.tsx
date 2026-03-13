@@ -1,3 +1,4 @@
+import { fetchTickets } from "@lib/data/admin"
 import { isAdmin } from "@lib/util/admin-guard"
 import { redirect } from "next/navigation"
 import TicketList from "@modules/account/components/ticket-list"
@@ -11,5 +12,8 @@ export default async function AdminTicketsPage({
   if (!(await isAdmin())) {
     redirect(`/${countryCode}/account`)
   }
-  return <TicketList />
+
+  const { tickets } = await fetchTickets()
+
+  return <TicketList tickets={tickets} />
 }

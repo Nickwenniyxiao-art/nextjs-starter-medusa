@@ -1,3 +1,4 @@
+import { fetchCurrencyBreakdown } from "@lib/data/admin"
 import { isAdmin } from "@lib/util/admin-guard"
 import { redirect } from "next/navigation"
 import CurrencyReport from "@modules/account/components/currency-report"
@@ -11,5 +12,8 @@ export default async function CurrencyReportPage({
   if (!(await isAdmin())) {
     redirect(`/${countryCode}/account`)
   }
-  return <CurrencyReport />
+
+  const currencies = await fetchCurrencyBreakdown()
+
+  return <CurrencyReport currencies={currencies} />
 }

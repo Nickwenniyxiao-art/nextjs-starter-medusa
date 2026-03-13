@@ -1,45 +1,16 @@
 "use client"
 
+import {
+  TicketDetailData,
+  TicketMessage,
+  sendTicketMessage,
+  updateTicketStatus,
+} from "@lib/data/admin"
 import { Badge, Button, Textarea, Text } from "@medusajs/ui"
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 
 type TicketStatus = "open" | "in_progress" | "resolved" | "closed"
-
-interface Message {
-  id: string
-  author: string
-  role: "customer" | "admin"
-  content: string
-  createdAt: string
-}
-
-const MOCK_MESSAGES: Message[] = [
-  {
-    id: "msg_1",
-    author: "John Doe",
-    role: "customer",
-    content:
-      "I received the wrong item in my order. I ordered the Lind 3-Seat Sofa in gray but received it in beige.",
-    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
-  },
-  {
-    id: "msg_2",
-    author: "Admin",
-    role: "admin",
-    content:
-      "We apologize for the inconvenience. Could you please share a photo of the item you received?",
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-  {
-    id: "msg_3",
-    author: "John Doe",
-    role: "customer",
-    content:
-      "Here is the photo. The color is clearly beige, not the gray I ordered.",
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-]
 
 const statusTransitions: Record<TicketStatus, TicketStatus[]> = {
   open: ["in_progress", "closed"],
@@ -56,50 +27,63 @@ const statusColors: Record<TicketStatus, "orange" | "blue" | "green" | "grey"> =
     closed: "grey",
   }
 
-export default function TicketDetail({ ticketId }: { ticketId: string }) {
+export default function TicketDetail({
+  ticket,
+  initialMessages,
+}: {
+  ticket: TicketDetailData
+  initialMessages: TicketMessage[]
+}) {
   const t = useTranslations("admin")
-  const [status, setStatus] = useState<TicketStatus>("open")
-  const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES)
+  const [status, setStatus] = useState<TicketStatus>(ticket.status)
+  const [messages, setMessages] = useState<TicketMessage[]>(initialMessages)
   const [reply, setReply] = useState("")
+  const [sending, setSending] = useState(false)
 
-  const sendReply = () => {
-    if (!reply.trim()) return
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `msg_${prev.length + 1}`,
-        author: "Admin",
-        role: "admin",
-        content: reply.trim(),
-        createdAt: new Date().toISOString(),
-      },
-    ])
-    setReply("")
+  const handleStatusChange = async (next: TicketStatus) => {
+    const ok = await updateTicketStatus(ticket.id, next)
+    if (ok) setStatus(next)
+  }
+
+  const sendReply = async () => {
+    if (!reply.trim() || sending) return
+    setSending(true)
+    const ok = await sendTicketMessage(ticket.id, reply.trim())
+    if (ok) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `msg_${Date.now()}`,
+          author: "Admin",
+          role: "admin",
+          content: reply.trim(),
+          created_at: new Date().toISOString(),
+        },
+      ])
+      setReply("")
+    }
+    setSending(false)
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">
-          {t("ticketDetail")} #{ticketId.replace("ticket_", "")}
+          {t("ticketDetail")} #{ticket.display_id}
         </h1>
         <Badge color={statusColors[status]}>
           {t(`ticketStatus_${status}` as any)}
         </Badge>
       </div>
 
-      <p className="rounded border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
-        {t("mockDataNotice")}
-      </p>
-
       <div className="rounded border bg-white p-4">
         <h2 className="mb-2 text-lg font-semibold">{t("ticketSubject")}</h2>
-        <Text>Wrong item received</Text>
+        <Text>{ticket.subject}</Text>
         <div className="mt-2 flex gap-2">
           <Text className="text-sm text-ui-fg-subtle">
-            John Doe · john@example.com
+            {ticket.customer_name} · {ticket.customer_email}
           </Text>
-          <Badge>return</Badge>
+          <Badge>{t(`ticketType_${ticket.type}` as any)}</Badge>
         </div>
       </div>
 
@@ -109,7 +93,7 @@ export default function TicketDetail({ ticketId }: { ticketId: string }) {
             <Button
               key={next}
               variant="secondary"
-              onClick={() => setStatus(next)}
+              onClick={() => handleStatusChange(next)}
             >
               {t(`ticketAction_${next}` as any)}
             </Button>
@@ -137,7 +121,7 @@ export default function TicketDetail({ ticketId }: { ticketId: string }) {
                 {msg.role === "admin" ? t("adminRole") : t("customerRole")}
               </Badge>
               <Text className="text-xs text-ui-fg-subtle">
-                {new Date(msg.createdAt).toLocaleString()}
+                {new Date(msg.created_at).toLocaleString()}
               </Text>
             </div>
             <Text>{msg.content}</Text>
@@ -152,8 +136,8 @@ export default function TicketDetail({ ticketId }: { ticketId: string }) {
           placeholder={t("ticketReplyPlaceholder")}
           rows={3}
         />
-        <Button disabled={!reply.trim()} onClick={sendReply}>
-          {t("sendReply")}
+        <Button disabled={!reply.trim() || sending} onClick={sendReply}>
+          {sending ? t("sending") || "Sending..." : t("sendReply")}
         </Button>
       </div>
     </div>
