@@ -28,6 +28,7 @@ export default async function PaginatedProducts({
   maxPrice,
   searchQuery,
   colors,
+  materials,
 }: {
   sortBy?: SortOptions
   page: number
@@ -39,6 +40,7 @@ export default async function PaginatedProducts({
   maxPrice?: string
   searchQuery?: string
   colors?: string
+  materials?: string
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 100,
@@ -97,10 +99,23 @@ export default async function PaginatedProducts({
     const colorList = colors.split(",").map((c) => c.trim().toLowerCase())
     products = products.filter((product) => {
       const opts = product.options || []
-      const colorOpt = opts.find((o: any) => o.title?.toLowerCase() === "color")
+      const colorOpt = opts.find((o: any) => o.title?.toLowerCase() === "color" || o.title?.toLowerCase() === "颜色")
       if (!colorOpt) return false
       const vals = colorOpt.values?.map((v: any) => v.value?.toLowerCase()) || []
       return colorList.some((c) => vals.includes(c))
+    })
+  }
+
+  if (materials) {
+    const materialList = materials.split(",").map((m) => m.trim().toLowerCase())
+    products = products.filter((product) => {
+      const opts = product.options || []
+      const materialOpt = opts.find(
+        (o: any) => o.title?.toLowerCase() === "material" || o.title?.toLowerCase() === "材质"
+      )
+      if (!materialOpt) return false
+      const vals = materialOpt.values?.map((v: any) => v.value?.toLowerCase()) || []
+      return materialList.some((m) => vals.includes(m))
     })
   }
 
