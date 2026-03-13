@@ -1,6 +1,6 @@
 "use server"
 
-import { adminFetch } from "./admin"
+import { adminFetch, fetchFinanceSummary, fetchProfit, fetchOrders, fetchOrderStats } from "./admin"
 
 export interface KpiData {
   todaySales: number
@@ -40,8 +40,6 @@ export interface AnalyticsData {
   topProducts: TopProduct[]
   funnel: FunnelStage[]
 }
-
-const USE_MOCK = true
 
 function generateMockSalesTrend(days: number): SalesTrendPoint[] {
   const points: SalesTrendPoint[] = []
@@ -90,22 +88,40 @@ const MOCK_DATA: AnalyticsData = {
 }
 
 export async function getAnalyticsData(days: number = 30): Promise<AnalyticsData> {
-  if (USE_MOCK) {
+  try {
+    const [kpi, trend, top, funnel] = await Promise.all([
+      adminFetch<{ data: KpiData }>("/admin/analytics/sales-summary").catch(() => null),
+      adminFetch<{ data: SalesTrendPoint[] }>("/admin/analytics/sales-trend", { query: { days: String(days) } }).catch(() => null),
+      adminFetch<{ data: TopProduct[] }>("/admin/analytics/top-products", { query: { limit: "10" } }).catch(() => null),
+      adminFetch<{ data: FunnelStage[] }>("/admin/analytics/traffic").catch(() => null),
+    ])
+
+    if (kpi?.data && trend?.data && top?.data && funnel?.data) {
+      return { kpi: kpi.data, salesTrend: trend.data, topProducts: top.data, funnel: funnel.data }
+    }
+
+    // Fallback: build KPI from order stats
+    const stats = await fetchOrderStats()
+    const fallbackKpi: KpiData = {
+      todaySales: stats.todayRevenue,
+      todayOrders: stats.todayOrders,
+      averageOrderValue: stats.todayOrders > 0 ? Math.round(stats.todayRevenue / stats.todayOrders) : 0,
+      refundRate: 0,
+      trends: { sales: 0, orders: 0, aov: 0, refunds: 0 },
+    }
+
+    return {
+      kpi: kpi?.data || fallbackKpi,
+      salesTrend: trend?.data || generateMockSalesTrend(days),
+      topProducts: top?.data || MOCK_DATA.topProducts,
+      funnel: funnel?.data || MOCK_DATA.funnel,
+    }
+  } catch {
     return {
       ...MOCK_DATA,
       salesTrend: generateMockSalesTrend(days),
     }
   }
-
-  // const [kpi, trend, top, funnel] = await Promise.all([
-  //   adminFetch<{ data: KpiData }>("/admin/analytics/sales-summary"),
-  //   adminFetch<{ data: SalesTrendPoint[] }>("/admin/analytics/sales-trend", { query: { days: String(days) } }),
-  //   adminFetch<{ data: TopProduct[] }>("/admin/analytics/top-products", { query: { limit: "10" } }),
-  //   adminFetch<{ data: FunnelStage[] }>("/admin/analytics/traffic"),
-  // ])
-  // return { kpi: kpi.data, salesTrend: trend.data, topProducts: top.data, funnel: funnel.data }
-
-  return MOCK_DATA
 }
 
 export interface FinanceOverview {
@@ -138,48 +154,50 @@ export interface FinanceData {
   totalTransactions: number
 }
 
-const MOCK_FINANCE: FinanceData = {
-  overview: {
-    totalRevenue: 112480,
-    totalRefunds: 3250,
-    netRevenue: 109230,
-    stripeFees: 3374.4,
-  },
-  monthly: [
-    { month: "2025-10", revenue: 18200, refunds: 500, net: 17700 },
-    { month: "2025-11", revenue: 22400, refunds: 800, net: 21600 },
-    { month: "2025-12", revenue: 31500, refunds: 1200, net: 30300 },
-    { month: "2026-01", revenue: 19800, refunds: 350, net: 19450 },
-    { month: "2026-02", revenue: 15200, refunds: 250, net: 14950 },
-    { month: "2026-03", revenue: 5380, refunds: 150, net: 5230 },
-  ],
-  transactions: Array.from({ length: 21 }, (_, i) => ({
-    orderId: `order_${String(i + 1).padStart(3, "0")}`,
-    displayId: i + 1,
-    date: new Date(Date.now() - i * 86400000 * 2).toISOString(),
-    amount: Math.round(200 + Math.random() * 2000),
-    currency: "usd",
-    status: i % 7 === 0 ? "refunded" : i % 5 === 0 ? "partially_refunded" : "captured",
-  })),
-  totalTransactions: 21,
-}
-
 export async function getFinanceData(page: number = 1, pageSize: number = 20): Promise<FinanceData> {
-  if (USE_MOCK) {
-    const start = (page - 1) * pageSize
+  try {
+    const [summary, profit, ordersData] = await Promise.all([
+      fetchFinanceSummary(),
+      fetchProfit(),
+      fetchOrders({ limit: pageSize, offset: (page - 1) * pageSize }),
+    ])
+
+    const overview: FinanceOverview = {
+      totalRevenue: summary.totalRevenue,
+      totalRefunds: summary.totalRefunds,
+      netRevenue: summary.netRevenue,
+      stripeFees: summary.stripeFees,
+    }
+
+    const monthly: MonthlyRevenue[] = profit.monthly.map((m) => ({
+      month: m.month,
+      revenue: m.revenue,
+      refunds: m.refunds,
+      net: m.net,
+    }))
+
+    const transactions: Transaction[] = (ordersData.orders || []).map((o: any) => ({
+      orderId: o.id,
+      displayId: o.display_id,
+      date: o.created_at,
+      amount: o.total || 0,
+      currency: o.currency_code || "usd",
+      status: o.payment_status || "captured",
+    }))
 
     return {
-      ...MOCK_FINANCE,
-      transactions: MOCK_FINANCE.transactions.slice(start, start + pageSize),
+      overview,
+      monthly,
+      transactions,
+      totalTransactions: ordersData.count,
+    }
+  } catch {
+    // Return empty state on total failure
+    return {
+      overview: { totalRevenue: 0, totalRefunds: 0, netRevenue: 0, stripeFees: 0 },
+      monthly: [],
+      transactions: [],
+      totalTransactions: 0,
     }
   }
-
-  // const [overview, monthly, txns] = await Promise.all([
-  //   adminFetch<{ data: FinanceOverview }>("/admin/finance/overview"),
-  //   adminFetch<{ data: MonthlyRevenue[] }>("/admin/finance/monthly"),
-  //   adminFetch<{ data: Transaction[]; count: number }>("/admin/finance/transactions", { query: { limit: String(pageSize), offset: String((page - 1) * pageSize) } }),
-  // ])
-  // return { overview: overview.data, monthly: monthly.data, transactions: txns.data, totalTransactions: txns.count }
-
-  return MOCK_FINANCE
 }
