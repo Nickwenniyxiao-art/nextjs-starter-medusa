@@ -5,14 +5,16 @@ import ProfileBillingAddress from "@modules/account/components/profile-billing-a
 import ProfileEmail from "@modules/account/components/profile-email"
 import ProfileName from "@modules/account/components/profile-name"
 import ProfilePassword from "@modules/account/components/profile-password"
+import NotificationPreferences from "@modules/account/components/notification-preferences"
 
 import { notFound } from "next/navigation"
 import { listRegions } from "@lib/data/regions"
-import { retrieveCustomer } from "@lib/data/customer"
+import { getNotificationPreferences, retrieveCustomer } from "@lib/data/customer"
 import { getTranslations } from "next-intl/server"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("account")
+  const preferences = await getNotificationPreferences()
 
   return {
     title: t("profile"),
@@ -24,6 +26,7 @@ export default async function Profile() {
   const customer = await retrieveCustomer()
   const regions = await listRegions()
   const t = await getTranslations("account")
+  const preferences = await getNotificationPreferences()
 
   if (!customer || !regions) {
     notFound()
@@ -45,6 +48,8 @@ export default async function Profile() {
         <ProfilePassword customer={customer} />
         <Divider />
         <ProfileBillingAddress customer={customer} regions={regions} />
+        <Divider />
+        <NotificationPreferences preferences={preferences} />
       </div>
     </div>
   )

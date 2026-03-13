@@ -12,13 +12,13 @@ export default function InventoryAlerts({ items }: { items: any[] }) {
   const alertItems = useMemo(() => {
     return items
       .map((item) => {
-        const level = item.location_levels?.[0]
-        const stocked = level?.stocked_quantity || 0
-        const reserved = level?.reserved_quantity || 0
-        const available = stocked - reserved
-        return { ...item, stocked, reserved, available }
+        const stocked = item.current_stock ?? item.stocked_quantity ?? 0
+        const reserved = item.reserved_quantity ?? 0
+        const available = item.available_quantity ?? stocked - reserved
+        const threshold = item.threshold ?? 10
+        return { ...item, stocked, reserved, available, threshold }
       })
-      .filter((item) => item.available <= threshold)
+       .filter((item) => item.available <= (item.threshold ?? threshold))
       .sort((a, b) => a.available - b.available)
   }, [items, threshold])
 
@@ -38,9 +38,7 @@ export default function InventoryAlerts({ items }: { items: any[] }) {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">{t("inventoryAlerts")}</h1>
-      <p className="rounded border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">{t("mockDataNotice")}</p>
-
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded border bg-white p-4"><Text>Total alerts</Text><Badge color="orange">{alertItems.length}</Badge></div>
         <div className="rounded border bg-white p-4"><Text>{t("outOfStockItems")}</Text><Badge color="red">{outOfStock.length}</Badge></div>
         <div className="rounded border bg-white p-4"><Text>{t("lowStockItems")}</Text><Badge color="orange">{lowStock.length}</Badge></div>
@@ -65,17 +63,18 @@ export default function InventoryAlerts({ items }: { items: any[] }) {
       <div className="rounded border bg-white p-4">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b"><th className="p-2">{t("sku")}</th><th className="p-2">{t("productName")}</th><th className="p-2">{t("stockedQty")}</th><th className="p-2">{t("reservedQty")}</th><th className="p-2">{t("availableQty")}</th><th className="p-2">Action</th></tr>
+            <tr className="border-b"><th className="p-2">{t("sku")}</th><th className="p-2">{t("productName")}</th><th className="p-2">{t("stockedQty")}</th><th className="p-2">{t("reservedQty")}</th><th className="p-2">{t("availableQty")}</th><th className="p-2">阈值</th><th className="p-2">Action</th></tr>
           </thead>
           <tbody>
-            {alertItems.length === 0 ? <tr><td colSpan={6} className="py-8 text-center text-ui-fg-subtle">{t("noAlerts")}</td></tr> : alertItems.map((item) => (
+            {alertItems.length === 0 ? <tr><td colSpan={7} className="py-8 text-center text-ui-fg-subtle">{t("noAlerts")}</td></tr> : alertItems.map((item) => (
               <tr key={item.id} className={`border-b ${item.available <= 0 ? "bg-red-50" : "bg-amber-50"}`}>
                 <td className="p-2">{item.sku}</td>
                 <td className="p-2">{item.title}</td>
                 <td className="p-2">{item.stocked}</td>
                 <td className="p-2">{item.reserved}</td>
                 <td className={`p-2 ${item.available <= 0 ? "text-red-600" : "text-amber-600"}`}>{item.available}</td>
-                <td className="p-2"><Button size="small" onClick={() => { /* TODO: open restock modal */ }}>{t("quickRestock")}</Button></td>
+                <td className="p-2">{item.threshold ?? threshold}</td>
+                <td className="p-2"><Button size="small" onClick={() => {}}>{t("quickRestock")}</Button></td>
               </tr>
             ))}
           </tbody>

@@ -209,3 +209,32 @@ export async function adjustInventory(
   revalidatePath("/")
   return result
 }
+
+export async function getAdminDashboardStats() {
+  const [ordersToday, revenueToday, lowStock, activeUsers, openTickets] = await Promise.all([
+    adminFetch<{ count?: number }>("/admin/analytics/orders-today").catch(() => ({ count: 0 })),
+    adminFetch<{ amount?: number }>("/admin/analytics/revenue-today").catch(() => ({ amount: 0 })),
+    adminFetch<{ count?: number }>("/admin/inventory/low-stock-alerts").catch(() => ({ count: 0 })),
+    adminFetch<{ count?: number }>("/admin/analytics/active-users").catch(() => ({ count: 0 })),
+    adminFetch<{ count?: number }>("/admin/after-sales/tickets", {
+      query: { status: "open", limit: 1 },
+    }).catch(() => ({ count: 0 })),
+  ])
+
+  return {
+    ordersToday: ordersToday.count || 0,
+    revenueToday: revenueToday.amount || 0,
+    lowStockCount: lowStock.count || 0,
+    activeUsers: activeUsers.count || 0,
+    openTickets: openTickets.count || 0,
+  }
+}
+
+export async function getRevenueTrend(period: "daily" | "weekly" | "monthly" = "daily") {
+  const data = await adminFetch<{ data?: { date: string; amount: number }[] }>(
+    "/admin/finance/revenue-trend",
+    { query: { period } }
+  )
+
+  return data.data || []
+}

@@ -1,64 +1,15 @@
+import { getAdminDashboardStats, getRevenueTrend, adminFetch } from "@lib/data/admin"
 import { isAdmin } from "@lib/util/admin-guard"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
-const kpiCards = [
-  {
-    label: "今日订单数",
-    value: "128",
-    change: "+12.6%",
-    trend: "↑",
-    trendUp: true,
-    // TODO: Replace with GET /admin/analytics/orders-today
-  },
-  {
-    label: "今日收入",
-    value: "¥86,420",
-    change: "+8.3%",
-    trend: "↑",
-    trendUp: true,
-    // TODO: Replace with GET /admin/analytics/revenue-today
-  },
-  {
-    label: "在线访客数",
-    value: "342",
-    change: "-3.1%",
-    trend: "↓",
-    trendUp: false,
-    // TODO: Replace mock data with realtime visitor service
-  },
-  {
-    label: "待处理工单数",
-    value: "17",
-    change: "+5.9%",
-    trend: "↑",
-    trendUp: true,
-    // TODO: Replace with GET /admin/after-sales/tickets?status=open
-  },
-]
-
-const recentOrders = [
-  { id: "100901", customer: "Lina Wang", amount: "¥1,299", status: "待发货", time: "10:32" },
-  { id: "100900", customer: "Mia Chen", amount: "¥899", status: "已付款", time: "10:20" },
-  { id: "100899", customer: "Kevin Yu", amount: "¥2,399", status: "已发货", time: "10:14" },
-  { id: "100898", customer: "Alex Wu", amount: "¥429", status: "退款中", time: "09:58" },
-  { id: "100897", customer: "Ivy Li", amount: "¥3,120", status: "待发货", time: "09:31" },
-  { id: "100896", customer: "Sophie Yan", amount: "¥749", status: "已完成", time: "09:05" },
-  { id: "100895", customer: "Noah Gu", amount: "¥1,050", status: "已付款", time: "08:47" },
-  { id: "100894", customer: "Emma Hao", amount: "¥1,589", status: "已发货", time: "08:22" },
-  { id: "100893", customer: "Chris Zhao", amount: "¥629", status: "待发货", time: "08:09" },
-  { id: "100892", customer: "Olivia Xu", amount: "¥2,060", status: "已完成", time: "07:43" },
-  // TODO: Replace with GET /admin/orders?limit=10
-]
-
-const openTickets = [
-  { id: "AS-2201", customer: "Lina Wang", type: "退货", priority: "高" },
-  { id: "AS-2200", customer: "Mia Chen", type: "维修", priority: "中" },
-  { id: "AS-2198", customer: "Kevin Yu", type: "咨询", priority: "低" },
-  { id: "AS-2197", customer: "Ivy Li", type: "退货", priority: "高" },
-  { id: "AS-2196", customer: "Alex Wu", type: "维修", priority: "中" },
-  // TODO: Replace with GET /admin/after-sales/tickets?status=open&limit=5
-]
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("zh-CN", {
+    style: "currency",
+    currency: "CNY",
+    maximumFractionDigits: 0,
+  }).format(value || 0)
+}
 
 export default async function AdminHomePage({
   params,
@@ -71,18 +22,75 @@ export default async function AdminHomePage({
     redirect(`/${countryCode}/account`)
   }
 
+  let error: string | null = null
+  let stats = {
+    ordersToday: 0,
+    revenueToday: 0,
+    lowStockCount: 0,
+    activeUsers: 0,
+    openTickets: 0,
+  }
+  let trend: { date: string; amount: number }[] = []
+  let recentOrders: any[] = []
+
+  try {
+    ;[stats, trend] = await Promise.all([
+      getAdminDashboardStats(),
+      getRevenueTrend("daily"),
+    ])
+
+    const orders = await adminFetch<{ orders?: any[] }>("/admin/orders", {
+      query: { limit: 10, order: "-created_at" },
+    })
+
+    recentOrders = orders.orders || []
+  } catch (e: any) {
+    error = e?.message || "加载仪表盘数据失败"
+  }
+
+  const kpiCards = [
+    { label: "今日订单数", value: String(stats.ordersToday) },
+    { label: "今日收入", value: formatCurrency(stats.revenueToday) },
+    { label: "低库存商品数", value: String(stats.lowStockCount) },
+    { label: "活跃用户数", value: String(stats.activeUsers) },
+  ]
+
+  const maxAmount = Math.max(...trend.map((point) => point.amount), 1)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="admin-overview-page">
+      {error && (
+        <p className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">
+          {error}
+        </p>
+      )}
+
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {kpiCards.map((card) => (
           <article key={card.label} className="rounded-2xl border border-grey-20 bg-white p-5 shadow-sm">
             <p className="text-sm text-grey-50">{card.label}</p>
             <p className="mt-3 text-3xl font-semibold text-forest">{card.value}</p>
-            <p className={card.trendUp ? "mt-2 text-sm text-emerald-700" : "mt-2 text-sm text-rose-700"}>
-              {card.trend} {card.change}
-            </p>
           </article>
         ))}
+      </section>
+
+      <section className="rounded-2xl border border-grey-20 bg-white p-5 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-grey-80">收入趋势（Daily）</h3>
+        {trend.length === 0 ? (
+          <p className="text-sm text-grey-50">暂无收入趋势数据</p>
+        ) : (
+          <div className="flex h-48 items-end gap-2 overflow-x-auto">
+            {trend.slice(-14).map((point) => {
+              const height = Math.max((point.amount / maxAmount) * 100, 8)
+              return (
+                <div key={point.date} className="min-w-10 text-center text-xs text-grey-50">
+                  <div className="mx-auto w-6 rounded-t bg-[#2C3E2D]" style={{ height: `${height}%` }} />
+                  <p className="mt-1">{point.date.slice(5)}</p>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </section>
 
       <section className="rounded-2xl border border-grey-20 bg-white p-5 shadow-sm">
@@ -95,45 +103,34 @@ export default async function AdminHomePage({
                 <th className="py-2">客户名</th>
                 <th className="py-2">金额</th>
                 <th className="py-2">状态</th>
-                <th className="py-2">时间</th>
               </tr>
             </thead>
             <tbody>
               {recentOrders.map((order) => (
                 <tr key={order.id} className="border-b border-grey-10">
                   <td className="py-3">
-                    <Link className="text-forest hover:underline" href={`/${countryCode}/account/admin/oms/orders/${order.id}`}>
-                      #{order.id}
+                    <Link className="text-forest hover:underline" href={`/${countryCode}/account/admin/orders/${order.id}`}>
+                      #{order.display_id || order.id}
                     </Link>
                   </td>
-                  <td className="py-3 text-grey-70">{order.customer}</td>
-                  <td className="py-3 text-grey-70">{order.amount}</td>
-                  <td className="py-3 text-grey-70">{order.status}</td>
-                  <td className="py-3 text-grey-50">{order.time}</td>
+                  <td className="py-3 text-grey-70">{order.email || "-"}</td>
+                  <td className="py-3 text-grey-70">{formatCurrency((order.summary?.current_order_total ?? order.total) || 0)}</td>
+                  <td className="py-3 text-grey-70">{order.fulfillment_status || order.status || "-"}</td>
                 </tr>
               ))}
+              {recentOrders.length === 0 && (
+                <tr>
+                  <td className="py-8 text-center text-grey-50" colSpan={4}>暂无订单数据</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </section>
 
       <section className="rounded-2xl border border-grey-20 bg-white p-5 shadow-sm">
-        <h3 className="mb-4 text-lg font-semibold text-grey-80">待处理工单</h3>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {openTickets.map((ticket) => (
-            <Link
-              key={ticket.id}
-              href={`/${countryCode}/account/admin/after-sales`}
-              className="rounded-xl border border-grey-20 bg-warm px-4 py-3 transition hover:border-forest"
-            >
-              <p className="text-sm font-medium text-grey-80">{ticket.id}</p>
-              <p className="mt-1 text-sm text-grey-60">{ticket.customer}</p>
-              <p className="mt-1 text-sm text-grey-50">
-                {ticket.type} · 紧急程度 {ticket.priority}
-              </p>
-            </Link>
-          ))}
-        </div>
+        <h3 className="mb-2 text-lg font-semibold text-grey-80">待处理工单</h3>
+        <p className="text-grey-60">当前待处理工单：{stats.openTickets}</p>
       </section>
     </div>
   )

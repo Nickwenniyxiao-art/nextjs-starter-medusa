@@ -465,7 +465,12 @@
     "profileDescription": "View and update your profile information, including your name, email, and phone number.",
     "previousPage": "← Previous",
     "nextPage": "Next →",
-    "pageIndicator": "Page {page}"
+    "pageIndicator": "Page {page}",
+    "notificationPreferences": "Notification Preferences",
+    "notifyOrderUpdates": "Order updates notifications",
+    "notifyPromotions": "Promotional notifications",
+    "notifyNewsletter": "Newsletter subscription",
+    "savePreferences": "Save preferences"
   },
   "trackOrder": {
     "title": "Track Your Order",

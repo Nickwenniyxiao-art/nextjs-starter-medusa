@@ -377,3 +377,44 @@ export const setDefaultCustomerAddress = async (
       return { success: false, error: err.toString() }
     })
 }
+
+export async function getNotificationPreferences(): Promise<{
+  order_updates: boolean
+  promotions: boolean
+  newsletter: boolean
+}> {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  if (!headers.authorization) {
+    return { order_updates: true, promotions: false, newsletter: false }
+  }
+
+  return sdk.client
+    .fetch<{ preferences: { order_updates: boolean; promotions: boolean; newsletter: boolean } }>(
+      "/store/customers/me/notification-preferences",
+      { method: "GET", headers, cache: "no-store" }
+    )
+    .then((res) => res.preferences)
+    .catch(() => ({ order_updates: true, promotions: false, newsletter: false }))
+}
+
+export async function updateNotificationPreferences(formData: FormData) {
+  "use server"
+
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  await sdk.client.fetch("/store/customers/me/notification-preferences", {
+    method: "PUT",
+    headers,
+    body: {
+      order_updates: formData.get("order_updates") === "on",
+      promotions: formData.get("promotions") === "on",
+      newsletter: formData.get("newsletter") === "on",
+    },
+    cache: "no-store",
+  })
+}
