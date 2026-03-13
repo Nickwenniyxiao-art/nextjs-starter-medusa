@@ -64,6 +64,21 @@ jobs:
             pm2 logs storefront-test --lines 20 --nostream 2>/dev/null || true
             exit 1
 
+      - name: Seed test environment (ensure admin + products)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 3m
+          script: |
+            if [ -f /opt/nordhjem/scripts/seed-env.sh ]; then
+              chmod +x /opt/nordhjem/scripts/seed-env.sh
+              /opt/nordhjem/scripts/seed-env.sh test 9001 "pk_fb2107b3fac8df5420bf0dfc4b0ceea7c2dec6600fbc331eec4f91138bc0ba23"
+            else
+              echo "⚠️ seed script not found, skipping"
+            fi
+
   # ============================================================
   # Stage 2: 在测试环境跑 E2E
   # ============================================================
@@ -160,6 +175,21 @@ jobs:
             echo "❌ Health check failed"
             pm2 logs storefront-staging --lines 20 --nostream 2>/dev/null || true
             exit 1
+
+      - name: Seed staging environment (ensure admin + products)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 3m
+          script: |
+            if [ -f /opt/nordhjem/scripts/seed-env.sh ]; then
+              chmod +x /opt/nordhjem/scripts/seed-env.sh
+              /opt/nordhjem/scripts/seed-env.sh staging 9002 "pk_64112cda99be1a3e9cdc3d722df9d3dfbbcd19759306897a6dafd4c7e068ebe3"
+            else
+              echo "⚠️ seed script not found, skipping"
+            fi
 
   # ============================================================
   # Stage 4: 在预生产环境跑 E2E
