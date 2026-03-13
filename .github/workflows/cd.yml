@@ -30,17 +30,32 @@ jobs:
             echo "=== Pulling latest (develop) ==="
             git fetch origin develop
             git reset --hard origin/develop
-            echo "=== Ensuring .env has correct MEDUSA_BACKEND_URL ==="
+
+            echo "=== Ensuring .env is correct ==="
+            # Ensure runtime MEDUSA_BACKEND_URL is present (critical for standalone mode)
             grep -q "^MEDUSA_BACKEND_URL=" .env 2>/dev/null || echo "MEDUSA_BACKEND_URL=http://66.94.127.117:9001" >> .env
             sed -i 's|^MEDUSA_BACKEND_URL=.*|MEDUSA_BACKEND_URL=http://66.94.127.117:9001|' .env
+
             echo "=== Installing dependencies ==="
             corepack enable
             yarn install
+
             echo "=== Building ==="
             yarn build
-            echo "=== Restarting PM2 ==="
-            PORT=8001 pm2 restart storefront-test --update-env || \
-              PORT=8001 pm2 start npm --name storefront-test -- start
+
+            echo "=== Setting up standalone mode ==="
+            # Copy static assets into standalone directory (required for standalone output)
+            cp -r public .next/standalone/public
+            cp -r .next/static .next/standalone/.next/static
+            # Copy .env into standalone dir so node can read it
+            cp .env .next/standalone/.env
+
+            echo "=== Restarting PM2 (standalone) ==="
+            pm2 delete storefront-test 2>/dev/null || true
+            cd /opt/nordhjem/storefront-test
+            PORT=8001 HOSTNAME=0.0.0.0 MEDUSA_BACKEND_URL=http://66.94.127.117:9001 \
+              pm2 start .next/standalone/server.js --name storefront-test \
+              --cwd /opt/nordhjem/storefront-test
             pm2 save
             echo "=== Deploy to test complete ==="
 
@@ -115,6 +130,7 @@ jobs:
         env:
           BASE_URL: http://${{ secrets.DEPLOY_HOST }}:8001
           API_URL: http://${{ secrets.DEPLOY_HOST }}:9001
+          PUBLISHABLE_API_KEY: ${{ secrets.PUBLISHABLE_KEY_TEST }}
         run: npx playwright test
 
       - name: Upload test report
@@ -147,17 +163,29 @@ jobs:
             echo "=== Pulling latest (develop) ==="
             git fetch origin develop
             git reset --hard origin/develop
-            echo "=== Ensuring .env has correct MEDUSA_BACKEND_URL ==="
+
+            echo "=== Ensuring .env is correct ==="
             grep -q "^MEDUSA_BACKEND_URL=" .env 2>/dev/null || echo "MEDUSA_BACKEND_URL=http://66.94.127.117:9002" >> .env
             sed -i 's|^MEDUSA_BACKEND_URL=.*|MEDUSA_BACKEND_URL=http://66.94.127.117:9002|' .env
+
             echo "=== Installing dependencies ==="
             corepack enable
             yarn install
+
             echo "=== Building ==="
             yarn build
-            echo "=== Restarting PM2 ==="
-            PORT=8002 pm2 restart storefront-staging --update-env || \
-              PORT=8002 pm2 start npm --name storefront-staging -- start
+
+            echo "=== Setting up standalone mode ==="
+            cp -r public .next/standalone/public
+            cp -r .next/static .next/standalone/.next/static
+            cp .env .next/standalone/.env
+
+            echo "=== Restarting PM2 (standalone) ==="
+            pm2 delete storefront-staging 2>/dev/null || true
+            cd /opt/nordhjem/storefront-staging
+            PORT=8002 HOSTNAME=0.0.0.0 MEDUSA_BACKEND_URL=http://66.94.127.117:9002 \
+              pm2 start .next/standalone/server.js --name storefront-staging \
+              --cwd /opt/nordhjem/storefront-staging
             pm2 save
             echo "=== Deploy to staging complete ==="
 
@@ -232,6 +260,7 @@ jobs:
         env:
           BASE_URL: http://${{ secrets.DEPLOY_HOST }}:8002
           API_URL: http://${{ secrets.DEPLOY_HOST }}:9002
+          PUBLISHABLE_API_KEY: ${{ secrets.PUBLISHABLE_KEY_STAGING }}
         run: npx playwright test
 
       - name: Upload test report
