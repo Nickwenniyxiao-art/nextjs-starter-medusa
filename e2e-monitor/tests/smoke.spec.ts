@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const BASE = process.env.BASE_URL || 'https://nordhjem.store';
 const API = process.env.API_URL || 'http://66.94.127.117:9000';
+const API_KEY = process.env.PUBLISHABLE_API_KEY || 'pk_131083b02252b54782a42b83a9f1dd79b4bb01b6a9b409a252b104b965b977ea';
 
 test.describe('NordHjem Smoke Tests — 核心流程巡检', () => {
 
@@ -54,7 +55,7 @@ test.describe('NordHjem Smoke Tests — 核心流程巡检', () => {
   test('Store API 返回产品数据', async ({ request }) => {
     const res = await request.get(`${API}/store/products?limit=1`, {
       headers: {
-        'x-publishable-api-key': 'pk_131083b02252b54782a42b83a9f1dd79b4bb01b6a9b409a252b104b965b977ea',
+        'x-publishable-api-key': API_KEY,
       },
     });
     expect(res.status()).toBe(200);
