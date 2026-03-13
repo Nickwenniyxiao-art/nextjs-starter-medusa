@@ -93,6 +93,7 @@ jobs:
         env:
           BASE_URL: http://${{ secrets.DEPLOY_HOST }}:8001
           API_URL: http://${{ secrets.DEPLOY_HOST }}:9001
+          PUBLISHABLE_API_KEY: ${{ secrets.PUBLISHABLE_KEY_TEST }}
         run: npx playwright test
 
       - name: Upload test report
@@ -188,6 +189,7 @@ jobs:
         env:
           BASE_URL: http://${{ secrets.DEPLOY_HOST }}:8002
           API_URL: http://${{ secrets.DEPLOY_HOST }}:9002
+          PUBLISHABLE_API_KEY: ${{ secrets.PUBLISHABLE_KEY_STAGING }}
         run: npx playwright test
 
       - name: Upload test report
