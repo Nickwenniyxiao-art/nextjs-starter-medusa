@@ -11,7 +11,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Determine environment
@@ -22,16 +22,19 @@ jobs:
             echo "port=8001" >> $GITHUB_OUTPUT
             echo "pm2_name=storefront-test" >> $GITHUB_OUTPUT
             echo "dir=/opt/nordhjem/storefront-test" >> $GITHUB_OUTPUT
+            echo "branch=develop" >> $GITHUB_OUTPUT
           elif [ "${{ github.ref_name }}" = "staging" ]; then
             echo "target=staging" >> $GITHUB_OUTPUT
             echo "port=8002" >> $GITHUB_OUTPUT
             echo "pm2_name=storefront-staging" >> $GITHUB_OUTPUT
             echo "dir=/opt/nordhjem/storefront-staging" >> $GITHUB_OUTPUT
+            echo "branch=staging" >> $GITHUB_OUTPUT
           elif [ "${{ github.ref_name }}" = "main" ]; then
             echo "target=production" >> $GITHUB_OUTPUT
             echo "port=8000" >> $GITHUB_OUTPUT
             echo "pm2_name=storefront" >> $GITHUB_OUTPUT
             echo "dir=/opt/nordhjem/storefront" >> $GITHUB_OUTPUT
+            echo "branch=main" >> $GITHUB_OUTPUT
           fi
 
       - name: Deploy via SSH
@@ -40,31 +43,49 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script_stop: true
+          command_timeout: 10m
           script: |
             set -e
             cd ${{ steps.env.outputs.dir }}
-            echo "=== Pulling latest (${{ github.ref_name }}) ==="
-            git fetch origin ${{ github.ref_name }}
-            git reset --hard origin/${{ github.ref_name }}
+
+            echo "=== Pulling latest code (${{ steps.env.outputs.branch }}) ==="
+            git fetch origin ${{ steps.env.outputs.branch }}
+            git reset --hard origin/${{ steps.env.outputs.branch }}
+
             echo "=== Installing dependencies ==="
             corepack enable
             yarn install
+
             echo "=== Building ==="
             yarn build
-            echo "=== Restarting PM2 ==="
+
+            echo "=== Restarting PM2 process ==="
             PORT=${{ steps.env.outputs.port }} pm2 restart ${{ steps.env.outputs.pm2_name }} --update-env || \
               PORT=${{ steps.env.outputs.port }} pm2 start npm --name ${{ steps.env.outputs.pm2_name }} -- start
             pm2 save
+
             echo "=== Deploy complete: ${{ steps.env.outputs.target }} ==="
 
       - name: Health check
-        run: |
-          sleep 10
-          STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://${{ secrets.DEPLOY_HOST }}:${{ steps.env.outputs.port }} || true)
-          if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ]; then
-            echo "Health check passed (HTTP $STATUS)"
-          else
-            echo "WARNING: Health check returned HTTP $STATUS"
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 2m
+          script: |
+            echo "=== Waiting for app to start ==="
+            sleep 10
+            for i in 1 2 3 4 5; do
+              STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:${{ steps.env.outputs.port }} 2>/dev/null || echo "000")
+              if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ] || [ "$STATUS" = "302" ]; then
+                echo "Health check passed (HTTP $STATUS)"
+                exit 0
+              fi
+              echo "Attempt $i: HTTP $STATUS, waiting 10s..."
+              sleep 10
+            done
+            echo "Health check failed after 5 attempts"
+            # Show PM2 logs for debugging
+            pm2 logs ${{ steps.env.outputs.pm2_name }} --lines 20 --nostream 2>/dev/null || true
             exit 1
-          fi
