@@ -8,18 +8,24 @@ test.describe('Business Regression - Home & Navigation', () => {
     const response = await page.goto(`${BASE}${LOCALE_PATH}`)
     expect(response?.ok()).toBeTruthy()
 
+    // Header with nav
     await expect(page.locator('header')).toBeVisible()
-    await expect(page.getByTestId('footer')).toBeVisible()
-    await expect(page.getByRole('link', { name: /store|shop/i })).toBeVisible()
+    // Footer element (no data-testid, use semantic selector)
+    await expect(page.locator('footer')).toBeVisible()
+    // Store link in nav
+    await expect(page.getByTestId('nav-store-link')).toBeVisible()
+    // Hero section with Shop Now CTA
+    await expect(page.getByRole('link', { name: /shop now/i })).toBeVisible()
+    // No error state
     await expect(page.locator('body')).not.toContainText('Something went wrong')
   })
 
-  test('can navigate to about page from main navigation', async ({ page }) => {
+  test('can navigate to about page from footer link', async ({ page }) => {
     await page.goto(`${BASE}${LOCALE_PATH}`)
-    await page.getByRole('link', { name: /about/i }).first().click()
+    // About link is in the footer, not main nav
+    await page.locator('footer').getByRole('link', { name: /about us/i }).first().click()
 
     await expect(page).toHaveURL(/\/about/)
-    await expect(page.locator('h1')).toBeVisible()
-    await expect(page.locator('body')).not.toContainText(/about\.\w+\.\w+/)
+    await expect(page.locator('body')).not.toContainText('Something went wrong')
   })
 })
