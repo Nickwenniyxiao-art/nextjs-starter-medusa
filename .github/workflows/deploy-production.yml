@@ -1,0 +1,62 @@
+name: 🚀 Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: '输入 YES 确认发布到生产环境'
+        required: true
+        type: string
+
+jobs:
+  deploy-production:
+    name: "🚀 Deploy → Production"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: ${{ github.event.inputs.confirm == 'YES' }}
+    environment: production
+    steps:
+      - name: Deploy to production
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            set -e
+            cd /opt/nordhjem/storefront
+            echo "=== Pulling latest (develop) ==="
+            git fetch origin develop
+            git reset --hard origin/develop
+            echo "=== Installing dependencies ==="
+            corepack enable
+            yarn install
+            echo "=== Building ==="
+            yarn build
+            echo "=== Restarting PM2 ==="
+            PORT=8000 pm2 restart storefront --update-env || \
+              PORT=8000 pm2 start npm --name storefront -- start
+            pm2 save
+            echo "=== Deploy to production complete ==="
+
+      - name: Health check (production)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 2m
+          script: |
+            sleep 10
+            for i in 1 2 3 4 5; do
+              STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8000/en/dk 2>/dev/null || echo "000")
+              if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ]; then
+                echo "✅ Production health check passed (HTTP $STATUS)"
+                exit 0
+              fi
+              echo "Attempt $i: HTTP $STATUS, waiting 10s..."
+              sleep 10
+            done
+            echo "❌ Health check failed"
+            exit 1
