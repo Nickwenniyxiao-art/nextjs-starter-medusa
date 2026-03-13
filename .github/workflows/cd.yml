@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: pipeline-frontend
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   # ============================================================
@@ -32,7 +32,6 @@ jobs:
             git reset --hard origin/develop
 
             echo "=== Ensuring .env is correct ==="
-            # Ensure runtime MEDUSA_BACKEND_URL is present (critical for standalone mode)
             grep -q "^MEDUSA_BACKEND_URL=" .env 2>/dev/null || echo "MEDUSA_BACKEND_URL=http://66.94.127.117:9001" >> .env
             sed -i 's|^MEDUSA_BACKEND_URL=.*|MEDUSA_BACKEND_URL=http://66.94.127.117:9001|' .env
 
@@ -44,10 +43,8 @@ jobs:
             yarn build
 
             echo "=== Setting up standalone mode ==="
-            # Copy static assets into standalone directory (required for standalone output)
             cp -r public .next/standalone/public
             cp -r .next/static .next/standalone/.next/static
-            # Copy .env into standalone dir so node can read it
             cp .env .next/standalone/.env
 
             echo "=== Restarting PM2 (standalone) ==="
@@ -78,12 +75,8 @@ jobs:
               sleep 10
             done
             echo "❌ Health check failed"
-            pm2 logs storefront-test --lines 20 --nostream 2>/dev/null || true
             exit 1
 
-  # ============================================================
-  # Stage 1b: Seed 测试环境数据
-  # ============================================================
   seed-test:
     name: "🌱 Seed → Test"
     needs: deploy-test
@@ -100,9 +93,6 @@ jobs:
           script: |
             bash /opt/nordhjem/scripts/seed-env.sh test || echo "⚠️ Seed had warnings (non-fatal)"
 
-  # ============================================================
-  # Stage 2: 在测试环境跑 E2E
-  # ============================================================
   e2e-test:
     name: "🧪 E2E → Test"
     needs: seed-test
@@ -111,20 +101,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - name: Install E2E dependencies
         working-directory: e2e-monitor
         run: npm ci
-
       - name: Install Playwright browsers
         working-directory: e2e-monitor
         run: npx playwright install chromium --with-deps
-
       - name: Run E2E tests against test environment
         working-directory: e2e-monitor
         env:
@@ -132,7 +118,6 @@ jobs:
           API_URL: http://${{ secrets.DEPLOY_HOST }}:9001
           PUBLISHABLE_API_KEY: ${{ secrets.PUBLISHABLE_KEY_TEST }}
         run: npx playwright test
-
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
@@ -142,7 +127,7 @@ jobs:
           retention-days: 30
 
   # ============================================================
-  # Stage 3: E2E 通过 → 自动部署到预生产环境
+  # Stage 2: 部署到预生产环境
   # ============================================================
   deploy-staging:
     name: "🚀 Deploy → Staging"
@@ -208,12 +193,8 @@ jobs:
               sleep 10
             done
             echo "❌ Health check failed"
-            pm2 logs storefront-staging --lines 20 --nostream 2>/dev/null || true
             exit 1
 
-  # ============================================================
-  # Stage 3b: Seed 预生产环境数据
-  # ============================================================
   seed-staging:
     name: "🌱 Seed → Staging"
     needs: deploy-staging
@@ -230,9 +211,6 @@ jobs:
           script: |
             bash /opt/nordhjem/scripts/seed-env.sh staging || echo "⚠️ Seed had warnings (non-fatal)"
 
-  # ============================================================
-  # Stage 4: 在预生产环境跑 E2E
-  # ============================================================
   e2e-staging:
     name: "🧪 E2E → Staging"
     needs: seed-staging
@@ -241,20 +219,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
       - name: Install E2E dependencies
         working-directory: e2e-monitor
         run: npm ci
-
       - name: Install Playwright browsers
         working-directory: e2e-monitor
         run: npx playwright install chromium --with-deps
-
       - name: Run E2E tests against staging environment
         working-directory: e2e-monitor
         env:
@@ -262,7 +236,6 @@ jobs:
           API_URL: http://${{ secrets.DEPLOY_HOST }}:9002
           PUBLISHABLE_API_KEY: ${{ secrets.PUBLISHABLE_KEY_STAGING }}
         run: npx playwright test
-
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
@@ -270,60 +243,3 @@ jobs:
           name: e2e-report-staging
           path: e2e-monitor/playwright-report/
           retention-days: 30
-
-  # ============================================================
-  # Stage 5: 预生产 E2E 通过 → 手动审批 → 部署到生产
-  # ============================================================
-  deploy-production:
-    name: "🚀 Deploy → Production"
-    needs: e2e-staging
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment: production
-    steps:
-      - name: Deploy to production
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          command_timeout: 10m
-          script: |
-            set -e
-            cd /opt/nordhjem/storefront
-            echo "=== Pulling latest (develop) ==="
-            git fetch origin develop
-            git reset --hard origin/develop
-            echo "=== Installing dependencies ==="
-            corepack enable
-            yarn install
-            echo "=== Building ==="
-            yarn build
-            echo "=== Restarting PM2 ==="
-            PORT=8000 pm2 restart storefront --update-env || \
-              PORT=8000 pm2 start npm --name storefront -- start
-            pm2 save
-            echo "=== Deploy to production complete ==="
-
-      - name: Health check (production)
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          command_timeout: 2m
-          script: |
-            sleep 10
-            for i in 1 2 3 4 5; do
-              STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8000/en/dk 2>/dev/null || echo "000")
-              if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ]; then
-                echo "✅ Production health check passed (HTTP $STATUS)"
-                exit 0
-              fi
-              echo "Attempt $i: HTTP $STATUS, waiting 10s..."
-              sleep 10
-            done
-            echo "❌ Health check failed"
-            pm2 logs storefront --lines 20 --nostream 2>/dev/null || true
-            exit 1
-# Pipeline run 1773375356
