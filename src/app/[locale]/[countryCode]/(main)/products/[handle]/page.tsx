@@ -37,7 +37,13 @@ function getImagesForVariant(
   }
 
   const imageIdsMap = new Map(variant.images.map((i) => [i.id, true]))
-  return product.images!.filter((i) => imageIdsMap.has(i.id))
+  const matchedImages = product.images?.filter((i) => imageIdsMap.has(i.id)) || []
+
+  if (matchedImages.length) {
+    return matchedImages
+  }
+
+  return variant.images
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {

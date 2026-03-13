@@ -11,6 +11,7 @@ type Params = {
     max_price?: string
     q?: string
     colors?: string
+    materials?: string
   }>
   params: Promise<{ countryCode: string; locale: string }>
 }
@@ -28,7 +29,7 @@ export async function generateMetadata(props: Params): Promise<Metadata> {
 export default async function StorePage(props: Params) {
   const params = await props.params
   const searchParams = await props.searchParams
-  const { sortBy, page, min_price, max_price, q, colors } = searchParams
+  const { sortBy, page, min_price, max_price, q, colors, materials } = searchParams
 
   return (
     <StoreTemplate
@@ -39,6 +40,7 @@ export default async function StorePage(props: Params) {
       maxPrice={max_price}
       searchQuery={q}
       colors={colors}
+      materials={materials}
     />
   )
 }

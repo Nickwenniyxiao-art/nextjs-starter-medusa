@@ -13,6 +13,7 @@ const StoreTemplate = async ({
   maxPrice,
   searchQuery,
   colors,
+  materials,
 }: {
   sortBy?: SortOptions
   page?: string
@@ -21,6 +22,7 @@ const StoreTemplate = async ({
   maxPrice?: string
   searchQuery?: string
   colors?: string
+  materials?: string
 }) => {
   const t = await getTranslations("store")
   const pageNumber = page ? parseInt(page) : 1
@@ -56,6 +58,7 @@ const StoreTemplate = async ({
             maxPrice={maxPrice}
             searchQuery={searchQuery}
             colors={colors}
+            materials={materials}
           />
         </Suspense>
       </div>
