@@ -326,3 +326,4 @@ jobs:
             echo "❌ Health check failed"
             pm2 logs storefront --lines 20 --nostream 2>/dev/null || true
             exit 1
+# Pipeline run 1773375356
