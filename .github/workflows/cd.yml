@@ -27,9 +27,6 @@ jobs:
           script: |
             set -e
             cd /opt/nordhjem/storefront-test
-            # Kill any stale build processes
-            pkill -f "next build.*storefront-test" 2>/dev/null || true
-            sleep 2
             echo "=== Pulling latest (develop) ==="
             git fetch origin develop
             git reset --hard origin/develop
@@ -127,9 +124,6 @@ jobs:
           script: |
             set -e
             cd /opt/nordhjem/storefront-staging
-            # Kill any stale build processes
-            pkill -f "next build.*storefront-staging" 2>/dev/null || true
-            sleep 2
             echo "=== Pulling latest (develop) ==="
             git fetch origin develop
             git reset --hard origin/develop
@@ -228,9 +222,6 @@ jobs:
           script: |
             set -e
             cd /opt/nordhjem/storefront
-            # Kill any stale build processes
-            pkill -f "next build.*storefront/" 2>/dev/null || true
-            sleep 2
             echo "=== Pulling latest (develop) ==="
             git fetch origin develop
             git reset --hard origin/develop
