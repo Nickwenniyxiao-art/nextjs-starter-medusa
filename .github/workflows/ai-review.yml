@@ -208,32 +208,92 @@ jobs:
           fi
           echo "✅ AI Reviewer 1 passed (result: $RESULT)"
 
-  # ── Reviewer 2: [TEMPLATE — Uncomment to enable] ────────────
-  # reviewer-2-security:
-  #   needs: extract-diff
-  #   if: needs.extract-diff.outputs.has_code_changes == 'true'
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 10
-  #   steps:
-  #     - name: AI Review — Security & Edge Cases (Claude)
-  #       env:
-  #         ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-  #       run: |
-  #         # Similar structure to reviewer-1, but:
-  #         # - Uses Claude API (api.anthropic.com)
-  #         # - Prompt focused on security, edge cases, error handling
-  #         # - Posts as "Reviewer 2 (Security)"
-  #         echo "Reviewer 2 placeholder"
-  #
-  #     - name: Post review comment on PR
-  #       uses: actions/github-script@v7
-  #       with:
-  #         script: |
-  #           // Post Claude's review as PR comment
-  #
-  #     - name: Gate check
-  #       run: |
-  #         # Same gate logic as reviewer-1
+  # ── Reviewer 2: Claude — Security & Edge Cases ──────────────
+  reviewer-2-security:
+    needs: extract-diff
+    if: needs.extract-diff.outputs.has_code_changes == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: AI Review — Security & Edge Cases
+        id: review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "⚠️ ANTHROPIC_API_KEY not set, skipping security review"
+            echo "result=skip" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          DIFF='${{ needs.extract-diff.outputs.diff }}'
+
+          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg diff "$DIFF" \
+              '{
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 2000,
+                messages: [{
+                  role: "user",
+                  content: ("你是一位资深的前端安全审查专家，专注于电商网站安全。\n请审查以下 PR 代码变更，专注于安全维度：\n\n## 审查维度\n1. **XSS 防护** — 用户输入是否正确转义，dangerouslySetInnerHTML 使用是否安全\n2. **敏感信息泄露** — API Key、Token、密码是否暴露在前端代码或日志中\n3. **支付安全** — Stripe 集成是否安全，PCI 合规风险\n4. **认证授权** — 路由保护是否完善，权限校验是否到位\n5. **输入验证** — 表单输入是否有服务端验证，SQL/NoSQL 注入风险\n6. **CSRF/CORS** — 跨站请求是否有防护\n\n## 输出格式\n对每个维度给出：\n- ✅ 通过 — 没有安全风险\n- ⚠️ 风险 — 潜在风险但非紧急\n- ❌ 阻塞 — 严重安全漏洞，必须修复\n\n最后给出总体评分：\n- **APPROVE** — 无安全风险\n- **COMMENT** — 有建议但不阻塞\n- **REQUEST_CHANGES** — 有安全漏洞，必须修复\n\n## PR Diff\n" + $diff)
+                }]
+              }')")
+
+          REVIEW=$(echo "$RESPONSE" | jq -r '.content[0].text // "API call failed"')
+
+          if [ "$REVIEW" = "API call failed" ] || [ -z "$REVIEW" ]; then
+            echo "❌ Claude security review API call failed"
+            echo "$RESPONSE" | jq .
+            echo "result=error" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          if echo "$REVIEW" | grep -q "REQUEST_CHANGES"; then
+            echo "result=request_changes" >> "$GITHUB_OUTPUT"
+          elif echo "$REVIEW" | grep -q "COMMENT"; then
+            echo "result=comment" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=approve" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "$REVIEW" > /tmp/security_review.md
+
+      - name: Post security review comment on PR
+        if: always() && steps.review.outputs.result != 'skip'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let review = '';
+            try {
+              review = fs.readFileSync('/tmp/security_review.md', 'utf8');
+            } catch {
+              review = 'Security review completed but output could not be read.';
+            }
+
+            const result = '${{ steps.review.outputs.result }}';
+            const icon = result === 'approve' ? '✅' : result === 'request_changes' ? '❌' : '💬';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `## ${icon} AI Security Review — Reviewer 2 (Security)\n\n${review}\n\n---\n*Automated security review by AI Reviewer 2 (Claude)*`
+            });
+
+      - name: Gate check
+        if: always()
+        run: |
+          RESULT="${{ steps.review.outputs.result }}"
+          if [ "$RESULT" = "request_changes" ]; then
+            echo "❌ AI Reviewer 2 found security issues. PR needs fixes."
+            exit 1
+          fi
+          echo "✅ AI Reviewer 2 passed (result: $RESULT)"
 
   # ── Reviewer 3: [TEMPLATE — Uncomment to enable] ────────────
   # reviewer-3-architecture:
@@ -252,9 +312,7 @@ jobs:
 
   # ── Summary Gate ─────────────────────────────────────────────
   ai-review-gate:
-    needs: [reviewer-1-quality]
-    # When adding reviewers, add them here:
-    # needs: [reviewer-1-quality, reviewer-2-security, reviewer-3-architecture]
+    needs: [reviewer-1-quality, reviewer-2-security]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -262,11 +320,17 @@ jobs:
         run: |
           echo "=== AI Review Summary ==="
           echo "Reviewer 1 (Quality): ${{ needs.reviewer-1-quality.result }}"
-          # echo "Reviewer 2 (Security): ${{ needs.reviewer-2-security.result }}"
-          # echo "Reviewer 3 (Architecture): ${{ needs.reviewer-3-architecture.result }}"
+          echo "Reviewer 2 (Security): ${{ needs.reviewer-2-security.result }}"
 
-          # Check if any reviewer failed
+          FAILED=false
           if [ "${{ needs.reviewer-1-quality.result }}" = "failure" ]; then
+            FAILED=true
+          fi
+          if [ "${{ needs.reviewer-2-security.result }}" = "failure" ]; then
+            FAILED=true
+          fi
+
+          if [ "$FAILED" = "true" ]; then
             echo "❌ One or more AI reviewers flagged blocking issues."
             exit 1
           fi

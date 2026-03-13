@@ -11,6 +11,7 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { browserName: 'chromium' } },
+    { name: 'webkit', use: { browserName: 'webkit' } },
   ],
   reporter: [['list'], ['html', { open: 'never' }]],
 });
