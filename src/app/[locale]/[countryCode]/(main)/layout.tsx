@@ -23,6 +23,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    languages: {
+      en: "https://nordhjem.store/en",
+      zh: "https://nordhjem.store/zh",
+    },
+  },
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {

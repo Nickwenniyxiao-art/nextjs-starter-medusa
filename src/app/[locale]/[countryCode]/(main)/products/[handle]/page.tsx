@@ -85,7 +85,11 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       images: product.thumbnail ? [product.thumbnail] : [],
     },
     alternates: {
-      canonical: `https://nordhjem.store/products/${handle}`,
+      canonical: `https://nordhjem.store/${params.locale}/${params.countryCode}/products/${handle}` ,
+      languages: {
+        en: `https://nordhjem.store/en/${params.countryCode}/products/${handle}`,
+        zh: `https://nordhjem.store/zh/${params.countryCode}/products/${handle}`,
+      },
     },
   }
 }
@@ -121,15 +125,15 @@ export default async function ProductPage(props: Props) {
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     {
       name: locale === "zh" ? "首页" : "Home",
-      item: "https://nordhjem.store",
+      item: `https://nordhjem.store/${locale}/${params.countryCode}`,
     },
     {
       name: locale === "zh" ? "所有商品" : "Products",
-      item: "https://nordhjem.store/products",
+      item: `https://nordhjem.store/${locale}/${params.countryCode}/products`,
     },
     {
       name: title,
-      item: `https://nordhjem.store/products/${pricedProduct.handle}`,
+      item: `https://nordhjem.store/${locale}/${params.countryCode}/products/${pricedProduct.handle}`,
     },
   ])
 

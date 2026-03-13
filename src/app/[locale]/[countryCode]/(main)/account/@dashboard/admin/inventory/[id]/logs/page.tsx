@@ -1,6 +1,7 @@
 import { isAdmin } from "@lib/util/admin-guard"
 import { redirect } from "next/navigation"
 import InventoryLogs from "@modules/account/components/inventory-logs"
+import { adminFetch } from "@lib/data/admin"
 
 export default async function InventoryLogsPage({
   params,
@@ -11,5 +12,8 @@ export default async function InventoryLogsPage({
   if (!(await isAdmin())) {
     redirect(`/${countryCode}/account`)
   }
-  return <InventoryLogs itemId={id} />
+
+  const data = await adminFetch<{ logs?: any[] }>(`/admin/inventory/${id}/logs`).catch(() => ({ logs: [] }))
+
+  return <InventoryLogs itemId={id} logs={data.logs || []} />
 }
