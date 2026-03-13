@@ -15,7 +15,7 @@ jobs:
   deploy-test:
     name: "🚀 Deploy → Test"
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Deploy to test environment
         uses: appleboy/ssh-action@v1
@@ -23,10 +23,13 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          command_timeout: 10m
+          command_timeout: 15m
           script: |
             set -e
             cd /opt/nordhjem/storefront-test
+            # Kill any stale build processes
+            pkill -f "next build.*storefront-test" 2>/dev/null || true
+            sleep 2
             echo "=== Pulling latest (develop) ==="
             git fetch origin develop
             git reset --hard origin/develop
@@ -34,6 +37,7 @@ jobs:
             corepack enable
             yarn install
             echo "=== Building ==="
+            rm -rf .next
             yarn build
             echo "=== Restarting PM2 ==="
             PORT=8001 pm2 restart storefront-test --update-env || \
@@ -111,7 +115,7 @@ jobs:
     name: "🚀 Deploy → Staging"
     needs: e2e-test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Deploy to staging environment
         uses: appleboy/ssh-action@v1
@@ -119,10 +123,13 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          command_timeout: 10m
+          command_timeout: 15m
           script: |
             set -e
             cd /opt/nordhjem/storefront-staging
+            # Kill any stale build processes
+            pkill -f "next build.*storefront-staging" 2>/dev/null || true
+            sleep 2
             echo "=== Pulling latest (develop) ==="
             git fetch origin develop
             git reset --hard origin/develop
@@ -130,6 +137,7 @@ jobs:
             corepack enable
             yarn install
             echo "=== Building ==="
+            rm -rf .next
             yarn build
             echo "=== Restarting PM2 ==="
             PORT=8002 pm2 restart storefront-staging --update-env || \
@@ -207,7 +215,7 @@ jobs:
     name: "🚀 Deploy → Production"
     needs: e2e-staging
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     environment: production
     steps:
       - name: Deploy to production
@@ -216,10 +224,13 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          command_timeout: 10m
+          command_timeout: 15m
           script: |
             set -e
             cd /opt/nordhjem/storefront
+            # Kill any stale build processes
+            pkill -f "next build.*storefront/" 2>/dev/null || true
+            sleep 2
             echo "=== Pulling latest (develop) ==="
             git fetch origin develop
             git reset --hard origin/develop
@@ -227,6 +238,7 @@ jobs:
             corepack enable
             yarn install
             echo "=== Building ==="
+            rm -rf .next
             yarn build
             echo "=== Restarting PM2 ==="
             PORT=8000 pm2 restart storefront --update-env || \
