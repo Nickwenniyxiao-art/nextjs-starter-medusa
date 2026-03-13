@@ -1,0 +1,70 @@
+name: CD
+
+on:
+  push:
+    branches: [develop, staging, main]
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ github.ref_name }}" = "develop" ]; then
+            echo "target=test" >> $GITHUB_OUTPUT
+            echo "port=8001" >> $GITHUB_OUTPUT
+            echo "pm2_name=storefront-test" >> $GITHUB_OUTPUT
+            echo "dir=/opt/nordhjem/storefront-test" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" = "staging" ]; then
+            echo "target=staging" >> $GITHUB_OUTPUT
+            echo "port=8002" >> $GITHUB_OUTPUT
+            echo "pm2_name=storefront-staging" >> $GITHUB_OUTPUT
+            echo "dir=/opt/nordhjem/storefront-staging" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref_name }}" = "main" ]; then
+            echo "target=production" >> $GITHUB_OUTPUT
+            echo "port=8000" >> $GITHUB_OUTPUT
+            echo "pm2_name=storefront" >> $GITHUB_OUTPUT
+            echo "dir=/opt/nordhjem/storefront" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+            cd ${{ steps.env.outputs.dir }}
+            echo "=== Pulling latest (${{ github.ref_name }}) ==="
+            git fetch origin ${{ github.ref_name }}
+            git reset --hard origin/${{ github.ref_name }}
+            echo "=== Installing dependencies ==="
+            corepack enable
+            yarn install
+            echo "=== Building ==="
+            yarn build
+            echo "=== Restarting PM2 ==="
+            PORT=${{ steps.env.outputs.port }} pm2 restart ${{ steps.env.outputs.pm2_name }} --update-env || \
+              PORT=${{ steps.env.outputs.port }} pm2 start npm --name ${{ steps.env.outputs.pm2_name }} -- start
+            pm2 save
+            echo "=== Deploy complete: ${{ steps.env.outputs.target }} ==="
+
+      - name: Health check
+        run: |
+          sleep 10
+          STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://${{ secrets.DEPLOY_HOST }}:${{ steps.env.outputs.port }} || true)
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ]; then
+            echo "Health check passed (HTTP $STATUS)"
+          else
+            echo "WARNING: Health check returned HTTP $STATUS"
+            exit 1
+          fi

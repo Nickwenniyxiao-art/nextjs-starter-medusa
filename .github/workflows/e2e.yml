@@ -1,0 +1,79 @@
+name: E2E Tests
+
+on:
+  workflow_run:
+    workflows: ["CD"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - staging
+          - production
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "env=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            BRANCH="${{ github.event.workflow_run.head_branch }}"
+            case "$BRANCH" in
+              develop) echo "env=test" >> $GITHUB_OUTPUT ;;
+              staging) echo "env=staging" >> $GITHUB_OUTPUT ;;
+              main) echo "env=production" >> $GITHUB_OUTPUT ;;
+              *) echo "env=test" >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install E2E dependencies
+        working-directory: e2e-monitor
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: e2e-monitor
+        run: npx playwright install chromium --with-deps
+
+      - name: Run E2E tests
+        working-directory: e2e-monitor
+        env:
+          TEST_ENV: ${{ steps.env.outputs.env }}
+        run: npx playwright test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results-${{ steps.env.outputs.env }}
+          path: e2e-monitor/test-results/
+          retention-days: 30
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report-${{ steps.env.outputs.env }}
+          path: e2e-monitor/playwright-report/
+          retention-days: 30
