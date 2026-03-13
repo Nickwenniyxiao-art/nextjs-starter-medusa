@@ -1,0 +1,150 @@
+name: "CD — Staging"
+
+on:
+  push:
+    branches: [staging]
+
+concurrency:
+  group: cd-staging-frontend
+  cancel-in-progress: true
+
+jobs:
+  deploy-staging:
+    name: "🚀 Deploy → Staging"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy to staging environment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 10m
+          script: |
+            set -e
+            cd /opt/nordhjem/storefront-staging
+            echo "=== Pulling latest (staging) ==="
+            git fetch origin staging
+            git reset --hard origin/staging
+
+            echo "=== Ensuring .env is correct ==="
+            grep -q "^MEDUSA_BACKEND_URL=" .env 2>/dev/null || echo "MEDUSA_BACKEND_URL=http://66.94.127.117:9002" >> .env
+            sed -i 's|^MEDUSA_BACKEND_URL=.*|MEDUSA_BACKEND_URL=http://66.94.127.117:9002|' .env
+
+            echo "=== Installing dependencies ==="
+            corepack enable
+            yarn install
+
+            echo "=== Building ==="
+            yarn build
+
+            echo "=== Setting up standalone mode ==="
+            cp -r public .next/standalone/public
+            cp -r .next/static .next/standalone/.next/static
+            cp .env .next/standalone/.env
+
+            echo "=== Restarting PM2 (standalone) ==="
+            pm2 delete storefront-staging 2>/dev/null || true
+            cd /opt/nordhjem/storefront-staging
+            PORT=8002 HOSTNAME=0.0.0.0 MEDUSA_BACKEND_URL=http://66.94.127.117:9002 \
+              pm2 start .next/standalone/server.js --name storefront-staging \
+              --cwd /opt/nordhjem/storefront-staging
+            pm2 save
+            echo "=== Deploy to staging complete ==="
+
+      - name: Health check (staging)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 2m
+          script: |
+            sleep 10
+            for i in 1 2 3 4 5; do
+              STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8002/en/dk 2>/dev/null || echo "000")
+              if [ "$STATUS" = "200" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "301" ]; then
+                echo "✅ Staging env health check passed (HTTP $STATUS)"
+                exit 0
+              fi
+              echo "Attempt $i: HTTP $STATUS, waiting 10s..."
+              sleep 10
+            done
+            echo "❌ Health check failed"
+            exit 1
+
+  seed-staging:
+    name: "🌱 Seed → Staging"
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Seed staging environment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 3m
+          script: |
+            bash /opt/nordhjem/scripts/seed-env.sh staging || echo "⚠️ Seed had warnings (non-fatal)"
+
+  e2e-staging:
+    name: "🧪 E2E → Staging"
+    needs: seed-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install E2E dependencies
+        working-directory: e2e-monitor
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: e2e-monitor
+        run: npx playwright install chromium --with-deps
+      - name: Run E2E tests against staging environment
+        working-directory: e2e-monitor
+        env:
+          BASE_URL: http://${{ secrets.DEPLOY_HOST }}:8002
+          API_URL: http://${{ secrets.DEPLOY_HOST }}:9002
+          PUBLISHABLE_API_KEY: ${{ secrets.PUBLISHABLE_KEY_STAGING }}
+        run: npx playwright test
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report-staging
+          path: e2e-monitor/playwright-report/
+          retention-days: 30
+
+  promote-to-production:
+    name: "🔀 Promote → Production"
+    needs: e2e-staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge staging into main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          git merge origin/staging --no-edit --ff-only
+          if [ $? -ne 0 ]; then
+            echo "❌ Fast-forward merge failed — main has diverged from staging."
+            echo "Please manually resolve the conflict or reset main."
+            exit 1
+          fi
+          git push origin main
