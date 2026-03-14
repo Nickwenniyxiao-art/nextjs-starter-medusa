@@ -1,71 +1,58 @@
-name: Bug report for the Medusa Next.js Starter
-description: File a bug report.
+name: "Bug 报告"
+description: "报告一个 Bug"
 title: "[Bug]: "
-labels: ["status: needs triaging", "bug"]
+labels: ["type: bug", "status: needs review"]
 body:
-  - type: markdown
-    attributes:
-      value: "## System information"
-  - type: markdown
-    attributes:
-      value: |
-        The system information will help us reproduce the issue in the same environment
-  - type: textarea
-    attributes:
-      label: Package.json file
-      description: Copy/paste the contents of the `package.json` file. No need to use backticks
-      placeholder: No need to use markdown backticks. Just copy/paste the contents of the file
-      render: JSON
-    validations:
-      required: true
   - type: input
+    id: roadmap_ref
     attributes:
-      label: Node.js version
-      description: Copy/paste the output of `node -v` command.
-      placeholder: v21.0.0
+      label: "ROADMAP Ref"
+      description: "关联的 ROADMAP 目标 ID（格式: R-Px-xx）。紧急 bug 填 HOTFIX，基础设施问题填 INFRA"
+      placeholder: "R-P1-01 或 HOTFIX"
     validations:
       required: true
-  - type: input
-    attributes:
-      label: Operating system name and version
-    validations:
-      required: true
-  - type: input
-    attributes:
-      label: Browser name
-  - type: markdown
-    attributes:
-      value: "## Describe the issue"
-  - type: markdown
-    attributes:
-      value: |
-        Please explain your issue in-depth along with the relevant screenshots and code snippets
+
   - type: textarea
+    id: description
     attributes:
-      label: What happended?
-      placeholder: A clear and concise description of what the bug is
+      label: Bug 描述
+      description: 清晰描述这个 Bug 是什么
     validations:
       required: true
+
   - type: textarea
+    id: steps
     attributes:
-      label: Expected behavior
+      label: 复现步骤
+      placeholder: |
+        1. 打开 xxx 页面
+        2. 点击 xxx 按钮
+        3. 看到 xxx 错误
     validations:
       required: true
+
   - type: textarea
+    id: expected
     attributes:
-      label: Actual behavior
+      label: 期望行为
     validations:
       required: true
-  - type: markdown
+
+  - type: textarea
+    id: actual
     attributes:
-      value: "## Reproduction"
-  - type: markdown
+      label: 实际行为
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
     attributes:
-      value: |
-        Providing a reproduction repo allows us to quickly validate the issue and get back to you.
-  - type: input
-    attributes:
-      label: Link to reproduction repo
-      description: Please reproduce the issue in isolation and share it as a Github repo with us
+      label: 严重程度
+      options:
+        - "P0 — 阻断性"
+        - "P1 — 主流程受影响"
+        - "P2 — 次要功能问题"
+        - "P3 — 外观/体验"
     validations:
       required: true

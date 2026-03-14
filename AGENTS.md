@@ -42,19 +42,54 @@ src/
 - CD: develop auto-deploys to test → staging auto-deploys → main needs approval for production
 - Required checks: `lint-and-build` + `ai-review-gate` + all governance gates (see below)
 
-## CI Gate 规则
+## CI 门禁规范（必须遵守）
 
-### Issue 规范
-- 每个 Issue 必须有 `type:` 前缀标签（type: task / type: feature / type: bug）
-- 每个 Issue 必须有 `approved` 标签才能开发
-- PR 必须在 body 中包含 `Closes #<issue_number>` 关联 Issue
+### PR 必须关联 Issue
+- PR 描述的**第一行**必须包含 `Closes #<issue_number>`
+- 示例：`Closes #123`
+- 没有关联 Issue 的 PR 会被 CI 自动拒绝
 
-### PR 规范
-- **分支命名**：`<type>/<description>`（如 `feat/add-search`, `codex/42-fix-cart`）
-- **PR 标题**：必须符合 Conventional Commits（`feat(scope): description`）
-- **Commit 消息**：必须符合 Conventional Commits
-- **Assignee**：每个 PR 必须有至少一个 assignee
-- **豁免**：带 `no-issue` 或 `hotfix` 标签的 PR 可跳过 Issue 关联检查
+### 分支命名规范
+- 必须使用以下前缀：`codex/`、`feat/`、`fix/`、`hotfix/`、`docs/`、`chore/`、`refactor/`、`test/`、`ci/`
+- Codex 创建的分支格式：`codex/<issue-number>-<brief-description>`
+- 示例：`codex/123-add-order-validation`
+- 不符合命名的分支会被 CI 拒绝
+
+### Commit Message 规范
+- 必须使用 Conventional Commits 格式
+- 格式：`type(scope): description`
+- 允许的 type：feat, fix, hotfix, docs, chore, refactor, test, ci
+- 示例：`feat(orders): add bulk status update endpoint`
+- 不符合格式的 commit 会被 CI 拒绝
+
+### PR 标题规范
+- 与 commit message 格式相同
+- 示例：`feat(M4): add order status validation`
+- 不符合格式的 PR 标题会被 CI 拒绝
+
+### Issue 审批要求
+- 关联的 Issue 必须有 `approved` label（Owner 添加）
+- 如果 Issue 没有 approved label，PR 不能合并
+- 不要为没有 approved label 的 Issue 创建 PR
+
+### Issue 标签要求
+- 关联的 Issue 必须有 `type:` 前缀的标签（如 `type: feature`、`type: bug`、`type: task`）
+- 缺少类型标签的 Issue 会导致 PR CI 检查失败
+- 创建 Issue 时务必选择正确的 Issue 模板（会自动添加类型标签）
+
+### PR 元数据要求
+- 每个 PR 必须有至少一个 Assignee
+- 没有 Assignee 的 PR 会被 CI 拒绝
+- Codex 创建的 PR 应指定 Assignee 为发起任务的 CTO 或 Owner
+
+### ROADMAP 追溯要求
+- 每个 Issue 必须在 body 中包含 `ROADMAP Ref` 字段，引用后端仓库 `docs/ROADMAP.md` 中的目标 ID
+- ID 格式：`R-Px-xx`（如 `R-P1-01`、`R-P3-05`）
+- 创建 Issue 时使用 Issue 模板，ROADMAP Ref 为必填字段
+- CI Gate `check-roadmap-ref` 会验证：Ref 格式合法 + Ref 在 ROADMAP.md 中真实存在
+- 前端仓库通过 API 从后端仓库读取 ROADMAP.md（单一信源）
+- 豁免值：紧急 bug 填 `HOTFIX`，基础设施维护填 `INFRA`（CI 通过但审计会标记）
+- 每个 PR 都会运行 `roadmap-audit`，在 PR comment 中输出 ROADMAP 覆盖率报告
 
 ### 自动化流程
 1. PR 创建 → 自动启用 auto-merge（squash）
@@ -77,3 +112,8 @@ src/
 - Commit `.env` files
 - Create PR without linked Issue (unless `no-issue` or `hotfix` label)
 - Start development before Issue has `approved` label
+
+---
+
+> CI Gate v2 full pipeline verified: 2026-03-14T11:14:00Z
+> ROADMAP traceability + Issue templates + CODEOWNERS: 2026-03-14T11:24:00Z
