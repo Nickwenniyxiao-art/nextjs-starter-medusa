@@ -40,7 +40,27 @@ src/
 ## CI/CD
 - CI: yarn install → lint → type-check → build on PR/push
 - CD: develop auto-deploys to test → staging auto-deploys → main needs approval for production
-- Required checks: `lint-and-build` + `ai-review-gate`
+- Required checks: `lint-and-build` + `ai-review-gate` + all governance gates (see below)
+
+## CI Gate 规则
+
+### Issue 规范
+- 每个 Issue 必须有 `type:` 前缀标签（type: task / type: feature / type: bug）
+- 每个 Issue 必须有 `approved` 标签才能开发
+- PR 必须在 body 中包含 `Closes #<issue_number>` 关联 Issue
+
+### PR 规范
+- **分支命名**：`<type>/<description>`（如 `feat/add-search`, `codex/42-fix-cart`）
+- **PR 标题**：必须符合 Conventional Commits（`feat(scope): description`）
+- **Commit 消息**：必须符合 Conventional Commits
+- **Assignee**：每个 PR 必须有至少一个 assignee
+- **豁免**：带 `no-issue` 或 `hotfix` 标签的 PR 可跳过 Issue 关联检查
+
+### 自动化流程
+1. PR 创建 → 自动启用 auto-merge（squash）
+2. CI gates 全部通过 → AI Review 通过 → Bot 自动 approve
+3. Branch Protection 所有 required checks 通过 → 自动合并
+4. staging 分支不需要审批，production 分支需要 Owner 审批
 
 ## Environments
 | Env | FE Port | BE Port | Backend URL |
@@ -55,3 +75,5 @@ src/
 - Modify `.github/workflows/` without explicit instruction
 - Add `"use client"` to components that don't need interactivity
 - Commit `.env` files
+- Create PR without linked Issue (unless `no-issue` or `hotfix` label)
+- Start development before Issue has `approved` label

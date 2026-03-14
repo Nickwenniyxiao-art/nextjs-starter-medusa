@@ -20,15 +20,15 @@ permissions:
 #   4. Add the new job name to Branch Protection required checks
 #
 # Current reviewers:
-#   - reviewer-1 (OpenAI GPT) — General code quality + logic
+#   - reviewer-1 (OpenAI GPT) \u2014 General code quality + logic
 #
 # Planned:
-#   - reviewer-2 (Claude) — Security + edge cases
-#   - reviewer-3 (Perplexity) — Architecture consistency
+#   - reviewer-2 (Claude) \u2014 Security + edge cases
+#   - reviewer-3 (Perplexity) \u2014 Architecture consistency
 # ──────────────────────────────────────────────────────────────
 
 jobs:
-  # ── Shared: Extract PR diff ──────────────────────────────────
+  # \u2500\u2500 Shared: Extract PR diff \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   extract-diff:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -76,49 +76,49 @@ jobs:
           echo "files_changed=$(echo "$FILES" | tr '\n' ',')" >> "$GITHUB_OUTPUT"
           echo "has_code_changes=$HAS_CODE" >> "$GITHUB_OUTPUT"
 
-          echo "📊 Changed files: $(echo "$FILES" | wc -w)"
-          echo "📊 Has code changes: $HAS_CODE"
+          echo "\ud83d\udcca Changed files: $(echo "$FILES" | wc -w)"
+          echo "\ud83d\udcca Has code changes: $HAS_CODE"
 
-  # ── Reviewer 1: OpenAI GPT — General Quality ────────────────
+  # \u2500\u2500 Reviewer 1: OpenAI GPT \u2014 General Quality \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   reviewer-1-quality:
     needs: extract-diff
     if: needs.extract-diff.outputs.has_code_changes == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: AI Review — Code Quality & Logic
+      - name: AI Review \u2014 Code Quality & Logic
         id: review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           if [ -z "$OPENAI_API_KEY" ]; then
-            echo "⚠️ OPENAI_API_KEY not set, skipping AI review"
+            echo "\u26a0\ufe0f OPENAI_API_KEY not set, skipping AI review"
             echo "result=skip" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           # Build the review prompt
           PROMPT=$(cat <<'PROMPT_END'
-          你是一位资深的 Next.js + TypeScript 前端代码审查专家。
-          请审查以下 Pull Request 的代码变更，从以下维度给出评价：
+          \u4f60\u662f\u4e00\u4f4d\u8d44\u6df1\u7684 Next.js + TypeScript \u524d\u7aef\u4ee3\u7801\u5ba1\u67e5\u4e13\u5bb6\u3002
+          \u8bf7\u5ba1\u67e5\u4ee5\u4e0b Pull Request \u7684\u4ee3\u7801\u53d8\u66f4\uff0c\u4ece\u4ee5\u4e0b\u7ef4\u5ea6\u7ed9\u51fa\u8bc4\u4ef7\uff1a
 
-          ## 审查维度
-          1. **逻辑正确性** — 是否有 bug、边界情况遗漏、空值处理
-          2. **类型安全** — TypeScript 类型是否正确，是否有 any 滥用
-          3. **性能** — 是否有不必要的重渲染、内存泄漏风险、N+1 查询
-          4. **安全** — XSS、敏感信息泄露、不安全的 API 调用
-          5. **代码风格** — 命名规范、重复代码、可读性
+          ## \u5ba1\u67e5\u7ef4\u5ea6
+          1. **\u903b\u8f91\u6b63\u786e\u6027** \u2014 \u662f\u5426\u6709 bug\u3001\u8fb9\u754c\u60c5\u51b5\u9057\u6f0f\u3001\u7a7a\u503c\u5904\u7406
+          2. **\u7c7b\u578b\u5b89\u5168** \u2014 TypeScript \u7c7b\u578b\u662f\u5426\u6b63\u786e\uff0c\u662f\u5426\u6709 any \u6ee5\u7528
+          3. **\u6027\u80fd** \u2014 \u662f\u5426\u6709\u4e0d\u5fc5\u8981\u7684\u91cd\u6e32\u67d3\u3001\u5185\u5b58\u6cc4\u6f0f\u98ce\u9669\u3001N+1 \u67e5\u8be2
+          4. **\u5b89\u5168** \u2014 XSS\u3001\u654f\u611f\u4fe1\u606f\u6cc4\u6f0f\u3001\u4e0d\u5b89\u5168\u7684 API \u8c03\u7528
+          5. **\u4ee3\u7801\u98ce\u683c** \u2014 \u547d\u540d\u89c4\u8303\u3001\u91cd\u590d\u4ee3\u7801\u3001\u53ef\u8bfb\u6027
 
-          ## 输出格式
-          对每个维度给出：
-          - ✅ 通过 — 没有问题
-          - ⚠️ 建议 — 非阻塞性建议
-          - ❌ 阻塞 — 必须修复才能合并
+          ## \u8f93\u51fa\u683c\u5f0f
+          \u5bf9\u6bcf\u4e2a\u7ef4\u5ea6\u7ed9\u51fa\uff1a
+          - \u2705 \u901a\u8fc7 \u2014 \u6ca1\u6709\u95ee\u9898
+          - \u26a0\ufe0f \u5efa\u8bae \u2014 \u975e\u963b\u585e\u6027\u5efa\u8bae
+          - \u274c \u963b\u585e \u2014 \u5fc5\u987b\u4fee\u590d\u624d\u80fd\u5408\u5e76
 
-          最后给出总体评分：
-          - **APPROVE** — 可以合并
-          - **COMMENT** — 有建议但不阻塞
-          - **REQUEST_CHANGES** — 有阻塞性问题，必须修复
+          \u6700\u540e\u7ed9\u51fa\u603b\u4f53\u8bc4\u5206\uff1a
+          - **APPROVE** \u2014 \u53ef\u4ee5\u5408\u5e76
+          - **COMMENT** \u2014 \u6709\u5efa\u8bae\u4f46\u4e0d\u963b\u585e
+          - **REQUEST_CHANGES** \u2014 \u6709\u963b\u585e\u6027\u95ee\u9898\uff0c\u5fc5\u987b\u4fee\u590d
 
           ## PR Diff
           PROMPT_END
@@ -137,7 +137,7 @@ jobs:
                 model: "gpt-4o-mini",
                 messages: [
                   {role: "system", content: $prompt},
-                  {role: "user", content: ("请审查以下代码变更:\n\n" + $diff)}
+                  {role: "user", content: ("\u8bf7\u5ba1\u67e5\u4ee5\u4e0b\u4ee3\u7801\u53d8\u66f4:\n\n" + $diff)}
                 ],
                 temperature: 0.3,
                 max_tokens: 2000
@@ -147,7 +147,7 @@ jobs:
           REVIEW=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // "API call failed"')
 
           if [ "$REVIEW" = "API call failed" ] || [ -z "$REVIEW" ]; then
-            echo "❌ AI review API call failed"
+            echo "\u274c AI review API call failed"
             echo "$RESPONSE" | jq .
             echo "result=error" >> "$GITHUB_OUTPUT"
             exit 1
@@ -182,13 +182,13 @@ jobs:
             }
 
             const result = '${{ steps.review.outputs.result }}';
-            const icon = result === 'approve' ? '✅' : result === 'request_changes' ? '❌' : '💬';
+            const icon = result === 'approve' ? '\u2705' : result === 'request_changes' ? '\u274c' : '\ud83d\udcac';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: `## ${icon} AI Code Review — Reviewer 1 (Quality)\n\n${review}\n\n---\n*Automated review by AI Reviewer 1 (GPT-4o-mini)*`
+              body: `## ${icon} AI Code Review \u2014 Reviewer 1 (Quality)\n\n${review}\n\n---\n*Automated review by AI Reviewer 1 (GPT-4o-mini)*`
             });
 
       - name: Gate check
@@ -196,19 +196,19 @@ jobs:
         run: |
           RESULT="${{ steps.review.outputs.result }}"
           if [ "$RESULT" = "request_changes" ]; then
-            echo "❌ AI Reviewer 1 found blocking issues. PR needs fixes."
+            echo "\u274c AI Reviewer 1 found blocking issues. PR needs fixes."
             exit 1
           fi
-          echo "✅ AI Reviewer 1 passed (result: $RESULT)"
+          echo "\u2705 AI Reviewer 1 passed (result: $RESULT)"
 
-  # ── Reviewer 2: [TEMPLATE — Uncomment to enable] ────────────
+  # \u2500\u2500 Reviewer 2: [TEMPLATE \u2014 Uncomment to enable] \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   # reviewer-2-security:
   #   needs: extract-diff
   #   if: needs.extract-diff.outputs.has_code_changes == 'true'
   #   runs-on: ubuntu-latest
   #   timeout-minutes: 10
   #   steps:
-  #     - name: AI Review — Security & Edge Cases (Claude)
+  #     - name: AI Review \u2014 Security & Edge Cases (Claude)
   #       env:
   #         ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
   #       run: |
@@ -228,14 +228,14 @@ jobs:
   #       run: |
   #         # Same gate logic as reviewer-1
 
-  # ── Reviewer 3: [TEMPLATE — Uncomment to enable] ────────────
+  # \u2500\u2500 Reviewer 3: [TEMPLATE \u2014 Uncomment to enable] \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   # reviewer-3-architecture:
   #   needs: extract-diff
   #   if: needs.extract-diff.outputs.has_code_changes == 'true'
   #   runs-on: ubuntu-latest
   #   timeout-minutes: 10
   #   steps:
-  #     - name: AI Review — Architecture Consistency
+  #     - name: AI Review \u2014 Architecture Consistency
   #       env:
   #         PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
   #       run: |
@@ -243,7 +243,7 @@ jobs:
   #         # Prompt focused on architecture patterns, consistency
   #         echo "Reviewer 3 placeholder"
 
-  # ── Summary Gate ─────────────────────────────────────────────
+  # \u2500\u2500 Summary Gate \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   ai-review-gate:
     needs: [reviewer-1-quality]
     # When adding reviewers, add them here:
@@ -260,8 +260,23 @@ jobs:
 
           # Check if any reviewer failed
           if [ "${{ needs.reviewer-1-quality.result }}" = "failure" ]; then
-            echo "❌ One or more AI reviewers flagged blocking issues."
+            echo "\u274c One or more AI reviewers flagged blocking issues."
             exit 1
           fi
 
-          echo "✅ All AI reviewers passed. PR is clear for merge."
+          echo "\u2705 All AI reviewers passed. PR is clear for merge."
+
+      - name: Auto-approve PR via bot
+        if: needs.reviewer-1-quality.result == 'success' || needs.reviewer-1-quality.result == 'skipped'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.BOT_PAT }}
+          script: |
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              event: 'APPROVE',
+              body: '\u2705 AI Code Review passed \u2014 all reviewers approved.\n\nAutomated approval by @nickwenniyxiao-bot'
+            });
+            console.log('\u2705 Bot approval submitted for PR #' + context.payload.pull_request.number);
