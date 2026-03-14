@@ -91,6 +91,17 @@ src/
 - 豁免值：紧急 bug 填 `HOTFIX`，基础设施维护填 `INFRA`（CI 通过但审计会标记）
 - 每个 PR 都会运行 `roadmap-audit`，在 PR comment 中输出 ROADMAP 覆盖率报告
 
+### Project Board 门禁要求
+- 每个 PR 关联的 Issue 必须被添加到 **NordHjem Engineering Roadmap** GitHub Project
+- Issue 在 Project Board 上必须填写以下字段：
+  - **Status**：不能为空（Todo / In Progress / Done）
+  - **Priority**：必须是 P0、P1、P2、P3 之一
+  - **Phase**：必须是 Phase 0、Phase 1、Phase 2、Phase 3、Phase 4 之一
+  - **Module**：M01-M23、INFRA 或 DOCS（字段存在时强制校验，未创建时 warning 跳过）
+- 豁免：PR 有 `hotfix` 或 `no-issue` label 时跳过所有 Project Board 检查
+- CI Gate `check-project-board` 使用 GraphQL API 查询 Projects v2，需要 `CTO_PAT`（read:project scope）
+- Issue body 必须包含 `## 背景` 或 `## 动机` 或 `## Background` 或 `## Motivation` 段落
+
 ### AI Issue 质量审查（Phase 1: 信息性）
 - 每个 PR 创建/更新时，`check-issue-quality` workflow 会自动审查关联 Issue 的质量
 - 使用 GPT-4o-mini 从 5 个维度打分（每项 0-2 分，满分 10）：
@@ -130,4 +141,4 @@ src/
 
 > CI Gate v2 full pipeline verified: 2026-03-14T11:14:00Z
 > ROADMAP traceability + Issue templates + CODEOWNERS: 2026-03-14T11:24:00Z
-> AI Issue quality review (Phase 1): 2026-03-14
+> Project Board gate + AI Issue quality review: 2026-03-14
