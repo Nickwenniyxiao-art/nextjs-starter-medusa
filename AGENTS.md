@@ -1,46 +1,67 @@
-# AGENTS.md — NordHjem Frontend
+# AGENTS.md — NordHjem Backend
 
 ## Project Overview
+
 NordHjem is a Scandinavian furniture e-commerce platform.
-This is the storefront, powered by **Next.js 15** + **Medusa.js v2 SDK**.
+This is the backend, powered by **Medusa.js v2** (2.13.x) + **PostgreSQL** + **Docker**.
 
 ## Tech Stack
-- Framework: Next.js 15 (App Router)
-- Language: TypeScript (strict mode)
-- Package Manager: Yarn 4 (Berry) with PnP disabled (node_modules mode)
-- Styling: Tailwind CSS
-- State/Data: Medusa JS SDK + React Query
-- Deployment: PM2 on VPS (not Vercel)
+
+- Runtime: Node.js 20+
+- Framework: Medusa.js v2 (not v1 — API and module patterns are different)
+- ORM: MikroORM (via @mikro-orm/postgresql)
+- Language: TypeScript 5.6+ (strictNullChecks enabled)
+- Containerization: Docker (single Dockerfile, docker-compose for local dev)
+- Process Manager: Docker (production), Node directly (development)
 
 ## Project Structure
-```
+
 src/
-├── app/              # Next.js App Router pages
-│   ├── [countryCode]/ # Localized routes
-│   └── api/          # API routes
-├── lib/              # Utilities, SDK config, constants
-├── modules/          # Feature modules (layout, products, cart, etc.)
-└── types/            # TypeScript type definitions
-```
+├── api/          # Custom API routes (REST endpoints)
+├── jobs/         # Background scheduled jobs
+├── links/        # Module link definitions
+├── modules/      # Custom Medusa modules
+├── scripts/      # One-off scripts (seed, migrations)
+├── subscribers/  # Event subscribers
+└── workflows/    # Medusa workflows
 
 ## Key Conventions
-- Pages use App Router conventions (`page.tsx`, `layout.tsx`)
-- Country code routing: `/[countryCode]/...` for i18n
-- Server Components by default; use `"use client"` only when needed
-- Medusa SDK initialized in `src/lib/config.ts`
-- All API calls go through Medusa SDK (not raw fetch)
-- Publishable API Key is set via `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`
+
+- All source code in `src/` uses TypeScript
+- API routes follow Medusa v2 conventions: `src/api/store/...` for storefront, `src/api/admin/...` for admin
+- Use Medusa's built-in dependency injection — do NOT use raw `new` for services
+- Database migrations are handled by `npx medusa db:migrate`
+- Environment variables are defined in `.env` (see `.env.example`)
 
 ## Branch Strategy
+
 - `develop` → `staging` → `main`
 - All changes via feature branches → PR to `develop`
 - Branch naming: `codex/*` for AI-generated, `feature/*` for manual
 - PR titles must use Conventional Commits (feat/fix/refactor/chore)
 
 ## CI/CD
-- CI: yarn install → lint → type-check → build on PR/push
+
+- CI: Docker build + lint + type-check on PR/push to develop/staging/main
 - CD: develop auto-deploys to test → staging auto-deploys → main needs approval for production
-- Required checks: `lint-and-build` + `ai-review-gate` + all governance gates (see below)
+- Required checks: `build` + `ai-review-gate`
+- Bot auto-approval: @nickwenniyxiao-bot submits PR review when AI review passes
+
+## Environments
+
+| Env        | Port | Container               | Database            |
+| ---------- | ---- | ----------------------- | ------------------- |
+| Test       | 9001 | nordhjem_medusa_test    | nordhjem_test       |
+| Staging    | 9002 | nordhjem_medusa_staging | nordhjem_staging    |
+| Production | 9000 | nordhjem_medusa         | nordhjem_production |
+
+## Do NOT
+
+- Hardcode environment-specific values (use env vars)
+- Modify `.github/workflows/` without explicit instruction
+- Change database schema without a migration
+- Use `npm install` in CI (use `npm ci`)
+- Commit `.env` files
 
 ## CI 门禁规范（必须遵守）
 
@@ -83,11 +104,10 @@ src/
 - Codex 创建的 PR 应指定 Assignee 为发起任务的 CTO 或 Owner
 
 ### ROADMAP 追溯要求
-- 每个 Issue 必须在 body 中包含 `ROADMAP Ref` 字段，引用后端仓库 `docs/ROADMAP.md` 中的目标 ID
+- 每个 Issue 必须在 body 中包含 `ROADMAP Ref` 字段，引用 `docs/ROADMAP.md` 中的目标 ID
 - ID 格式：`R-Px-xx`（如 `R-P1-01`、`R-P3-05`）
 - 创建 Issue 时使用 Issue 模板，ROADMAP Ref 为必填字段
 - CI Gate `check-roadmap-ref` 会验证：Ref 格式合法 + Ref 在 ROADMAP.md 中真实存在
-- 前端仓库通过 API 从后端仓库读取 ROADMAP.md（单一信源）
 - 豁免值：紧急 bug 填 `HOTFIX`，基础设施维护填 `INFRA`（CI 通过但审计会标记）
 - 每个 PR 都会运行 `roadmap-audit`，在 PR comment 中输出 ROADMAP 覆盖率报告
 
@@ -103,42 +123,39 @@ src/
 - Issue body 必须包含 `## 背景` 或 `## 动机` 或 `## Background` 或 `## Motivation` 段落
 
 ### AI Issue 质量审查（Phase 1: 信息性）
-- 每个 PR 创建/更新时，`check-issue-quality` workflow 会自动审查关联 Issue 的质量
-- 使用 GPT-4o-mini 从 5 个维度打分（每项 0-2 分，满分 10）：
-  1. **ROADMAP 关联性** — Issue 和 PR 是否正确引用 ROADMAP ID
-  2. **描述完整性** — Issue 是否有清晰的背景、目标、实现方向
-  3. **AC 质量** — 验收标准是否明确且可验证
-  4. **PR-Issue 一致性** — PR 变更是否与 Issue 范围一致
-  5. **粒度合理性** — Issue 粒度是否适中（单 PR 可完成）
+- 每个 PR 创建/更新时，`check-issue-quality` workflow 自动审查关联 Issue 的质量
+- 使用 GPT-4o-mini 从 5 个维度打分（每项 0-2 分，满分 10）
 - 评分 >= 7.0 且无 ❌ 维度 → 自动添加 `ai-approved` 标签
-- **Phase 1 说明**：当前仅信息性展示，不作为硬门禁（CI check 始终 pass）
-- 审查结果以结构化表格形式发布为 PR comment，格式固定，可查询
+- **Phase 1 说明**：当前仅信息性展示，不作为硬门禁
 - `ai-approved` 标签与 Owner 的 `approved` 标签是独立的两套机制
-
-### 自动化流程
-1. PR 创建 → 自动启用 auto-merge（squash）
-2. CI gates 全部通过 → AI Review 通过 → Bot 自动 approve
-3. Branch Protection 所有 required checks 通过 → 自动合并
-4. staging 分支不需要审批，production 分支需要 Owner 审批
-
-## Environments
-| Env | FE Port | BE Port | Backend URL |
-|-----|---------|---------|-------------|
-| Test | 8001 | 9001 | http://localhost:9001 |
-| Staging | 8002 | 9002 | http://localhost:9002 |
-| Production | 8000 | 9000 | http://localhost:9000 |
-
-## Do NOT
-- Hardcode backend URLs (use `NEXT_PUBLIC_MEDUSA_BACKEND_URL`)
-- Use `yarn install` in CI without `--immutable` (use frozen lockfile)
-- Modify `.github/workflows/` without explicit instruction
-- Add `"use client"` to components that don't need interactivity
-- Commit `.env` files
-- Create PR without linked Issue (unless `no-issue` or `hotfix` label)
-- Start development before Issue has `approved` label
 
 ---
 
-> CI Gate v2 full pipeline verified: 2026-03-14T11:14:00Z
-> ROADMAP traceability + Issue templates + CODEOWNERS: 2026-03-14T11:24:00Z
+> CI Gate v2 full pipeline verified: 2026-03-14T09:25:00Z
+> CI Gate v2 remediation + new gates: 2026-03-14T09:40:00Z
+> ROADMAP traceability: 2026-03-14
 > Project Board gate + AI Issue quality review: 2026-03-14
+
+## 调研闭环规范
+- 所有调研任务必须遵循"输入清晰 → 过程可追溯 → 结论可执行 → 结果可归档"的闭环原则。
+- 调研开始前必须明确：调研背景、目标问题、约束条件、预期产出；信息不足时先补齐上下文再执行。
+- 调研过程中必须记录来源（官方文档/仓库/标准规范）与关键结论，避免仅给出主观判断。
+- 调研结论必须包含：推荐方案、备选方案、取舍理由、风险与后续动作（Action Items）。
+- 调研结果需沉淀到可检索文档（如 `docs/research/`），并在相关 Issue/PR 中引用，确保可审计与可复用。
+- 若调研结论会影响实现方案，必须同步更新验收标准或实施计划，确保"调研→实现→验证"一致。
+
+## 测试规范
+- 所有代码或文档变更在提交前都必须进行最小可行验证，至少覆盖受影响范围。
+- 后端默认检查命令：`npm run lint`、`npx tsc --noEmit`、`npm test`（若项目存在对应测试）。
+- 若本次变更仅涉及文档，至少执行格式/拼写/链接等自检，并在 PR 中说明验证方式。
+- 新增或修改功能时，优先补充自动化测试；无法补充时需在 PR 中写明原因与替代验证步骤。
+- 所有测试结果必须在 PR 描述中透明披露：通过项、失败项、无法执行项及原因。
+- 禁止跳过关键检查直接合并；若受环境限制无法执行，需标注阻塞项并给出后续执行计划。
+
+## PR 提交规范
+- PR 标题必须使用 Conventional Commits：`type(scope): description`。
+- PR 描述第一行必须是 Issue 关闭语句：`Closes #<issue_number>`。
+- PR 描述必须包含 `ROADMAP Ref`，并与 Issue 中的追溯信息保持一致。
+- PR 必须指派至少 1 名 Assignee（Codex 任务默认指派发起任务的 CTO/Owner）。
+- PR 描述建议包含：变更摘要、影响范围、测试结果、风险与回滚方案、待办事项。
+- 提交前必须自检：分支命名合规、提交信息合规、CI 门禁要求齐全（Issue 标签/Project 字段/审批标签）。
