@@ -1,0 +1,71 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Install Lighthouse CI CLI
+        run: yarn add --dev @lhci/cli
+
+      - name: Run Lighthouse CI (warn-only)
+        id: lhci
+        run: |
+          set +e
+          yarn lhci autorun 2>&1 | tee lhci_output.txt
+          LHCI_EXIT_CODE=${PIPESTATUS[0]}
+          {
+            echo "exit_code=${LHCI_EXIT_CODE}"
+            echo "result<<EOF"
+            sed -n '1,200p' lhci_output.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Comment Lighthouse results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const exitCode = `${{ steps.lhci.outputs.exit_code }}`
+            const result = `${{ steps.lhci.outputs.result }}`
+            const body = [
+              '## Lighthouse CI Result',
+              '',
+              `- Exit code: ${exitCode} (warn-only mode, does not block PR)`,
+              '',
+              '```text',
+              result,
+              '```'
+            ].join('\n')
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            })
