@@ -1,0 +1,73 @@
+name: "Incident 事故复盘"
+description: "线上事故记录、处置与复盘"
+title: "[Incident]: "
+labels: ["type: bug", "status: needs review"]
+body:
+  - type: input
+    id: roadmap_ref
+    attributes:
+      label: "ROADMAP Ref"
+      description: "线上事故通常填写 HOTFIX；基础设施故障可填 INFRA"
+      placeholder: "HOTFIX"
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: "背景/动机"
+      description: "事故发生的上下文与业务背景"
+      placeholder: "在 xx 时间段，xx 模块出现异常..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: timeline
+    attributes:
+      label: "时间线"
+      description: "按时间顺序记录发现、响应、恢复关键节点"
+      placeholder: |
+        - 10:00 监控告警触发
+        - 10:05 值班同学接手
+        - 10:30 发布临时修复
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: "影响范围"
+      description: "受影响用户、模块、持续时长、业务损失"
+      placeholder: "影响欧洲站下单流程，约 20% 用户受影响，持续 45 分钟"
+    validations:
+      required: true
+
+  - type: textarea
+    id: root_cause
+    attributes:
+      label: "根因分析"
+      description: "事故的技术根因与触发条件"
+      placeholder: "根因是 xxx 变更引发 yyy..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: resolution
+    attributes:
+      label: "处置与恢复"
+      description: "临时止血、永久修复、验证过程"
+      placeholder: "先回滚，再补丁修复，并通过监控验证"
+    validations:
+      required: true
+
+  - type: textarea
+    id: prevention
+    attributes:
+      label: "防止再发"
+      description: "新增测试、监控、流程优化项"
+      placeholder: |
+        - 增加回归测试
+        - 增加告警阈值
+        - 更新发布 checklist
+    validations:
+      required: true

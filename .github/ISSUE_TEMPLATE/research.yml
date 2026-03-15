@@ -1,0 +1,63 @@
+name: "Research 调研"
+description: "用于技术选型、方案评估、问题探索"
+title: "[Research]: "
+labels: ["type: task", "status: needs review"]
+body:
+  - type: input
+    id: roadmap_ref
+    attributes:
+      label: "ROADMAP Ref"
+      description: "关联的 ROADMAP 目标 ID（格式: R-Px-xx）。基础设施维护可填 INFRA"
+      placeholder: "R-P2-01 或 INFRA"
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: "背景/动机"
+      description: "为什么需要这次调研？当前痛点是什么？"
+      placeholder: "为了支持 xxx，需要评估 yyy 方案..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: "调研范围"
+      description: "明确要调研的边界与不在范围内的内容"
+      placeholder: "包含 A/B/C，不包含 D/E"
+    validations:
+      required: true
+
+  - type: textarea
+    id: questions
+    attributes:
+      label: "关键问题"
+      description: "列出需要回答的问题"
+      placeholder: |
+        - 问题 1
+        - 问题 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: "交付物"
+      description: "期望产出（文档、PoC、结论）"
+      placeholder: "调研报告 + 推荐方案 + 风险清单"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - "P0 — 紧急"
+        - "P1 — 高"
+        - "P2 — 中"
+        - "P3 — 低"
+    validations:
+      required: true
