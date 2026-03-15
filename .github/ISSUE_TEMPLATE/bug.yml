@@ -1,0 +1,154 @@
+name: "Bug 报告"
+description: "报告一个 Bug"
+title: "[Bug]: "
+labels: ["type: bug", "status: needs review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug 模板（升级版）
+        为了通过 CI `check-bug-postmortem`，请在下方“问题分析与处置”字段中**保留并填写**以下四个二级标题：
+        - `## 现象`
+        - `## 根因分析`
+        - `## 修复方案`
+        - `## 防止再发`
+
+  - type: input
+    id: roadmap_ref
+    attributes:
+      label: "ROADMAP Ref"
+      description: "关联的 ROADMAP 目标 ID（格式: R-Px-xx）。紧急 bug 填 HOTFIX，基础设施问题填 INFRA"
+      placeholder: "R-P1-01 或 HOTFIX"
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: "背景/动机"
+      description: "什么场景下发现了这个 Bug？影响了什么？"
+      placeholder: "用户在结账时遇到 xxx 错误，导致无法完成购买..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: detected_by
+    attributes:
+      label: 发现方式（detected_by）
+      options:
+        - "用户反馈"
+        - "监控告警"
+        - "测试发现"
+        - "代码审查"
+        - "线上巡检"
+        - "其他"
+    validations:
+      required: true
+
+  - type: input
+    id: affected_version
+    attributes:
+      label: 受影响版本（affected_version）
+      description: "例如：v2.13.1 / staging-2026.03.15 / commit sha"
+      placeholder: "v2.13.1"
+    validations:
+      required: true
+
+  - type: input
+    id: fix_version
+    attributes:
+      label: 修复版本（fix_version）
+      description: "计划修复版本（未确定可填 TBD，修复 PR 合并前需更新）"
+      placeholder: "v2.13.2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug 描述
+      description: 清晰描述这个 Bug 是什么
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 xxx 页面
+        2. 点击 xxx 按钮
+        3. 看到 xxx 错误
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact_scope
+    attributes:
+      label: 影响范围（impact_scope）
+      options:
+        - "全部用户"
+        - "部分用户"
+        - "特定环境（Test/Staging/Production）"
+        - "仅内部管理端"
+        - "未知（待确认）"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 严重程度
+      options:
+        - "P0 — 阻断性"
+        - "P1 — 主流程受影响"
+        - "P2 — 次要功能问题"
+        - "P3 — 外观/体验"
+    validations:
+      required: true
+
+  - type: textarea
+    id: regression_test
+    attributes:
+      label: 回归测试（regression_test）
+      description: "说明如何验证修复不会再次回归（测试用例、手动验证、监控项）"
+      placeholder: |
+        - 新增/更新测试：...
+        - 手动验证步骤：...
+        - 监控与告警验证：...
+    validations:
+      required: true
+
+  - type: textarea
+    id: postmortem
+    attributes:
+      label: 问题分析与处置（必填）
+      description: "请保留以下标题并补充完整内容；不要只写占位词（如 TBD/待排查）"
+      placeholder: |
+        ## 现象
+        （出了什么问题，怎么复现，影响范围）
+
+        ## 根因分析
+        （为什么出了这个问题，排查过程与根因定位）
+
+        ## 修复方案
+        （怎么修的，改了哪些文件/逻辑，为什么这样改）
+
+        ## 防止再发
+        （补了哪些测试、告警、review checklist 或文档）
+    validations:
+      required: true
