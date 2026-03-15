@@ -70,7 +70,7 @@ jobs:
             console.log(`Found ${validIds.size} ROADMAP IDs in backend docs/ROADMAP.md`);
 
             // -- 5. Check each linked issue --
-            const exemptValues = ['HOTFIX', 'INFRA'];
+            const exemptValues = ['HOTFIX', 'INFRA', 'RESEARCH'];
 
             for (const match of matches) {
               const issueNumber = parseInt(match[1]);
@@ -92,7 +92,7 @@ jobs:
                 core.setFailed(
                   `Issue #${issueNumber} has no ROADMAP Ref field.\n` +
                   `Every issue must include a ROADMAP Ref (e.g., R-P1-01).\n` +
-                  `For urgent bugs use HOTFIX, for infra maintenance use INFRA.`
+                  `For urgent bugs use HOTFIX, for infra maintenance use INFRA, and for research work use RESEARCH.`
                 );
                 return;
               }
@@ -112,7 +112,7 @@ jobs:
                 core.setFailed(
                   `Issue #${issueNumber} has invalid ROADMAP Ref format: "${ref}"\n` +
                   `Expected format: R-Px-xx (e.g., R-P1-01)\n` +
-                  `Allowed exemptions: HOTFIX, INFRA`
+                  `Allowed exemptions: HOTFIX, INFRA, RESEARCH`
                 );
                 return;
               }
