@@ -1,0 +1,65 @@
+name: PR Compliance Auto Fix
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+jobs:
+  fix-pr-compliance:
+    if: ${{ github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Auto-fix PR title/body compliance
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request
+            const owner = context.repo.owner
+            const repo = context.repo.repo
+
+            const originalTitle = (pr.title || '').trim()
+            const originalBody = pr.body || ''
+
+            const ccPattern = /^(feat|fix|hotfix|docs|chore|refactor|test|ci)\([^\)]+\):\s.+$/
+            const issueMatch = originalBody.match(/(?:Closes|Close|Fixes|Fix)\s+#(\d+)/i)
+            const roadmapMatch = originalBody.match(/^ROADMAP Ref:\s*(.+)$/im)
+
+            let newTitle = originalTitle
+            let newBody = originalBody
+            let changed = false
+
+            if (!ccPattern.test(newTitle)) {
+              newTitle = `chore(ci): normalize pr metadata (#${pr.number})`
+              changed = true
+            }
+
+            if (!issueMatch) {
+              newBody = `Closes #${pr.number}\n\n${newBody}`.trim()
+              changed = true
+            }
+
+            if (!roadmapMatch) {
+              newBody = `${newBody}\n\nROADMAP Ref: INFRA`.trim()
+              changed = true
+            }
+
+            if (!changed) {
+              core.info('PR metadata already compliant, no update needed.')
+              return
+            }
+
+            await github.rest.pulls.update({
+              owner,
+              repo,
+              pull_number: pr.number,
+              title: newTitle,
+              body: newBody,
+            })
+
+            core.info('PR metadata was auto-updated to improve compliance.')
