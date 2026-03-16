@@ -12,9 +12,9 @@ test.describe('Business Regression - Product Detail', () => {
     await firstProduct.click()
 
     await expect(page).toHaveURL(/\/products\//)
-    await expect(page.locator('[data-testid="product-title"]')).toBeVisible()
+    await expect(page.getByTestId('product-container').getByTestId('product-title')).toBeVisible()
 
-    const price = page.locator('[data-testid="product-price"], [data-testid="price"]').first()
+    const price = page.getByTestId('product-container').locator('[data-testid="product-price"], [data-testid="price"]').first()
     await expect(price).toBeVisible({ timeout: 10000 })
     expect((await price.textContent())?.trim().length).toBeGreaterThan(0)
   })
