@@ -6,3 +6,15 @@
 
 # Issue template protection
 /.github/ISSUE_TEMPLATE/ @Nickwenniyxiao-art
+
+# --- 以下为新增规则 ---
+
+# Documentation standards - Owner exclusive
+/docs/standards/ @Nickwenniyxiao-art
+
+# AI collaboration spec
+/AGENTS.md @Nickwenniyxiao-art
+
+# Document registry and library - governance core
+/DOC-REGISTRY.json @Nickwenniyxiao-art
+/docs/standards/DOC-LIBRARY.json @Nickwenniyxiao-art
