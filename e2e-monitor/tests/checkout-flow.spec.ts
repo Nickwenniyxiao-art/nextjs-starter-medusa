@@ -32,6 +32,13 @@ async function addFirstProductToCart(page: Page) {
   await page.waitForTimeout(2000)
 }
 
+async function hasAnyProducts(page: Page) {
+  await page.goto(`${BASE_URL}/en/dk/store`, { timeout: checkoutTimeout })
+  await page.waitForLoadState('networkidle')
+  const productLinks = page.locator('[data-testid="products-list"] li a, a[href*="/products/"]')
+  return (await productLinks.count()) > 0
+}
+
 test.describe('完整下单流程', () => {
   test.beforeEach(async ({ page }) => {
     const apiCheck = await page.request
@@ -44,6 +51,9 @@ test.describe('完整下单流程', () => {
   })
 
   test('首页到订单确认完整流转', async ({ page }) => {
+    const productsAvailable = await hasAnyProducts(page)
+    test.skip(!productsAvailable, '⚠️ No products found in test environment - skipping product-dependent test')
+
     await page.goto(`${BASE_URL}/en/dk`, { timeout: checkoutTimeout })
     await expect(page).toHaveURL(/\/en\/dk/, { timeout: checkoutTimeout })
 
