@@ -17,3 +17,9 @@
   3. 用户认证测试改用 UI 状态验证替代 cookies 数量检查
   4. 购物车/结账测试添加 API 可达性前置检查
   5. 触发频率从每 2 小时降为每 6 小时
+
+## S3-3: 前端文档治理同步 (2026-03-16)
+
+- **新增**: DOC-REGISTRY.json, docs/standards/DOC-LIBRARY.json
+- **新增**: .github/workflows/doc-format-check.yml
+- **作用**: 与后端仓库保持统一的文档治理体系
