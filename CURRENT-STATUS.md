@@ -17,3 +17,10 @@
   3. 用户认证测试改用 UI 状态验证替代 cookies 数量检查
   4. 购物车/结账测试添加 API 可达性前置检查
   5. 触发频率从每 2 小时降为每 6 小时
+
+
+## S1-3b: CD-Staging Promote 权限修复 (2026-03-16)
+
+- **问题**: promote-to-production 步骤使用 CD_PAT，该 token 没有创建 PR 的权限
+- **修复**: 改用 BOT_PAT（已验证有 repo 权限）
+- **影响**: CD-Staging 完成后可自动创建 staging→main 的 Promote PR
