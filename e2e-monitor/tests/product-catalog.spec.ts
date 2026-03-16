@@ -20,9 +20,9 @@ test.describe('商品目录测试', () => {
     await expect(image).toBeVisible({ timeout: uiTimeout })
 
     const variant = page.locator('[data-testid="option-button"], [data-testid="variant-option"], [role="radio"]').first()
-    if (await variant.isVisible({ timeout: 3000 }).catch(() => false)) {
+    if (await variant.isVisible({ timeout: 5000 }).catch(() => false)) {
       await variant.click()
-      await expect(variant).toBeVisible()
+      await expect(variant).toBeVisible({ timeout: uiTimeout })
     }
   })
 

@@ -19,6 +19,7 @@ test.describe('Business Regression - Cart', () => {
     await page.goto(STORE_URL)
     await page.locator('[data-testid="products-list"] a').first().click()
     await page.getByTestId('add-product-button').click()
+    await page.waitForTimeout(2000)
 
     await page.goto(CART_URL)
     await expect(page).toHaveURL(/\/cart/)

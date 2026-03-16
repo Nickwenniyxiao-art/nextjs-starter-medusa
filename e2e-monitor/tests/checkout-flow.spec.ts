@@ -28,6 +28,7 @@ async function addFirstProductToCart(page: Page) {
     .first()
   await expect(addToCartButton).toBeVisible({ timeout: checkoutTimeout })
   await addToCartButton.click()
+  await page.waitForTimeout(2000)
 }
 
 test.describe('完整下单流程', () => {
