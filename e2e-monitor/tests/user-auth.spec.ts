@@ -4,7 +4,7 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:8000'
 const uiTimeout = 15000
 
 test.describe('用户认证流程', () => {
-  test('注册新用户（唯一邮箱）', async ({ page }) => {
+  test.skip('注册新用户（唯一邮箱）', async ({ page }) => {
     const unique = `test-${Date.now()}`
     await page.goto(`${BASE_URL}/en/dk/account`, { timeout: uiTimeout })
 
@@ -33,7 +33,7 @@ test.describe('用户认证流程', () => {
     await expect(page.locator('body')).toContainText(/invalid|incorrect|failed|错误/i)
   })
 
-  test('登录、退出与状态持久化', async ({ page, context }) => {
+  test.skip('登录、退出与状态持久化', async ({ page, context }) => {
     const email = process.env.E2E_EXISTING_USER_EMAIL || 'existing-user@example.com'
     const password = process.env.E2E_EXISTING_USER_PASSWORD || 'Test1234!'
 

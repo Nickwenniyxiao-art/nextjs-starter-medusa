@@ -20,6 +20,7 @@ async function addOneProduct(page: Page) {
   const addToCart = page.locator('button[data-testid="add-product-button"], button:has-text("Add to cart"), button:has-text("加入购物车")').first()
   await expect(addToCart).toBeVisible({ timeout: uiTimeout })
   await addToCart.click()
+  await page.waitForTimeout(2000)
 }
 
 test.describe('购物车操作', () => {

@@ -34,6 +34,7 @@ jobs:
         env:
           BASE_URL: https://nordhjem.store
           API_URL: http://66.94.127.117:9000
+          PUBLISHABLE_API_KEY: pk_131083b02252b54782a42b83a9f1dd79b4bb01b6a9b409a252b104b965b977ea
 
       - name: Send Telegram alert on failure
         if: failure()
