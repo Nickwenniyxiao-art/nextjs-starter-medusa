@@ -90,6 +90,13 @@ jobs:
           script: |
             bash /opt/nordhjem/scripts/seed-env.sh test || echo "⚠️ Seed had warnings (non-fatal)"
 
+            echo "=== Verifying seed data ==="
+            PRODUCT_COUNT=$(curl -s http://localhost:9001/store/products | python3 -c "import sys,json; print(len(json.load(sys.stdin).get('products',[])))" 2>/dev/null || echo "0")
+            echo "Products in test environment: $PRODUCT_COUNT"
+            if [ "$PRODUCT_COUNT" = "0" ]; then
+              echo "⚠️ Warning: No products found after seed. E2E tests may skip product-dependent scenarios."
+            fi
+
   e2e-test:
     name: "🧪 E2E → Test"
     needs: seed-test

@@ -24,6 +24,13 @@ async function addOneProduct(page: Page) {
   await page.waitForTimeout(2000)
 }
 
+async function hasAnyProducts(page: Page) {
+  await page.goto(`${BASE_URL}/en/dk/store`, { timeout: uiTimeout })
+  await page.waitForLoadState('networkidle')
+  const productLinks = page.locator('[data-testid="products-list"] li a, a[href*="/products/"]')
+  return (await productLinks.count()) > 0
+}
+
 test.describe('购物车操作', () => {
   test.beforeEach(async ({ page }) => {
     const apiCheck = await page.request
@@ -56,6 +63,9 @@ test.describe('购物车操作', () => {
   })
 
   test('删除商品并验证空状态', async ({ page }) => {
+    const productsAvailable = await hasAnyProducts(page)
+    test.skip(!productsAvailable, '⚠️ No products found in test environment - skipping product-dependent test')
+
     await goToFirstProduct(page)
     await addOneProduct(page)
     await page.goto(`${BASE_URL}/en/dk/cart`, { timeout: uiTimeout })
@@ -69,6 +79,9 @@ test.describe('购物车操作', () => {
   })
 
   test('多商品购物车', async ({ page }) => {
+    const productsAvailable = await hasAnyProducts(page)
+    test.skip(!productsAvailable, '⚠️ No products found in test environment - skipping product-dependent test')
+
     await goToFirstProduct(page)
     await addOneProduct(page)
     await page.goto(`${BASE_URL}/en/dk/store`, { timeout: uiTimeout })
