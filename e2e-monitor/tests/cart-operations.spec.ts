@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8000'
 const uiTimeout = 15000
+const API_URL = process.env.API_URL || 'http://66.94.127.117:9000'
 
 async function goToFirstProduct(page: Page) {
   await page.goto(`${BASE_URL}/en/dk/store`, { timeout: uiTimeout })
@@ -24,6 +25,16 @@ async function addOneProduct(page: Page) {
 }
 
 test.describe('购物车操作', () => {
+  test.beforeEach(async ({ page }) => {
+    const apiCheck = await page.request
+      .get(`${API_URL}/health`, { timeout: 10000 })
+      .catch(() => null)
+
+    if (!apiCheck || !apiCheck.ok()) {
+      test.skip(true, 'Backend API is not reachable')
+    }
+  })
+
   test('添加商品并显示在购物车中', async ({ page }) => {
     await goToFirstProduct(page)
     await addOneProduct(page)
