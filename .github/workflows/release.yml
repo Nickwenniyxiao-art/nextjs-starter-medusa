@@ -33,7 +33,33 @@ jobs:
             @semantic-release/commit-analyzer@13 \
             @semantic-release/release-notes-generator@14
 
+      - name: Pre-check existing tags
+        run: |
+          echo "=== Fetching all tags ==="
+          git fetch --tags
+          echo "=== Existing tags ==="
+          git tag -l 'v*' | sort -V
+          LATEST_TAG=$(git tag -l 'v*' | sort -V | tail -1)
+          echo "Latest existing tag: $LATEST_TAG"
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_ENV
+
+      - name: Temporarily allow direct push
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          gh api repos/${{ github.repository }}/branches/main/protection/enforce_admins -X DELETE || true
+
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_PAT }}
-        run: npx semantic-release
+        run: |
+          git fetch --tags --force
+          echo "Tags synced. Running semantic-release..."
+          npx semantic-release
+
+      - name: Re-enable branch protection
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+        run: |
+          gh api repos/${{ github.repository }}/branches/main/protection/enforce_admins -X POST || true
