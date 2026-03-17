@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
+import { vi } from 'vitest'
 
 import Thumbnail from '../thumbnail'
 
-jest.mock('next/image', () => ({
+vi.mock('next/image', () => ({
   __esModule: true,
   default: (props: any) => <div data-testid='next-image' data-src={props.src} aria-label={props.alt} />,
 }))
