@@ -78,6 +78,11 @@
       "description": "Automated deployment event logs with environment, SHA, actor, and workflow metadata."
     },
     {
+      "id": "SMOKE-TEST",
+      "name": "Smoke Test",
+      "description": "Post-deployment smoke checks validating core availability and render readiness."
+    },
+    {
       "id": "DORA-METRICS",
       "name": "DORA Metrics",
       "description": "DORA metric definitions, collection methods, and periodic reporting standards."
