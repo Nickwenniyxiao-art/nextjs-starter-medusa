@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-03-16",
+  "updated_at": "2026-03-17",
   "types": [
     {
       "id": "ARCHITECTURE",
@@ -76,6 +76,11 @@
       "id": "DEPLOY-LOG",
       "name": "Deploy Log",
       "description": "Automated deployment event logs with environment, SHA, actor, and workflow metadata."
+    },
+    {
+      "id": "CI",
+      "name": "CI",
+      "description": "Continuous integration workflows, quality gates, and automation pipeline definitions."
     }
   ],
   "status_values": [

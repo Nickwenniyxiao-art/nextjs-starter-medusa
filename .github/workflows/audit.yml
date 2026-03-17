@@ -1,0 +1,40 @@
+name: "Security Audit"
+
+on:
+  pull_request:
+    branches: [develop]
+  schedule:
+    - cron: '0 6 * * 1' # 每周一 UTC 6:00
+  workflow_dispatch:
+
+jobs:
+  audit:
+    name: audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Run yarn audit
+        run: |
+          yarn npm audit --severity high --environment production 2>&1 | tee audit-report.txt || true
+          # Yarn 4 的 audit 命令可能返回非零退出码
+          # 检查是否有 high/critical 漏洞
+          if yarn npm audit --severity critical --environment production 2>&1 | grep -q "critical"; then
+            echo "❌ Critical vulnerabilities found"
+            exit 1
+          fi
+          echo "✅ No critical vulnerabilities"
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn-audit-report
+          path: audit-report.txt
+          retention-days: 30
