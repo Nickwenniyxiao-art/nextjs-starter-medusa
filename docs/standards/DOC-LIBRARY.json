@@ -83,6 +83,11 @@
       "description": "Post-deployment smoke checks validating core availability and render readiness."
     },
     {
+      "id": "CI",
+      "name": "CI",
+      "description": "Continuous integration workflows, quality gates, and automation pipeline definitions."
+    },
+    {
       "id": "DORA-METRICS",
       "name": "DORA Metrics",
       "description": "DORA metric definitions, collection methods, and periodic reporting standards."
