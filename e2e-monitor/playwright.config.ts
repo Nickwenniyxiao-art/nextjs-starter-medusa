@@ -14,6 +14,9 @@ export default defineConfig({
     actionTimeout: 15000,
     navigationTimeout: 30000,
   },
-  projects: [{ name: 'chromium', use: { browserName: 'chromium' } }],
+  projects: [
+    { name: 'chromium', use: { browserName: 'chromium' } },
+    { name: 'webkit', use: { browserName: 'webkit' } },
+  ],
   reporter: [['list'], ['html', { open: 'never' }]],
 });
