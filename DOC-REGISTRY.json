@@ -65,5 +65,12 @@
     "required": false,
     "gate": 2,
     "status": "stub"
+  },
+  {
+    "id": "AI-REVIEWER-ARCH",
+    "file": "docs/AI-REVIEWER-ARCH.md",
+    "required": false,
+    "gate": 2,
+    "status": "stub"
   }
 ]
