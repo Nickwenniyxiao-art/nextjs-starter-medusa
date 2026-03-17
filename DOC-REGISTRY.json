@@ -235,5 +235,14 @@
     "last_updated": "2026-03-18",
     "version": "1.0.0",
     "description": "AI Agent 启动时必读的项目上下文，包含技术栈、分支策略、CI 规则、禁止事项"
+  },
+  {
+    "id": "UNIT-TEST-COVERAGE-GATE",
+    "title": "前端单元测试覆盖率门禁",
+    "path": "vitest.config.ts",
+    "type": "config",
+    "module": "INFRA",
+    "status": "active",
+    "description": "Vitest 覆盖率门禁配置（阈值 20%）"
   }
 ]

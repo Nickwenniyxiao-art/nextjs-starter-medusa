@@ -48,8 +48,8 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
-      - name: Run unit tests with coverage
-        run: yarn test:coverage
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
 
       - name: Build
         run: yarn build
