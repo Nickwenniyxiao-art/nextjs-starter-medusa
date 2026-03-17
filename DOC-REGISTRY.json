@@ -40,5 +40,12 @@
     "type": "DEPLOY-LOG",
     "status": "active",
     "version": "1.0.0"
+  },
+  {
+    "id": "DORA-REPORT",
+    "path": "docs/DORA-REPORT.md",
+    "type": "DORA-METRICS",
+    "status": "active",
+    "version": "1.0.0"
   }
 ]
