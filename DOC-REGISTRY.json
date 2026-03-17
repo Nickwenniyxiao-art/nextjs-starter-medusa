@@ -60,6 +60,13 @@
     "version": "1.0.0"
   },
   {
+    "id": "E2E-WEBKIT",
+    "file": "docs/E2E-WEBKIT.md",
+    "required": false,
+    "gate": 2,
+    "status": "stub"
+  },
+  {
     "id": "AI-REVIEWER-ARCH",
     "file": "docs/AI-REVIEWER-ARCH.md",
     "required": false,
