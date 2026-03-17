@@ -13,9 +13,10 @@ describe('Input', () => {
 
   it('toggles password visibility', async () => {
     const user = userEvent.setup()
-    render(<Input name='password' type='password' label='Password' />)
+    const { container } = render(<Input name='password' type='password' label='Password' />)
 
-    const field = screen.getByRole('textbox', { hidden: true }) as HTMLInputElement
+    const field = container.querySelector('input[name="password"]') as HTMLInputElement
+    expect(field).toBeTruthy()
     expect(field.type).toBe('password')
 
     await user.click(screen.getByRole('button'))
