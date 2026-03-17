@@ -78,6 +78,11 @@
       "description": "Automated deployment event logs with environment, SHA, actor, and workflow metadata."
     },
     {
+      "id": "SMOKE-TEST",
+      "name": "Smoke Test",
+      "description": "Post-deployment smoke checks validating core availability and render readiness."
+    },
+    {
       "id": "CI",
       "name": "CI",
       "description": "Continuous integration workflows, quality gates, and automation pipeline definitions."

@@ -147,7 +147,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git fetch origin staging
           git checkout staging
-          git merge origin/develop --no-edit --ff-only
+          git merge origin/develop --no-edit
           if [ $? -ne 0 ]; then
             echo "❌ Fast-forward merge failed — staging has diverged from develop."
             echo "Please manually resolve the conflict or reset staging."
