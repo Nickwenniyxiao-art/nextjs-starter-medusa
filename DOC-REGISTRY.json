@@ -88,6 +88,15 @@
     "status": "stub"
   },
   {
+    "id": "PRODUCTION-SMOKE-TEST",
+    "title": "前端 Production Smoke Test",
+    "path": "scripts/smoke-test.sh",
+    "type": "script",
+    "module": "INFRA",
+    "status": "active",
+    "description": "部署后自动验证核心页面可访问性"
+  },
+  {
     "id": "UNIT-TEST-FRAMEWORK",
     "title": "前端单元测试框架",
     "path": "vitest.config.ts",
