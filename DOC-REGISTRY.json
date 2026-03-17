@@ -88,6 +88,15 @@
     "status": "stub"
   },
   {
+    "id": "PRODUCTION-SMOKE-TEST",
+    "title": "前端 Production Smoke Test",
+    "path": "scripts/smoke-test.sh",
+    "type": "script",
+    "module": "INFRA",
+    "status": "active",
+    "description": "部署后自动验证核心页面可访问性"
+  },
+  {
     "id": "SENTRY-PERFORMANCE",
     "title": "Sentry 性能监控配置",
     "path": "sentry.client.config.ts",
