@@ -24,7 +24,7 @@ permissions:
 #   - reviewer-3 (Perplexity) \u2014 Architecture consistency
 #
 # Planned:
-#   - reviewer-2 (Claude) — Security + edge cases
+#   - reviewer-2 (Claude) \u2014 Security + edge cases
 # ──────────────────────────────────────────────────────────────
 
 jobs:
@@ -308,7 +308,6 @@ jobs:
             exit 1
           fi
           echo "✅ AI Reviewer 2 passed (result: $RESULT)"
-
 
   # ── Reviewer 3: Architecture Consistency ──────────────────────
   reviewer-3-architecture:
