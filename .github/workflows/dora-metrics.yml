@@ -1,0 +1,118 @@
+name: "DORA Metrics"
+
+on:
+  schedule:
+    - cron: '0 8 * * 1' # Every Monday at 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  collect-metrics:
+    name: "📊 Collect DORA Metrics"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      issues: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect DORA metrics (last 7 days)
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const msInDay = 24 * 60 * 60 * 1000;
+            const oneWeekAgoDate = new Date(Date.now() - 7 * msInDay);
+            const oneWeekAgo = oneWeekAgoDate.toISOString();
+
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'cd-production.yml',
+              per_page: 100,
+              created: `>=${oneWeekAgo}`,
+              status: 'completed',
+            });
+
+            const workflowRuns = runs.workflow_runs || [];
+            const successfulRuns = workflowRuns.filter((r) => r.conclusion === 'success');
+            const failedRuns = workflowRuns.filter((r) => r.conclusion === 'failure');
+
+            const leadTimes = [];
+            for (const run of successfulRuns) {
+              if (!run.head_sha) continue;
+              try {
+                const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  commit_sha: run.head_sha,
+                });
+
+                const mergedPrs = prs.filter((pr) => pr.merged_at);
+                if (mergedPrs.length === 0) continue;
+
+                const latestMergedAt = mergedPrs
+                  .map((pr) => new Date(pr.merged_at).getTime())
+                  .sort((a, b) => b - a)[0];
+
+                const deployedAt = new Date(run.updated_at || run.created_at).getTime();
+                const diffHours = (deployedAt - latestMergedAt) / (1000 * 60 * 60);
+
+                if (diffHours >= 0) {
+                  leadTimes.push(diffHours);
+                }
+              } catch (error) {
+                core.warning(`Failed to calculate lead time for run ${run.id}: ${error.message}`);
+              }
+            }
+
+            const avgLeadTime =
+              leadTimes.length > 0
+                ? (leadTimes.reduce((sum, value) => sum + value, 0) / leadTimes.length).toFixed(2)
+                : 'N/A';
+
+            const { data: incidents } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed',
+              labels: 'incident',
+              per_page: 100,
+              since: oneWeekAgo,
+            });
+
+            const mttrHoursList = incidents
+              .filter((issue) => !issue.pull_request && issue.closed_at)
+              .map((issue) => {
+                const created = new Date(issue.created_at).getTime();
+                const closed = new Date(issue.closed_at).getTime();
+                return (closed - created) / (1000 * 60 * 60);
+              })
+              .filter((hours) => hours >= 0);
+
+            const avgMttr =
+              mttrHoursList.length > 0
+                ? (mttrHoursList.reduce((sum, value) => sum + value, 0) / mttrHoursList.length).toFixed(2)
+                : 'N/A';
+
+            const totalDeployments = workflowRuns.length;
+            const successfulDeployments = successfulRuns.length;
+            const failedDeployments = failedRuns.length;
+            const changeFailureRate =
+              totalDeployments > 0 ? ((failedDeployments / totalDeployments) * 100).toFixed(1) : '0.0';
+
+            const report = [
+              '## 📊 DORA Metrics (last 7 days)',
+              '',
+              `- Deployment Frequency: **${totalDeployments}** production deployment runs`,
+              `- Lead Time for Changes: **${avgLeadTime === 'N/A' ? 'N/A' : `${avgLeadTime} hours`}**`,
+              `- Change Failure Rate: **${changeFailureRate}%** (${failedDeployments}/${totalDeployments})`,
+              `- Mean Time to Restore (MTTR): **${avgMttr === 'N/A' ? 'N/A' : `${avgMttr} hours`}**`,
+              '',
+              `> Successful deployments: ${successfulDeployments}`,
+              `> Failed deployments: ${failedDeployments}`,
+              `> Closed incidents with label \`incident\`: ${mttrHoursList.length}`,
+            ].join('\n');
+
+            core.summary.addRaw(report).write();
+            console.log(report);
