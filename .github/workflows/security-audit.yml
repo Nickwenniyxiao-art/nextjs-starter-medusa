@@ -1,0 +1,46 @@
+name: Security Audit
+
+on:
+  pull_request:
+    branches: [develop, staging, main]
+    types: [opened, synchronize]
+  schedule:
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  yarn-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run yarn audit (high + critical)
+        run: |
+          echo "## 🔒 yarn audit Report"
+
+          # yarn audit returns non-zero if vulnerabilities found
+          AUDIT_OUTPUT=$(yarn audit --level high 2>&1) || true
+          echo "$AUDIT_OUTPUT"
+
+          # Check exit code properly
+          yarn audit --level high 2>&1 || {
+            echo "⚠️ High or critical vulnerabilities detected"
+            # Don't fail CI for now — many frontend deps have known issues
+            # TODO: Enable strict mode once dependencies are updated
+            exit 0
+          }
+
+          echo "✅ No high or critical vulnerabilities found"

@@ -79,5 +79,14 @@
     "required": false,
     "gate": 3,
     "status": "stub"
+  },
+  {
+    "id": "SECURITY-AUDIT-WORKFLOW",
+    "title": "前端安全扫描工作流",
+    "path": ".github/workflows/security-audit.yml",
+    "type": "workflow",
+    "module": "INFRA",
+    "status": "active",
+    "description": "yarn audit 安全扫描，检测 high/critical 漏洞"
   }
 ]

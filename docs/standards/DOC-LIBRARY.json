@@ -133,6 +133,15 @@
       "required_sections": [],
       "required_metadata": [],
       "description": "AI Code Review 第三审查器的架构一致性审查配置"
+    },
+    {
+      "id": "SECURITY-AUDIT-WORKFLOW",
+      "title": "前端安全扫描工作流",
+      "path": ".github/workflows/security-audit.yml",
+      "type": "workflow",
+      "module": "INFRA",
+      "status": "active",
+      "description": "yarn audit 安全扫描，检测 high/critical 漏洞"
     }
   ]
 }
