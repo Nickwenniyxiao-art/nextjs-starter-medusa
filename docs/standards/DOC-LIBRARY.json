@@ -135,6 +135,30 @@
       "description": "AI Code Review 第三审查器的架构一致性审查配置"
     },
     {
+      "id": "AI-REVIEWER-CLAUDE",
+      "name": "AI Reviewer 2 (Claude) 配置",
+      "name_en": "AI-REVIEWER-CLAUDE",
+      "filename": "AI-REVIEWER-CLAUDE.md",
+      "category": "04-architecture",
+      "gate": 2,
+      "applicable_to": [
+        "frontend"
+      ],
+      "default_required": false,
+      "required_sections": [],
+      "required_metadata": [],
+      "description": "AI Code Review 第二审查器 Claude 的配置与审查维度说明"
+    },
+    {
+      "id": "PRODUCTION-SMOKE-TEST",
+      "title": "前端 Production Smoke Test",
+      "path": "scripts/smoke-test.sh",
+      "type": "script",
+      "module": "INFRA",
+      "status": "active",
+      "description": "部署后自动验证核心页面可访问性"
+    },
+    {
       "id": "SECURITY-AUDIT-WORKFLOW",
       "title": "前端安全扫描工作流",
       "path": ".github/workflows/security-audit.yml",
