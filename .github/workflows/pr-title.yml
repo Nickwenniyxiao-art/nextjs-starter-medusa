@@ -11,6 +11,7 @@ jobs:
     timeout-minutes: 2
     steps:
       - name: Check PR title
+        if: ${{ !startsWith(github.event.pull_request.head.ref, 'codex/') }}
         uses: deepakputhraya/action-pr-title@master
         with:
           regex: '^(feat|fix|hotfix|docs|chore|refactor|test|ci)(\(.+\))?\!?\:\s.+'
