@@ -42,7 +42,6 @@
     "version": "1.0.0"
   },
   {
-<<<<<<< HEAD
     "id": "AUDIT-WORKFLOW",
     "path": ".github/workflows/audit.yml",
     "file": ".github/workflows/audit.yml",
@@ -51,19 +50,27 @@
     "type": "CI",
     "status": "active",
     "last_updated": "2026-03-17",
-=======
+    "version": "1.0.0"
+  },
+  {
     "id": "CD-PRODUCTION-SMOKE-TEST",
     "path": "docs/CD-PRODUCTION-SMOKE-TEST.md",
     "type": "SMOKE-TEST",
     "status": "active",
->>>>>>> origin/develop
     "version": "1.0.0"
   },
   {
+    "id": "E2E-WEBKIT",
+    "file": "docs/E2E-WEBKIT.md",
+    "required": false,
+    "gate": 2,
+    "status": "stub"
+  },
+  {
     "id": "DORA-REPORT",
-    "path": "docs/DORA-REPORT.md",
-    "type": "DORA-METRICS",
-    "status": "active",
-    "version": "1.0.0"
+    "file": "docs/DORA-REPORT.md",
+    "required": false,
+    "gate": 3,
+    "status": "stub"
   }
 ]
