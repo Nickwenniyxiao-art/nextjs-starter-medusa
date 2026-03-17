@@ -1,9 +1,13 @@
 name: Find Duplicate Issue
 
-on:
-  issues:
-    types: [opened]
+# ⚠️ DEPRECATED — 已合并至 issue-management.yml
+# 保留此文件 1 周后删除（deprecated date: 2026-03-17）
 
+on:
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "DEPRECATED — see issue-management.yml"
 permissions:
   issues: write
 
