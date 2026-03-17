@@ -148,6 +148,15 @@
       "required_sections": [],
       "required_metadata": [],
       "description": "AI Code Review 第二审查器 Claude 的配置与审查维度说明"
+    },
+    {
+      "id": "SENTRY-PERFORMANCE",
+      "title": "Sentry 性能监控配置",
+      "path": "sentry.client.config.ts",
+      "type": "config",
+      "module": "INFRA",
+      "status": "active",
+      "description": "Sentry 性能监控 + Core Web Vitals 追踪"
     }
   ]
 }
