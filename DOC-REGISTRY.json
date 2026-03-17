@@ -72,5 +72,12 @@
     "required": false,
     "gate": 2,
     "status": "stub"
+  },
+  {
+    "id": "DORA-REPORT",
+    "file": "docs/DORA-REPORT.md",
+    "required": false,
+    "gate": 3,
+    "status": "stub"
   }
 ]
