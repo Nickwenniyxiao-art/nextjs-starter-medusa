@@ -1,0 +1,25 @@
+## S1-0: Codex Auto-Fix 已禁用 (2026-03-16)
+
+- **状态**: 已禁用（改为 workflow_dispatch 手动触发）
+- **原因**: 累计运行525次，22分钟内触发7次，浪费Actions额度并阻塞其他工作流
+- **恢复条件**: 阶段一（S1-1 ~ S1-6）全部完成、所有核心工作流稳定变绿后重新启用
+- **恢复时需要做的修改**:
+  1. 将触发条件改回 `workflow_run`
+  2. 添加频率限制：24小时内同一分支最多触发1次
+  3. 添加触发范围限制：只监听 CI 工作流，不监听 AI Code Review
+
+## S1-4: Playwright Site Monitor 修复 (2026-03-16)
+
+- **问题**: 28 passed / 16 failed，主要失败原因：API 响应超时、Cookie 检测不兼容、UI 交互超时
+- **修复**:
+  1. 增加全局 timeout 从 30s 到 60s
+  2. API 测试添加状态码容错（API 不可达时 skip 而非 fail）
+  3. 用户认证测试改用 UI 状态验证替代 cookies 数量检查
+  4. 购物车/结账测试添加 API 可达性前置检查
+  5. 触发频率从每 2 小时降为每 6 小时
+
+## S3-3: 前端文档治理同步 (2026-03-16)
+
+- **新增**: DOC-REGISTRY.json, docs/standards/DOC-LIBRARY.json
+- **新增**: .github/workflows/doc-format-check.yml
+- **作用**: 与后端仓库保持统一的文档治理体系

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "CI-GATE-V2-SUMMARY",
+    "path": "docs/CI-GATE-V2-SUMMARY.md",
+    "type": "ADR-TEMPLATE",
+    "status": "active",
+    "version": "1.0.0"
+  },
+  {
+    "id": "ARCHITECTURE",
+    "path": "docs/architecture.md",
+    "type": "ARCHITECTURE",
+    "status": "active",
+    "version": "1.0.0"
+  },
+  {
+    "id": "BUG-ARCHIVE",
+    "path": "docs/bugs/bug-archive.md",
+    "type": "POSTMORTEM",
+    "status": "active",
+    "version": "1.0.0"
+  },
+  {
+    "id": "RUNBOOK",
+    "path": "docs/runbook.md",
+    "type": "DEPLOYMENT",
+    "status": "active",
+    "version": "1.0.0"
+  },
+  {
+    "id": "STRIPE-SETUP",
+    "path": "docs/stripe-setup.md",
+    "type": "INTEGRATION-SPEC",
+    "status": "active",
+    "version": "1.0.0"
+  }
+]

@@ -1,5 +1,11 @@
 # NordHjem Storefront
 
+[![CI](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/ci.yml/badge.svg)](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/ci.yml)
+[![CD — Staging](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/cd-staging.yml/badge.svg)](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/cd-staging.yml)
+[![CD — Production](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/cd-production.yml/badge.svg)](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/cd-production.yml)
+[![Playwright Site Monitor](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/playwright-monitor.yml/badge.svg)](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/playwright-monitor.yml)
+[![Lighthouse CI](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/lighthouse-ci.yml/badge.svg)](https://github.com/Nickwenniyxiao-art/nextjs-starter-medusa/actions/workflows/lighthouse-ci.yml)
+
 NordHjem 北欧电商平台前端，基于 [Next.js 14](https://nextjs.org/) + [Medusa.js v2 Storefront](https://docs.medusajs.com/storefront) 构建。
 
 ## 技术栈

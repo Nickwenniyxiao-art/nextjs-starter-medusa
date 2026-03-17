@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-03-16",
+  "types": [
+    {
+      "id": "ARCHITECTURE",
+      "name": "Architecture",
+      "description": "System architecture and high-level design documents."
+    },
+    {
+      "id": "ADR",
+      "name": "Architecture Decision Record",
+      "description": "Captured engineering decisions and rationale."
+    },
+    {
+      "id": "ADR-TEMPLATE",
+      "name": "ADR Template",
+      "description": "Template or standardized structure for ADR-style documentation."
+    },
+    {
+      "id": "API-SPEC",
+      "name": "API Specification",
+      "description": "API contracts, request/response schema, and usage notes."
+    },
+    {
+      "id": "INTEGRATION-SPEC",
+      "name": "Integration Specification",
+      "description": "Third-party integration setup, contract, and operational notes."
+    },
+    {
+      "id": "DEPLOYMENT",
+      "name": "Deployment",
+      "description": "Deployment runbooks, release, rollback and environment operations."
+    },
+    {
+      "id": "RUNBOOK",
+      "name": "Runbook",
+      "description": "Operational troubleshooting and incident handling guides."
+    },
+    {
+      "id": "POSTMORTEM",
+      "name": "Postmortem",
+      "description": "Incident retrospective and lessons learned documentation."
+    },
+    {
+      "id": "ONBOARDING",
+      "name": "Onboarding",
+      "description": "Team onboarding and ramp-up documentation."
+    },
+    {
+      "id": "SECURITY",
+      "name": "Security",
+      "description": "Security hardening, audit, and incident response documents."
+    },
+    {
+      "id": "TEST-STRATEGY",
+      "name": "Test Strategy",
+      "description": "Quality strategy, test scopes, and validation matrix."
+    },
+    {
+      "id": "ROADMAP",
+      "name": "Roadmap",
+      "description": "Roadmap and planning artifacts for deliverables."
+    },
+    {
+      "id": "CHANGELOG",
+      "name": "Changelog",
+      "description": "Release notes and historical change records."
+    },
+    {
+      "id": "POLICY",
+      "name": "Policy",
+      "description": "Engineering policies, governance, and contribution standards."
+    }
+  ],
+  "status_values": [
+    "active",
+    "deprecated",
+    "archived",
+    "draft"
+  ],
+  "versioning": {
+    "format": "semver",
+    "example": "1.0.0"
+  }
+}

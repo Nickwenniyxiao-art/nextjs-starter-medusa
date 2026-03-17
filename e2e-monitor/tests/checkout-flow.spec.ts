@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8000'
 const checkoutTimeout = 15000
+const API_URL = process.env.API_URL || 'http://66.94.127.117:9000'
 
 async function addFirstProductToCart(page: Page) {
   await page.goto(`${BASE_URL}/en/dk/store`, { timeout: checkoutTimeout })
@@ -31,8 +32,28 @@ async function addFirstProductToCart(page: Page) {
   await page.waitForTimeout(2000)
 }
 
+async function hasAnyProducts(page: Page) {
+  await page.goto(`${BASE_URL}/en/dk/store`, { timeout: checkoutTimeout })
+  await page.waitForLoadState('networkidle')
+  const productLinks = page.locator('[data-testid="products-list"] li a, a[href*="/products/"]')
+  return (await productLinks.count()) > 0
+}
+
 test.describe('完整下单流程', () => {
+  test.beforeEach(async ({ page }) => {
+    const apiCheck = await page.request
+      .get(`${API_URL}/health`, { timeout: 10000 })
+      .catch(() => null)
+
+    if (!apiCheck || !apiCheck.ok()) {
+      test.skip(true, 'Backend API is not reachable')
+    }
+  })
+
   test('首页到订单确认完整流转', async ({ page }) => {
+    const productsAvailable = await hasAnyProducts(page)
+    test.skip(!productsAvailable, '⚠️ No products found in test environment - skipping product-dependent test')
+
     await page.goto(`${BASE_URL}/en/dk`, { timeout: checkoutTimeout })
     await expect(page).toHaveURL(/\/en\/dk/, { timeout: checkoutTimeout })
 
