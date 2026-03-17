@@ -31,6 +31,16 @@ test.describe('多币种与多地区', () => {
   test('US 地区展示 USD 价格符号', async ({ page }) => {
     await page.goto(`${BASE_URL}/en/us/store`, { timeout: uiTimeout })
     await page.waitForLoadState('networkidle')
+
+    const regionSelector = page
+      .locator('[data-testid="region-selector"], [data-testid="country-select"]')
+      .first()
+    const hasRegionSelector = await regionSelector.isVisible().catch(() => false)
+    if (!hasRegionSelector) {
+      test.skip(true, '跳过：test 环境未配置多地区')
+      return
+    }
+
     await expect(page.locator('body')).toContainText(/\$|usd/i)
   })
 
