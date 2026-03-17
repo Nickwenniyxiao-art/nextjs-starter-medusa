@@ -81,6 +81,11 @@
       "id": "SMOKE-TEST",
       "name": "Smoke Test",
       "description": "Post-deployment smoke checks validating core availability and render readiness."
+    },
+    {
+      "id": "CI",
+      "name": "CI",
+      "description": "Continuous integration workflows, quality gates, and automation pipeline definitions."
     }
   ],
   "status_values": [
