@@ -1,9 +1,14 @@
+# ⚠️ DEPRECATED — 已合并至 pr-compliance-gate.yml
+# 保留此文件 1 周后删除（deprecated date: 2026-03-17）
+# 删除 on: 触发器防止重复运行
+
 name: Check ROADMAP Ref
 
 on:
-  pull_request:
-    types: [opened, edited, reopened, synchronize]
-    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      note:
+        description: 'DEPRECATED — see pr-compliance-gate.yml'
 
 permissions:
   contents: read
