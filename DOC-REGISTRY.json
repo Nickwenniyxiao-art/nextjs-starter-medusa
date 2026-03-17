@@ -42,7 +42,6 @@
     "version": "1.0.0"
   },
   {
-<<<<<<< HEAD
     "id": "AUDIT-WORKFLOW",
     "path": ".github/workflows/audit.yml",
     "file": ".github/workflows/audit.yml",
@@ -51,12 +50,20 @@
     "type": "CI",
     "status": "active",
     "last_updated": "2026-03-17",
-=======
+    "version": "1.0.0"
+  },
+  {
     "id": "CD-PRODUCTION-SMOKE-TEST",
     "path": "docs/CD-PRODUCTION-SMOKE-TEST.md",
     "type": "SMOKE-TEST",
     "status": "active",
->>>>>>> origin/develop
     "version": "1.0.0"
+  },
+  {
+    "id": "AI-REVIEWER-CLAUDE",
+    "file": "docs/AI-REVIEWER-CLAUDE.md",
+    "required": false,
+    "gate": 2,
+    "status": "stub"
   }
 ]
