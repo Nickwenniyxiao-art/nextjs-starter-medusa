@@ -19,6 +19,12 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
+            const headRef = context.payload.pull_request.head.ref;
+            if (headRef.startsWith('codex/')) {
+              console.log('Skipping compliance fix: PR from codex/ branch');
+              return;
+            }
+
             const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
