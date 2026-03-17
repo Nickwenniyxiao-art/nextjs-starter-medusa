@@ -148,6 +148,15 @@
       "required_sections": [],
       "required_metadata": [],
       "description": "AI Code Review 第二审查器 Claude 的配置与审查维度说明"
+    },
+    {
+      "id": "PLAYWRIGHT-PATROL",
+      "title": "Playwright 定时巡检",
+      "path": ".github/workflows/playwright-patrol.yml",
+      "type": "workflow",
+      "module": "INFRA",
+      "status": "active",
+      "description": "每15分钟自动运行 Playwright 巡检验证核心页面"
     }
   ]
 }
