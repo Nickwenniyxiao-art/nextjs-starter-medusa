@@ -40,5 +40,12 @@
     "type": "DEPLOY-LOG",
     "status": "active",
     "version": "1.0.0"
+  },
+  {
+    "id": "CD-PRODUCTION-SMOKE-TEST",
+    "path": "docs/CD-PRODUCTION-SMOKE-TEST.md",
+    "type": "SMOKE-TEST",
+    "status": "active",
+    "version": "1.0.0"
   }
 ]

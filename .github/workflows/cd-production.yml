@@ -106,3 +106,44 @@ jobs:
             });
 
             console.log(`✅ Logged production deployment: ${sha} by ${actor}`);
+
+  smoke-test-production:
+    name: "💨 Smoke Test → Production"
+    needs: deploy-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Wait for service to stabilize
+        run: sleep 30
+
+      - name: Health check
+        run: |
+          PROD_URL="${{ secrets.PRODUCTION_FRONTEND_URL || 'https://nordhjem.com' }}"
+
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PROD_URL" || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "⏳ Attempt $i: status=$STATUS, retrying in 10s..."
+            sleep 10
+          done
+
+          echo "❌ Production health check failed after 5 attempts"
+          exit 1
+
+      - name: Page load smoke test
+        run: |
+          PROD_URL="${{ secrets.PRODUCTION_FRONTEND_URL || 'https://nordhjem.com' }}"
+
+          echo "Testing homepage..."
+          BODY=$(curl -s "$PROD_URL")
+          if echo "$BODY" | grep -q "</html>"; then
+            echo "✅ Homepage renders HTML"
+          else
+            echo "❌ Homepage does not render properly"
+            exit 1
+          fi
+
+          echo "✅ All production smoke tests passed"
