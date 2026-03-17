@@ -43,9 +43,6 @@ test.describe('购物车操作', () => {
   })
 
   test('添加商品并显示在购物车中', async ({ page }) => {
-    const productsAvailable = await hasAnyProducts(page)
-    test.skip(!productsAvailable, '⚠️ No products found in test environment - skipping product-dependent test')
-
     await goToFirstProduct(page)
     await addOneProduct(page)
 
@@ -54,9 +51,6 @@ test.describe('购物车操作', () => {
   })
 
   test('修改商品数量', async ({ page }) => {
-    const productsAvailable = await hasAnyProducts(page)
-    test.skip(!productsAvailable, '⚠️ No products found in test environment - skipping product-dependent test')
-
     await goToFirstProduct(page)
     await addOneProduct(page)
     await page.goto(`${BASE_URL}/en/dk/cart`, { timeout: uiTimeout })
@@ -85,7 +79,7 @@ test.describe('购物车操作', () => {
     }
 
     const emptyCart = page.locator('[data-testid="empty-cart-message"]')
-    await expect(emptyCart.first()).toBeVisible({ timeout: uiTimeout })
+    await expect(emptyCart).toBeVisible({ timeout: uiTimeout })
   })
 
   test('多商品购物车', async ({ page }) => {

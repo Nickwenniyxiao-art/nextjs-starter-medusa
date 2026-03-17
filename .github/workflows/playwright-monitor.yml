@@ -2,8 +2,8 @@ name: Playwright Site Monitor
 
 on:
   schedule:
-    # Run every 6 hours
-    - cron: '0 */6 * * *'
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Playwright browsers
         working-directory: e2e-monitor
-        run: npx playwright install chromium --with-deps
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Run smoke tests
         working-directory: e2e-monitor

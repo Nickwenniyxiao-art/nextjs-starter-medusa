@@ -1,12 +1,17 @@
-# ⚠️ DEPRECATED — 已合并至 pr-automation.yml
-# 保留此文件 1 周后删除（deprecated date: 2026-03-17）
 name: Codex Auto-Fix on Failure
 
 on:
+  # ⚠️ TEMPORARILY DISABLED — S1-0
+  # 原因：22分钟内触发7次，累计525次运行，形成恶性循环
+  # 恢复条件：阶段一所有工作流稳定变绿后重新启用
+  # 禁用日期：2026-03-16
+  # 禁用决策：Owner审批 + CTO执行
   workflow_dispatch:
     inputs:
-      note:
-        description: 'DEPRECATED — see pr-automation.yml'
+      confirm:
+        description: 'Type ENABLE to re-enable auto-fix'
+        required: true
+
 permissions:
   contents: write
   pull-requests: write

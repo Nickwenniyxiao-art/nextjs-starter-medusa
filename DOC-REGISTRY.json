@@ -33,5 +33,103 @@
     "type": "INTEGRATION-SPEC",
     "status": "active",
     "version": "1.0.0"
+  },
+  {
+    "id": "DEPLOY-LOG",
+    "path": "docs/DEPLOY-LOG.md",
+    "type": "DEPLOY-LOG",
+    "status": "active",
+    "version": "1.0.0"
+  },
+  {
+    "id": "AUDIT-WORKFLOW",
+    "path": ".github/workflows/audit.yml",
+    "file": ".github/workflows/audit.yml",
+    "title": "Security Audit Workflow",
+    "category": "ci",
+    "type": "CI",
+    "status": "active",
+    "last_updated": "2026-03-17",
+    "version": "1.0.0"
+  },
+  {
+    "id": "CD-PRODUCTION-SMOKE-TEST",
+    "path": "docs/CD-PRODUCTION-SMOKE-TEST.md",
+    "type": "SMOKE-TEST",
+    "status": "active",
+    "version": "1.0.0"
+  },
+  {
+    "id": "E2E-WEBKIT",
+    "file": "docs/E2E-WEBKIT.md",
+    "required": false,
+    "gate": 2,
+    "status": "stub"
+  },
+  {
+    "id": "AI-REVIEWER-ARCH",
+    "file": "docs/AI-REVIEWER-ARCH.md",
+    "required": false,
+    "gate": 2,
+    "status": "stub"
+  },
+  {
+    "id": "DORA-REPORT",
+    "file": "docs/DORA-REPORT.md",
+    "required": false,
+    "gate": 3,
+    "status": "stub"
+  },
+  {
+    "id": "AI-REVIEWER-CLAUDE",
+    "file": "docs/AI-REVIEWER-CLAUDE.md",
+    "required": false,
+    "gate": 2,
+    "status": "stub"
+  },
+  {
+    "id": "PRODUCTION-SMOKE-TEST",
+    "title": "前端 Production Smoke Test",
+    "path": "scripts/smoke-test.sh",
+    "type": "script",
+    "module": "INFRA",
+    "status": "active",
+    "description": "部署后自动验证核心页面可访问性"
+  },
+  {
+    "id": "SECURITY-AUDIT-WORKFLOW",
+    "title": "前端安全扫描工作流",
+    "path": ".github/workflows/security-audit.yml",
+    "type": "workflow",
+    "module": "INFRA",
+    "status": "active",
+    "description": "yarn audit 安全扫描，检测 high/critical 漏洞"
+  },
+  {
+    "id": "SENTRY-PERFORMANCE",
+    "title": "Sentry 性能监控配置",
+    "path": "sentry.client.config.ts",
+    "type": "config",
+    "module": "INFRA",
+    "status": "active",
+    "description": "Sentry 性能监控 + Core Web Vitals 追踪"
+  },
+  {
+    "id": "PLAYWRIGHT-PATROL",
+    "title": "Playwright 定时巡检",
+    "path": ".github/workflows/playwright-patrol.yml",
+    "type": "workflow",
+    "module": "INFRA",
+    "status": "active",
+    "description": "每15分钟自动运行 Playwright 巡检验证核心页面"
+  },
+  {
+    "id": "UNIT-TEST-FRAMEWORK",
+    "title": "前端单元测试框架",
+    "path": "vitest.config.ts",
+    "type": "config",
+    "module": "INFRA",
+    "status": "active",
+    "description": "Vitest + Testing Library 单元测试配置"
   }
 ]

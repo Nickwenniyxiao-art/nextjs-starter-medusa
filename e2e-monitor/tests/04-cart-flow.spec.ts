@@ -34,13 +34,10 @@ test.describe('Business Regression - Cart', () => {
   test('can add one product then navigate to cart', async ({ page }) => {
     await page.goto(STORE_URL)
 
-    const products = page.locator('[data-testid="products-list"] a')
-    test.skip((await products.count()) === 0, '⚠️ No products in test environment')
-
-    const firstProduct = products.first()
+    const firstProduct = page.locator('[data-testid="products-list"] a').first()
     await clickWhenVisible(firstProduct)
 
-    const addProductButton = page.getByTestId('add-product-button').first()
+    const addProductButton = page.getByTestId('add-product-button')
     await clickWhenVisible(addProductButton)
 
     await page.waitForTimeout(2000)

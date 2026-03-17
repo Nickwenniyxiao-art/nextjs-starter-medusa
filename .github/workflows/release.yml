@@ -43,18 +43,11 @@ jobs:
           echo "Latest existing tag: $LATEST_TAG"
           echo "latest_tag=$LATEST_TAG" >> $GITHUB_ENV
 
-      - name: Temporarily relax branch protection for release
+      - name: Temporarily allow direct push
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
         run: |
-          echo "=== Relaxing branch protection for semantic-release ==="
-          # 移除 required status checks（阻止 semantic-release push 的根因）
-          gh api repos/${{ github.repository }}/branches/main/protection/required_status_checks \
-            -X DELETE || true
-          # 也禁用 enforce_admins
-          gh api repos/${{ github.repository }}/branches/main/protection/enforce_admins \
-            -X DELETE || true
-          echo "✅ Branch protection relaxed"
+          gh api repos/${{ github.repository }}/branches/main/protection/enforce_admins -X DELETE || true
 
       - name: Run semantic-release
         env:
@@ -64,23 +57,9 @@ jobs:
           echo "Tags synced. Running semantic-release..."
           npx semantic-release
 
-      - name: Restore branch protection
+      - name: Re-enable branch protection
         if: always()
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
         run: |
-          echo "=== Restoring branch protection ==="
-          gh api repos/${{ github.repository }}/branches/main/protection \
-            -X PUT \
-            --input - << 'PROTECTION'
-          {
-            "required_status_checks": {
-              "strict": false,
-              "contexts": ["lint-and-build"]
-            },
-            "enforce_admins": false,
-            "required_pull_request_reviews": null,
-            "restrictions": null
-          }
-          PROTECTION
-          echo "✅ Branch protection restored"
+          gh api repos/${{ github.repository }}/branches/main/protection/enforce_admins -X POST || true

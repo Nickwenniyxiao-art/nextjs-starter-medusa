@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-03-16",
+  "updated_at": "2026-03-17",
   "types": [
     {
       "id": "ARCHITECTURE",
@@ -71,6 +71,26 @@
       "id": "POLICY",
       "name": "Policy",
       "description": "Engineering policies, governance, and contribution standards."
+    },
+    {
+      "id": "DEPLOY-LOG",
+      "name": "Deploy Log",
+      "description": "Automated deployment event logs with environment, SHA, actor, and workflow metadata."
+    },
+    {
+      "id": "SMOKE-TEST",
+      "name": "Smoke Test",
+      "description": "Post-deployment smoke checks validating core availability and render readiness."
+    },
+    {
+      "id": "CI",
+      "name": "CI",
+      "description": "Continuous integration workflows, quality gates, and automation pipeline definitions."
+    },
+    {
+      "id": "DORA-METRICS",
+      "name": "DORA Metrics",
+      "description": "DORA metric definitions, collection methods, and periodic reporting standards."
     }
   ],
   "status_values": [
@@ -82,5 +102,97 @@
   "versioning": {
     "format": "semver",
     "example": "1.0.0"
-  }
+  },
+  "documents": [
+    {
+      "id": "E2E-WEBKIT",
+      "name": "E2E WebKit 浏览器配置",
+      "name_en": "E2E-WEBKIT",
+      "filename": "E2E-WEBKIT.md",
+      "category": "05-testing",
+      "gate": 2,
+      "applicable_to": [
+        "frontend"
+      ],
+      "default_required": false,
+      "required_sections": [],
+      "required_metadata": [],
+      "description": "E2E 测试 WebKit 浏览器支持配置与验证说明"
+    },
+    {
+      "id": "AI-REVIEWER-ARCH",
+      "name": "AI Reviewer 3 架构审查配置",
+      "name_en": "AI-REVIEWER-ARCH",
+      "filename": "AI-REVIEWER-ARCH.md",
+      "category": "04-architecture",
+      "gate": 2,
+      "applicable_to": [
+        "frontend"
+      ],
+      "default_required": false,
+      "required_sections": [],
+      "required_metadata": [],
+      "description": "AI Code Review 第三审查器的架构一致性审查配置"
+    },
+    {
+      "id": "AI-REVIEWER-CLAUDE",
+      "name": "AI Reviewer 2 (Claude) 配置",
+      "name_en": "AI-REVIEWER-CLAUDE",
+      "filename": "AI-REVIEWER-CLAUDE.md",
+      "category": "04-architecture",
+      "gate": 2,
+      "applicable_to": [
+        "frontend"
+      ],
+      "default_required": false,
+      "required_sections": [],
+      "required_metadata": [],
+      "description": "AI Code Review 第二审查器 Claude 的配置与审查维度说明"
+    },
+    {
+      "id": "PRODUCTION-SMOKE-TEST",
+      "title": "前端 Production Smoke Test",
+      "path": "scripts/smoke-test.sh",
+      "type": "script",
+      "module": "INFRA",
+      "status": "active",
+      "description": "部署后自动验证核心页面可访问性"
+    },
+    {
+      "id": "SECURITY-AUDIT-WORKFLOW",
+      "title": "前端安全扫描工作流",
+      "path": ".github/workflows/security-audit.yml",
+      "type": "workflow",
+      "module": "INFRA",
+      "status": "active",
+      "description": "yarn audit 安全扫描，检测 high/critical 漏洞"
+    },
+    {
+      "id": "SENTRY-PERFORMANCE",
+      "title": "Sentry 性能监控配置",
+      "path": "sentry.client.config.ts",
+      "type": "config",
+      "module": "INFRA",
+      "status": "active",
+      "description": "Sentry 性能监控 + Core Web Vitals 追踪"
+    },
+    {
+      "id": "PLAYWRIGHT-PATROL",
+      "title": "Playwright 定时巡检",
+      "path": ".github/workflows/playwright-patrol.yml",
+      "type": "workflow",
+      "module": "INFRA",
+      "status": "active",
+      "description": "每15分钟自动运行 Playwright 巡检验证核心页面"
+    },
+    {
+      "id": "UNIT-TEST-FRAMEWORK",
+      "title": "前端单元测试框架",
+      "path": "vitest.config.ts",
+      "type": "config",
+      "module": "INFRA",
+      "status": "active",
+      "description": "Vitest + Testing Library 单元测试配置"
+    }
+  ]
 }
