@@ -2,6 +2,7 @@ import { getBaseURL } from "@lib/util/env"
 import CrispChat from "@modules/common/components/crisp-chat"
 import { GA4Script } from "@lib/analytics/ga4"
 import { generateOrganizationJsonLd } from "@lib/util/structured-data"
+import WebVitalsReporter from "@modules/common/components/web-vitals-reporter"
 import { Metadata } from "next"
 import "styles/globals.css"
 import { DM_Serif_Display, Inter, Noto_Sans_SC } from "next/font/google"
@@ -50,6 +51,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         <main className="relative">{props.children}</main>
         <CrispChat />
         <GA4Script />
+        <WebVitalsReporter />
       </body>
     </html>
   )
