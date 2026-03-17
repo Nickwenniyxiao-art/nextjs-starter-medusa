@@ -60,3 +60,49 @@ jobs:
             echo "❌ Health check failed"
             pm2 logs storefront --lines 20 --nostream 2>/dev/null || true
             exit 1
+
+      - name: Log deployment event
+        if: success()
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.BOT_PAT }}
+          script: |
+            const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+            const sha = context.sha.substring(0, 7);
+            const actor = context.actor;
+            const newLine = `| ${now} | production | ${sha} | ${actor} | cd-production |`;
+
+            let content, fileSha;
+            try {
+              const file = await github.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path: 'docs/DEPLOY-LOG.md',
+                ref: 'develop'
+              });
+              content = Buffer.from(file.data.content, 'base64').toString('utf8');
+              fileSha = file.data.sha;
+            } catch (e) {
+              content = '# 部署事件日志（前端）\n\n> 自动记录每次成功部署的时间、版本和环境。\n> 由 cd-staging.yml 和 cd-production.yml 自动更新。\n\n| 时间 (UTC) | 环境 | 版本 (SHA) | 触发者 | 工作流 |\n|------------|------|-----------|--------|--------|\n';
+              fileSha = undefined;
+            }
+
+            content = content.trimEnd() + '\n' + newLine + '\n';
+
+            const lines = content.split('\n');
+            const headerLines = lines.slice(0, 7);
+            const dataLines = lines.slice(7).filter((l) => l.startsWith('|') && !l.includes('---'));
+            const trimmedData = dataLines.slice(-100);
+            content = headerLines.join('\n') + '\n' + trimmedData.join('\n') + '\n';
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'docs/DEPLOY-LOG.md',
+              message: 'docs: log production deployment [skip ci]',
+              content: Buffer.from(content).toString('base64'),
+              branch: 'develop',
+              ...(fileSha ? { sha: fileSha } : {})
+            });
+
+            console.log(`✅ Logged production deployment: ${sha} by ${actor}`);

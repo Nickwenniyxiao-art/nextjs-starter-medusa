@@ -33,5 +33,12 @@
     "type": "INTEGRATION-SPEC",
     "status": "active",
     "version": "1.0.0"
+  },
+  {
+    "id": "DEPLOY-LOG",
+    "path": "docs/DEPLOY-LOG.md",
+    "type": "DEPLOY-LOG",
+    "status": "active",
+    "version": "1.0.0"
   }
 ]

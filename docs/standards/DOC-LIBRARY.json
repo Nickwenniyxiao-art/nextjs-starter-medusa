@@ -71,6 +71,11 @@
       "id": "POLICY",
       "name": "Policy",
       "description": "Engineering policies, governance, and contribution standards."
+    },
+    {
+      "id": "DEPLOY-LOG",
+      "name": "Deploy Log",
+      "description": "Automated deployment event logs with environment, SHA, actor, and workflow metadata."
     }
   ],
   "status_values": [
