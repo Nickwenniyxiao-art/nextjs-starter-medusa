@@ -148,6 +148,15 @@
       "required_sections": [],
       "required_metadata": [],
       "description": "AI Code Review 第二审查器 Claude 的配置与审查维度说明"
+    },
+    {
+      "id": "UNIT-TEST-FRAMEWORK",
+      "title": "前端单元测试框架",
+      "path": "vitest.config.ts",
+      "type": "config",
+      "module": "INFRA",
+      "status": "active",
+      "description": "Vitest + Testing Library 单元测试配置"
     }
   ]
 }

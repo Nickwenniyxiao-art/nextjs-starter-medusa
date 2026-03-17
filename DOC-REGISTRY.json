@@ -86,5 +86,14 @@
     "required": false,
     "gate": 2,
     "status": "stub"
+  },
+  {
+    "id": "UNIT-TEST-FRAMEWORK",
+    "title": "前端单元测试框架",
+    "path": "vitest.config.ts",
+    "type": "config",
+    "module": "INFRA",
+    "status": "active",
+    "description": "Vitest + Testing Library 单元测试配置"
   }
 ]
