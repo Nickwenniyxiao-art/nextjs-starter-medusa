@@ -69,13 +69,17 @@ test.describe('购物车操作', () => {
     await goToFirstProduct(page)
     await addOneProduct(page)
     await page.goto(`${BASE_URL}/en/dk/cart`, { timeout: uiTimeout })
+    await page.waitForLoadState('networkidle')
 
-    const removeButton = page.locator('button:has-text("Remove"), button:has-text("删除"), [data-testid="remove-item"]').first()
+    const removeButton = page
+      .locator('[data-testid="product-delete-button"], [data-testid="remove-item"], button:has-text("Remove"), button:has-text("删除")')
+      .first()
     if (await removeButton.isVisible({ timeout: 5000 }).catch(() => false)) {
       await removeButton.click()
     }
 
-    await expect(page.locator('body')).toContainText(/empty|no items|空/i)
+    const emptyCart = page.locator('[data-testid="empty-cart-message"]')
+    await expect(emptyCart).toBeVisible({ timeout: uiTimeout })
   })
 
   test('多商品购物车', async ({ page }) => {
