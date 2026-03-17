@@ -24,6 +24,10 @@ jobs:
           script: |
             set -e
             cd /opt/nordhjem/storefront-staging
+            echo "=== Recording current version for rollback ==="
+            ROLLBACK_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "none")
+            echo "$ROLLBACK_COMMIT" > /opt/nordhjem/backups/storefront-staging-last-good-commit.txt
+            echo "Saved rollback commit: $ROLLBACK_COMMIT"
             echo "=== Pulling latest (staging) ==="
             git fetch origin staging
             git reset --hard origin/staging
@@ -71,7 +75,43 @@ jobs:
               echo "Attempt $i: HTTP $STATUS, waiting 10s..."
               sleep 10
             done
-            echo "❌ Health check failed"
+
+            echo "❌ Health check failed, initiating rollback..."
+
+            LAST_GOOD=$(cat /opt/nordhjem/backups/storefront-staging-last-good-commit.txt 2>/dev/null || echo "none")
+            if [ "$LAST_GOOD" = "none" ] || [ -z "$LAST_GOOD" ]; then
+              echo "⚠️ No previous commit recorded, cannot auto-rollback"
+              exit 1
+            fi
+
+            echo "🔄 Rolling back to commit: $LAST_GOOD"
+            cd /opt/nordhjem/storefront-staging
+            git reset --hard $LAST_GOOD
+
+            echo "=== Rebuilding previous version ==="
+            corepack enable
+            yarn install
+            yarn build
+            cp -r public .next/standalone/public
+            cp -r .next/static .next/standalone/.next/static
+            cp .env .next/standalone/.env
+
+            echo "=== Restarting PM2 with previous version ==="
+            pm2 delete storefront-staging 2>/dev/null || true
+            PORT=8002 HOSTNAME=0.0.0.0 MEDUSA_BACKEND_URL=http://66.94.127.117:9002 \
+              pm2 start .next/standalone/server.js --name storefront-staging \
+              --cwd /opt/nordhjem/storefront-staging
+            pm2 save
+
+            sleep 10
+            ROLLBACK_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8002/en/dk 2>/dev/null || echo "000")
+            if [ "$ROLLBACK_STATUS" = "200" ] || [ "$ROLLBACK_STATUS" = "307" ] || [ "$ROLLBACK_STATUS" = "301" ]; then
+              echo "✅ Rollback successful — running on previous commit: $LAST_GOOD"
+              echo "⚠️ New deployment failed but service restored. Please investigate."
+            else
+              echo "❌ Rollback also failed (HTTP $ROLLBACK_STATUS)"
+              echo "⚠️ CRITICAL: Service may be down. Manual intervention required."
+            fi
             exit 1
 
   seed-staging:
