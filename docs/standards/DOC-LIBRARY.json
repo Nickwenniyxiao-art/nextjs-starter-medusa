@@ -175,6 +175,15 @@
       "module": "INFRA",
       "status": "active",
       "description": "Sentry 性能监控 + Core Web Vitals 追踪"
+    },
+    {
+      "id": "PLAYWRIGHT-PATROL",
+      "title": "Playwright 定时巡检",
+      "path": ".github/workflows/playwright-patrol.yml",
+      "type": "workflow",
+      "module": "INFRA",
+      "status": "active",
+      "description": "每15分钟自动运行 Playwright 巡检验证核心页面"
     }
   ]
 }
