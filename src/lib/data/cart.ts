@@ -3,6 +3,7 @@
 import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
+import * as Sentry from "@sentry/nextjs"
 import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import {
@@ -137,24 +138,36 @@ export async function addToCart({
     ...(await getAuthHeaders()),
   }
 
-  await sdk.store.cart
-    .createLineItem(
-      cart.id,
-      {
+  await Sentry.startSpan(
+    {
+      op: "cart.add_item",
+      name: "Cart Add Item",
+      attributes: {
+        cart_id: cart.id,
         variant_id: variantId,
-        quantity,
       },
-      {},
-      headers
-    )
-    .then(async () => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+    },
+    async () => {
+      await sdk.store.cart
+        .createLineItem(
+          cart.id,
+          {
+            variant_id: variantId,
+            quantity,
+          },
+          {},
+          headers
+        )
+        .then(async () => {
+          const cartCacheTag = await getCacheTag("carts")
+          revalidateTag(cartCacheTag)
 
-      const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
-    })
-    .catch(medusaError)
+          const fulfillmentCacheTag = await getCacheTag("fulfillment")
+          revalidateTag(fulfillmentCacheTag)
+        })
+        .catch(medusaError)
+    }
+  )
 }
 
 export async function updateLineItem({
@@ -413,14 +426,24 @@ export async function placeOrder(cartId?: string) {
     ...(await getAuthHeaders()),
   }
 
-  const cartRes = await sdk.store.cart
-    .complete(id, {}, headers)
-    .then(async (cartRes) => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-      return cartRes
-    })
-    .catch(medusaError)
+  const cartRes = await Sentry.startSpan(
+    {
+      op: "checkout.place_order",
+      name: "Checkout Place Order",
+      attributes: {
+        cart_id: id,
+      },
+    },
+    async () =>
+      sdk.store.cart
+        .complete(id, {}, headers)
+        .then(async (cartRes) => {
+          const cartCacheTag = await getCacheTag("carts")
+          revalidateTag(cartCacheTag)
+          return cartRes
+        })
+        .catch(medusaError)
+  )
 
   if (cartRes?.type === "order") {
     const countryCode =

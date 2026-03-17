@@ -106,6 +106,15 @@
     "description": "yarn audit 安全扫描，检测 high/critical 漏洞"
   },
   {
+    "id": "SENTRY-PERFORMANCE",
+    "title": "Sentry 性能监控配置",
+    "path": "sentry.client.config.ts",
+    "type": "config",
+    "module": "INFRA",
+    "status": "active",
+    "description": "Sentry 性能监控 + Core Web Vitals 追踪"
+  },
+  {
     "id": "PLAYWRIGHT-PATROL",
     "title": "Playwright 定时巡检",
     "path": ".github/workflows/playwright-patrol.yml",
