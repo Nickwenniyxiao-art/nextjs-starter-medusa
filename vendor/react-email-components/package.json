@@ -1,0 +1,10 @@
+{
+  "name": "@react-email/components",
+  "version": "0.0.19",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  }
+}
