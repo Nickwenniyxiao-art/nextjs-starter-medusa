@@ -1,0 +1,75 @@
+name: Sync Registry to Issues
+
+on:
+  push:
+    branches: [develop]
+    paths: ['docs/TASK-REGISTRY.json']
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Sync TASK-REGISTRY to GitHub Issues
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.BOT_PAT }}
+          script: |
+            const fs = require('fs');
+            let registry;
+            try {
+              registry = JSON.parse(fs.readFileSync('docs/TASK-REGISTRY.json', 'utf8'));
+            } catch(e) {
+              core.setFailed('Cannot read docs/TASK-REGISTRY.json: ' + e.message);
+              return;
+            }
+
+            // Get existing issues
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'task-registry',
+              per_page: 100
+            });
+            const existingTitles = new Set(existing.data.map(i => i.title));
+
+            let created = 0;
+            for (const project of registry.projects || []) {
+              for (const task of project.tasks || []) {
+                if (task.status === 'done') continue;
+                for (const action of task.actions || []) {
+                  if (action.status === 'done') continue;
+                  const title = `[${action.id}] ${action.name}`;
+                  if (!existingTitles.has(title)) {
+                    await github.rest.issues.create({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      title,
+                      body: [
+                        `## Task Registry Action`,
+                        ``,
+                        `- **Action ID**: ${action.id}`,
+                        `- **Task**: ${task.id} — ${task.name}`,
+                        `- **Phase**: ${project.phase} — ${project.name}`,
+                        `- **Status**: ${action.status}`,
+                        action.notes ? `- **Notes**: ${action.notes}` : '',
+                      ].filter(Boolean).join('\n'),
+                      labels: ['task-registry', 'type: task']
+                    });
+                    created++;
+                    await new Promise(r => setTimeout(r, 500)); // rate limit
+                  }
+                }
+              }
+            }
+            console.log(`✅ Created ${created} new issues from TASK-REGISTRY`);

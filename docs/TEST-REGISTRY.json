@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-03-18T00:00:00Z",
+  "description": "测试注册表 — 记录所有测试脚本与功能/Bug 的映射关系（NordHjem 前端）",
+  "tests": [
+    {
+      "id": "TEST-E2E-001",
+      "name": "首页加载与商品展示",
+      "type": "e2e",
+      "file": "e2e/home.spec.ts",
+      "covers": ["FEAT-HOME-001"],
+      "tags": ["smoke", "core"],
+      "status": "active",
+      "added": "2026-03-18"
+    },
+    {
+      "id": "TEST-E2E-002",
+      "name": "商品详情页",
+      "type": "e2e",
+      "file": "e2e/product.spec.ts",
+      "covers": ["FEAT-PDP-001"],
+      "tags": ["smoke", "core"],
+      "status": "active",
+      "added": "2026-03-18"
+    },
+    {
+      "id": "TEST-E2E-003",
+      "name": "加购与购物车流程",
+      "type": "e2e",
+      "file": "e2e/cart.spec.ts",
+      "covers": ["FEAT-CART-001"],
+      "tags": ["smoke", "core"],
+      "status": "active",
+      "added": "2026-03-18"
+    },
+    {
+      "id": "TEST-E2E-004",
+      "name": "结账流程（Stripe）",
+      "type": "e2e",
+      "file": "e2e/checkout.spec.ts",
+      "covers": ["FEAT-CHECKOUT-001"],
+      "tags": ["core", "payment"],
+      "status": "active",
+      "added": "2026-03-18"
+    },
+    {
+      "id": "TEST-UNIT-001",
+      "name": "价格格式化工具函数",
+      "type": "unit",
+      "file": "src/lib/__tests__/price.test.ts",
+      "covers": ["FEAT-PRICE-FORMAT"],
+      "tags": ["unit"],
+      "status": "active",
+      "added": "2026-03-18"
+    },
+    {
+      "id": "TEST-UNIT-002",
+      "name": "购物车状态管理",
+      "type": "unit",
+      "file": "src/lib/__tests__/cart.test.ts",
+      "covers": ["FEAT-CART-001"],
+      "tags": ["unit"],
+      "status": "active",
+      "added": "2026-03-18"
+    },
+    {
+      "id": "TEST-PATROL-001",
+      "name": "生产环境核心页面可用性巡检",
+      "type": "playwright-monitor",
+      "file": "e2e-monitor/patrol.spec.ts",
+      "covers": ["SLO-AVAILABILITY"],
+      "tags": ["monitor", "production"],
+      "status": "active",
+      "added": "2026-03-18",
+      "schedule": "每15分钟"
+    }
+  ]
+}

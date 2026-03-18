@@ -1,0 +1,53 @@
+name: Doc Gate Check
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+    branches: [develop]
+
+permissions:
+  contents: read
+
+env:
+  DOC_GATE_MODE: blocking
+
+jobs:
+  gate-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check Document Gate
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const prLabels = context.payload.pull_request?.labels?.map(l => l.name) || [];
+            if (prLabels.includes('egp-bootstrap') || prLabels.includes('no-issue')) {
+              console.log('✅ Skipping doc gate for exempt PR');
+              return;
+            }
+            let registry;
+            try {
+              registry = JSON.parse(fs.readFileSync('DOC-REGISTRY.json', 'utf8'));
+            } catch(e) {
+              core.warning('Cannot read DOC-REGISTRY.json: ' + e.message);
+              return;
+            }
+            const currentGate = registry.current_gate || 1;
+            const requiredDocs = (registry.documents || []).filter(doc =>
+              doc.required === true && doc.gate <= currentGate
+            );
+            const missing = requiredDocs.filter(doc => !fs.existsSync(doc.file || doc.path));
+            if (missing.length > 0) {
+              const mode = process.env.DOC_GATE_MODE || 'blocking';
+              const msg = `❌ ${missing.length} 个必需文档缺失（Gate ${currentGate}）:\n${missing.map(d => `  - ${d.file || d.path}`).join('\n')}\n\n所有必需文档必须存在才能写代码。`;
+              if (mode === 'blocking') {
+                core.setFailed(msg);
+              } else {
+                core.warning(msg);
+              }
+            } else {
+              console.log(`✅ Doc Gate ${currentGate} 检查通过：所有必需文档已就位`);
+            }

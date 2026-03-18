@@ -131,5 +131,109 @@
     "module": "INFRA",
     "status": "active",
     "description": "Vitest + Testing Library 单元测试配置"
+  },
+  {
+    "id": "TELEGRAM-ALERTS",
+    "title": "Telegram 告警工作流",
+    "path": ".github/workflows/telegram-alerts.yml",
+    "type": "workflow",
+    "module": "INFRA",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "CD 部署失败/成功通过 Telegram Bot 推送告警"
+  },
+  {
+    "id": "SENTRY-ALERT-MONITOR",
+    "title": "Sentry 错误率定时巡检",
+    "path": ".github/workflows/sentry-alert-monitor.yml",
+    "type": "workflow",
+    "module": "INFRA",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "每小时查询 Sentry 错误率，超阈值推送 Telegram + 自动创建 GitHub Issue"
+  },
+  {
+    "id": "SLO-SLA",
+    "title": "前端 SLO/SLA 定义",
+    "path": "docs/SLO-SLA.md",
+    "type": "SLA",
+    "module": "INFRA",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "可用性 99.5%、Core Web Vitals SLO、P0-P3 响应时限，与后端 SLA 对齐"
+  },
+  {
+    "id": "TELEGRAM-NOTIFY-SCRIPT",
+    "title": "Telegram 通知脚本",
+    "path": "scripts/telegram-notify.sh",
+    "type": "script",
+    "module": "INFRA",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "发送 Telegram Bot 消息的通用脚本，与后端保持一致"
+  },
+  {
+    "id": "TEST-REGISTRY",
+    "title": "测试注册表",
+    "path": "docs/TEST-REGISTRY.json",
+    "file": "docs/TEST-REGISTRY.json",
+    "type": "TEST-REGISTRY",
+    "module": "QA",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "记录所有测试脚本与功能/Bug 的映射关系，支持回归测试追踪"
+  },
+  {
+    "id": "RFC-README",
+    "title": "RFC 目录与使用说明",
+    "path": "docs/RFC/README.md",
+    "file": "docs/RFC/README.md",
+    "type": "RFC-INDEX",
+    "module": "PROCESS",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "RFC 流程说明与现有 RFC 索引，重要技术决策必须先提 RFC"
+  },
+  {
+    "id": "PRR",
+    "title": "生产就绪评审清单",
+    "path": "docs/PRR.md",
+    "file": "docs/PRR.md",
+    "type": "PRR",
+    "module": "PROCESS",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "功能上线前的生产就绪评审模板，Owner Approve = 批准生产发布"
+  },
+  {
+    "id": "ERROR-BUDGET",
+    "title": "Error Budget 定义与规则",
+    "path": "docs/ERROR-BUDGET.md",
+    "file": "docs/ERROR-BUDGET.md",
+    "type": "SLA",
+    "module": "INFRA",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "前端 SLO 错误预算计算、消耗追踪及开发暂停规则（Core Web Vitals 持续劣化 > 48h 触发）"
+  },
+  {
+    "id": "AI-CONTEXT",
+    "title": "AI Agent 项目上下文包",
+    "path": "docs/AI-CONTEXT.md",
+    "file": "docs/AI-CONTEXT.md",
+    "type": "AI-CONTEXT",
+    "module": "PROCESS",
+    "status": "active",
+    "last_updated": "2026-03-18",
+    "version": "1.0.0",
+    "description": "AI Agent 启动时必读的项目上下文，包含技术栈、分支策略、CI 规则、禁止事项"
   }
 ]
