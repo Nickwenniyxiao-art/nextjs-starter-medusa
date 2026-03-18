@@ -442,6 +442,7 @@ jobs:
 
       - name: Auto-approve PR via bot
         if: (needs.reviewer-1-quality.result == 'success' || needs.reviewer-1-quality.result == 'skipped') && (needs.reviewer-2-security.result == 'success' || needs.reviewer-2-security.result == 'skipped') && (needs.reviewer-3-architecture.result == 'success' || needs.reviewer-3-architecture.result == 'skipped')
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.BOT_PAT }}

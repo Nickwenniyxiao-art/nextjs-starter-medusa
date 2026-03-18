@@ -1,12 +1,804 @@
 {
-  "tasks": [
+  "version": "1.1.0",
+  "last_updated": "2026-03-18T00:00:00Z",
+  "projects": [
     {
-      "id": "R-P1-03",
-      "status": "in_progress",
-      "actions": [
+      "phase": "Phase 0",
+      "name": "基础设施整改",
+      "status": "done",
+      "tasks": [
         {
-          "id": "R-P1-03-A1",
-          "status": "in_progress"
+          "id": "R-P0-01",
+          "name": "AI Review extract-diff bug 修复",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-01-A1",
+              "name": "AI Review extract-diff bug 修复",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-02",
+          "name": "Branch Protection reviewer=1",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-02-A1",
+              "name": "Branch Protection reviewer=1",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-03",
+          "name": "Auto-merge CD_PAT",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-03-A1",
+              "name": "Auto-merge CD_PAT",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-04",
+          "name": "前端 ESLint + Next.js lint",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-04-A1",
+              "name": "前端 ESLint + Next.js lint",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-05",
+          "name": "前端 CI lint + type-check",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-05-A1",
+              "name": "前端 CI lint + type-check",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-06",
+          "name": "Husky + lint-staged + commitlint",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-06-A1",
+              "name": "Husky + lint-staged + commitlint",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-07",
+          "name": "AGENTS.md",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-07-A1",
+              "name": "AGENTS.md",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-08",
+          "name": "前端 CI frozen lockfile",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-08-A1",
+              "name": "前端 CI frozen lockfile",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-09",
+          "name": "Production admin bypass disabled",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P0-09-A1",
+              "name": "Production admin bypass disabled",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P0-10",
+          "name": "TypeScript strict mode",
+          "status": "skipped",
+          "actions": [
+            {
+              "id": "R-P0-10-A1",
+              "name": "TypeScript strict mode",
+              "status": "skipped",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-13T12:00:00Z",
+              "notes": "延后，历史代码 any 类型太多（ADR-006）"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "Phase 1",
+      "name": "质量与安全加固",
+      "status": "in_progress",
+      "tasks": [
+        {
+          "id": "R-P1-01",
+          "name": "前端单元测试框架搭建（Vitest）",
+          "priority": "P1",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-01-A1",
+              "name": "前端单元测试框架搭建（Vitest）",
+              "status": "done",
+              "pr": "#203",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-02",
+          "name": "CI 加 yarn audit 安全扫描",
+          "priority": "P1",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-02-A1",
+              "name": "CI 加 yarn audit 安全扫描",
+              "status": "done",
+              "pr": "#199",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-03",
+          "name": "E2E 加 WebKit 浏览器",
+          "priority": "P2",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-03-A1",
+              "name": "E2E 加 WebKit 浏览器",
+              "status": "done",
+              "pr": "#188",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-04",
+          "name": "AI Reviewer 2 (Claude) 启用",
+          "priority": "P2",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-04-A1",
+              "name": "AI Reviewer 2 (Claude) 启用",
+              "status": "done",
+              "pr": "#189",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-05",
+          "name": "AI Reviewer 3 (架构审查) 启用",
+          "priority": "P3",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-05-A1",
+              "name": "AI Reviewer 3 (架构审查) 启用",
+              "status": "done",
+              "pr": "#190",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-06",
+          "name": "Production Smoke Test",
+          "priority": "P2",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-06-A1",
+              "name": "Production Smoke Test",
+              "status": "done",
+              "pr": "#200",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-07",
+          "name": "Playwright 巡检频率调整",
+          "priority": "P2",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-07-A1",
+              "name": "Playwright 巡检频率调整",
+              "status": "done",
+              "pr": "#201",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": "2小时→15分钟"
+            }
+          ]
+        },
+        {
+          "id": "R-P1-08",
+          "name": "Sentry 性能监控完善",
+          "priority": "P2",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-08-A1",
+              "name": "Sentry 性能监控完善",
+              "status": "done",
+              "pr": "#202",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-09",
+          "name": "CI Gate v2 (Bot auto-approve)",
+          "priority": "P1",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-09-A1",
+              "name": "CI Gate v2 (Bot auto-approve)",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-14T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-10",
+          "name": "CI Gate: Issue 标签 + PR 元数据检查",
+          "priority": "P1",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-10-A1",
+              "name": "Issue/PR 元数据检查",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-14T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-11",
+          "name": "ROADMAP 追溯机制",
+          "priority": "P1",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P1-11-A1",
+              "name": "ROADMAP traceability baseline",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-14T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P1-24",
+          "name": "原子化执行保障体系 (EGP)",
+          "priority": "P0",
+          "status": "in_progress",
+          "actions": [
+            {
+              "id": "R-P1-24-A1",
+              "name": "创建 TASK-REGISTRY.json + Schema",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-18T00:00:00Z",
+              "notes": "egp-bootstrap — 前端 EGP 体系初始化"
+            },
+            {
+              "id": "R-P1-24-A2",
+              "name": "check-execution-protocol.yml CI 门禁",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-18T00:00:00Z",
+              "notes": "egp-bootstrap — 前端 EGP CI 门禁部署"
+            },
+            {
+              "id": "R-P1-24-A3",
+              "name": "前端 ROADMAP.md 创建",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-18T00:00:00Z",
+              "notes": "egp-bootstrap — 前端路线图文档"
+            },
+            {
+              "id": "R-P1-24-A4",
+              "name": "端到端验证",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": "初始化 PR 合并后进行验证"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "Phase 1.5",
+      "name": "Phase 1 遗留收尾",
+      "status": "in_progress",
+      "tasks": [
+        {
+          "id": "R-P1-12",
+          "name": "M3 结账流程",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P1-12-A1",
+              "name": "结账流程",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": "当前进度 ~95%"
+            }
+          ]
+        },
+        {
+          "id": "R-P1-13",
+          "name": "M4 订单管理",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P1-13-A1",
+              "name": "订单管理",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": "当前进度 92%"
+            }
+          ]
+        },
+        {
+          "id": "R-P1-14",
+          "name": "M5 退款系统",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P1-14-A1",
+              "name": "退款系统",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": "当前进度 ~95%"
+            }
+          ]
+        },
+        {
+          "id": "R-P1-15",
+          "name": "M6 用户账户",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P1-15-A1",
+              "name": "用户账户",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": "当前进度 92%"
+            }
+          ]
+        },
+        {
+          "id": "R-P1-16",
+          "name": "M9 支付系统",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P1-16-A1",
+              "name": "支付系统",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": "当前进度 ~95%"
+            }
+          ]
+        },
+        {
+          "id": "R-P1-17",
+          "name": "M16a SEO 基础",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P1-17-A1",
+              "name": "SEO 基础",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": "当前进度 85%"
+            }
+          ]
+        },
+        {
+          "id": "R-P1-18",
+          "name": "M18a 安全合规基础",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P1-18-A1",
+              "name": "安全合规基础",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": "当前进度 85%"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "Phase 2",
+      "name": "监控与运维完善",
+      "status": "in_progress",
+      "tasks": [
+        {
+          "id": "R-P2-01",
+          "name": "DORA 度量工作流",
+          "priority": "P1",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P2-01-A1",
+              "name": "DORA 度量工作流",
+              "status": "done",
+              "pr": "#183",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P2-02",
+          "name": "Lighthouse CI",
+          "priority": "P2",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P2-02-A1",
+              "name": "Lighthouse CI",
+              "status": "done",
+              "pr": "#163",
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P2-03",
+          "name": "Bundle Size 检查",
+          "priority": "P2",
+          "status": "done",
+          "actions": [
+            {
+              "id": "R-P2-03-A1",
+              "name": "Bundle Size 检查",
+              "status": "done",
+              "pr": null,
+              "issue": null,
+              "completed_at": "2026-03-17T00:00:00Z",
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P2-04",
+          "name": "Sentry 告警接入",
+          "priority": "P2",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P2-04-A1",
+              "name": "Sentry 告警接入",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P2-05",
+          "name": "SLO/SLA 定义",
+          "priority": "P3",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P2-05-A1",
+              "name": "SLO/SLA 定义",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "Phase 3",
+      "name": "功能开发",
+      "status": "planned",
+      "tasks": [
+        {
+          "id": "R-P3-01",
+          "name": "多品牌扩展",
+          "priority": "P1",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P3-01-A1",
+              "name": "多品牌扩展",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P3-02",
+          "name": "高级 SEO",
+          "priority": "P2",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P3-02-A1",
+              "name": "高级 SEO",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P3-03",
+          "name": "国际化 i18n",
+          "priority": "P2",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P3-03-A1",
+              "name": "国际化 i18n",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P3-04",
+          "name": "营销系统",
+          "priority": "P3",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P3-04-A1",
+              "name": "营销系统",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P3-05",
+          "name": "CMS 内容管理",
+          "priority": "P3",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P3-05-A1",
+              "name": "CMS 内容管理",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "Phase 4",
+      "name": "优化与扩展",
+      "status": "planned",
+      "tasks": [
+        {
+          "id": "R-P4-01",
+          "name": "高级安全合规",
+          "priority": "P2",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P4-01-A1",
+              "name": "高级安全合规",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P4-02",
+          "name": "社媒集成",
+          "priority": "P2",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P4-02-A1",
+              "name": "社媒集成",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P4-03",
+          "name": "性能优化",
+          "priority": "P2",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P4-03-A1",
+              "name": "性能优化",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P4-04",
+          "name": "Feature Flags",
+          "priority": "P3",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P4-04-A1",
+              "name": "Feature Flags",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
+        },
+        {
+          "id": "R-P4-05",
+          "name": "AI 个性化推荐",
+          "priority": "P3",
+          "status": "planned",
+          "actions": [
+            {
+              "id": "R-P4-05-A1",
+              "name": "AI 个性化推荐",
+              "status": "planned",
+              "pr": null,
+              "issue": null,
+              "completed_at": null,
+              "notes": null
+            }
+          ]
         }
       ]
     }

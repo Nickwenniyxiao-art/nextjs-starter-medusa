@@ -18,3 +18,7 @@
 # Document registry and library - governance core
 /DOC-REGISTRY.json @Nickwenniyxiao-art
 /docs/standards/DOC-LIBRARY.json @Nickwenniyxiao-art
+
+# Core governance documents
+/docs/ROADMAP.md @Nickwenniyxiao-art
+/docs/TASK-REGISTRY.json @Nickwenniyxiao-art
