@@ -1,0 +1,62 @@
+name: Scope Validation
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    branches: [develop]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check-scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate changed modules are in FEATURE-LIST
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const prLabels = context.payload.pull_request.labels.map(l => l.name);
+            if (prLabels.includes('no-issue') || prLabels.includes('egp-bootstrap') || prLabels.includes('hotfix')) {
+              console.log('✅ Skipping scope check for exempt PR');
+              return;
+            }
+            let featureList = '';
+            try {
+              featureList = fs.readFileSync('docs/FEATURE-LIST.md', 'utf8');
+            } catch(e) {
+              core.warning('docs/FEATURE-LIST.md not found — scope check skipped. Please create this file.');
+              return;
+            }
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100
+            });
+            const changedModules = new Set();
+            for (const file of files) {
+              const match = file.filename.match(/^src\/(?:modules?|components?|lib|app)\/([^\/]+)/);
+              if (match) changedModules.add(match[1].toLowerCase());
+            }
+            if (changedModules.size === 0) {
+              console.log('✅ No module-level changes detected');
+              return;
+            }
+            const missing = [];
+            for (const mod of changedModules) {
+              if (!featureList.toLowerCase().includes(mod)) {
+                missing.push(mod);
+              }
+            }
+            if (missing.length > 0) {
+              core.setFailed(
+                `❌ 范围校验失败：以下模块不在 docs/FEATURE-LIST.md 中：\n${missing.map(m => `  - ${m}`).join('\n')}\n\n请先更新 FEATURE-LIST.md 并走变更管理流程，再提交代码。\n如果这是基础设施变更，请添加 no-issue 标签。`
+              );
+            } else {
+              console.log(`✅ 范围校验通过`);
+            }

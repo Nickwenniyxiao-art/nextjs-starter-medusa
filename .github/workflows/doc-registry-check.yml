@@ -1,0 +1,118 @@
+name: Doc Registry Check
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'DOC-REGISTRY.json'
+
+permissions:
+  contents: read
+
+jobs:
+  registry-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Registry Consistency
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Skip for infrastructure / no-issue PRs
+            const prLabels = context.payload.pull_request?.labels?.map(l => l.name) || [];
+            if (prLabels.includes('no-issue') || prLabels.includes('hotfix') || prLabels.includes('type: infra')) {
+              console.log('✅ Skipping registry check for infra/no-issue PR');
+              return;
+            }
+
+            const fs = require('fs');
+            const path = require('path');
+            const errors = [];
+            const warnings = [];
+
+            // --- Load JSON files ---
+            let library, registry;
+            try {
+              library = JSON.parse(fs.readFileSync('docs/standards/DOC-LIBRARY.json', 'utf8'));
+            } catch (e) {
+              core.setFailed('Cannot read docs/standards/DOC-LIBRARY.json: ' + e.message);
+              return;
+            }
+            try {
+              registry = JSON.parse(fs.readFileSync('DOC-REGISTRY.json', 'utf8'));
+            } catch (e) {
+              core.setFailed('Cannot read DOC-REGISTRY.json: ' + e.message);
+              return;
+            }
+
+            // --- Build lookup sets ---
+            const libraryIds = new Set(library.documents.map(d => d.id));
+            const registeredFiles = new Set(registry.documents.map(d => d.file || d.path));
+            const registeredIds = new Set(registry.documents.map(d => d.id));
+
+            // --- Whitelist directories (not subject to registry check) ---
+            const whitelist = ['docs/standards/'];
+
+            // --- 1. Scan docs/ for unregistered files (野文档) ---
+            function walkDir(dir) {
+              const entries = fs.readdirSync(dir, { withFileTypes: true });
+              const files = [];
+              for (const entry of entries) {
+                const fullPath = path.join(dir, entry.name);
+                if (entry.isDirectory()) {
+                  files.push(...walkDir(fullPath));
+                } else if (entry.name.endsWith('.md')) {
+                  files.push(fullPath);
+                }
+              }
+              return files;
+            }
+
+            const docsFiles = walkDir('docs');
+
+            for (const file of docsFiles) {
+              if (whitelist.some(w => file.startsWith(w))) continue;
+              if (!registeredFiles.has(file)) {
+                errors.push(`Unregistered doc (野文档): ${file} — not found in DOC-REGISTRY.json`);
+              }
+            }
+
+            // --- 2. Check registered files actually exist ---
+            for (const doc of registry.documents) {
+              const filePath = doc.file || doc.path;
+              if (filePath && !fs.existsSync(filePath) && doc.status === 'exists') {
+                warnings.push(`Phantom doc: ${filePath} (id: ${doc.id}) registered as "exists" but file not found`);
+              }
+            }
+
+            // --- Output Report ---
+            let report = '# Doc Registry Check Report\n\n';
+            report += `**Docs scanned**: ${docsFiles.length}\n`;
+            report += `**Registry entries**: ${registry.documents.length}\n\n`;
+
+            if (errors.length === 0 && warnings.length === 0) {
+              report += '✅ All documents are properly registered.\n';
+              core.info('Registry check passed.');
+            } else {
+              if (errors.length > 0) {
+                report += `### ❌ Errors (${errors.length})\n\n`;
+                for (const err of errors) {
+                  report += `- ${err}\n`;
+                }
+                report += '\n';
+              }
+              if (warnings.length > 0) {
+                report += `### ⚠️ Warnings (${warnings.length})\n\n`;
+                for (const w of warnings) {
+                  report += `- ${w}\n`;
+                }
+              }
+            }
+
+            core.summary.addRaw(report);
+            await core.summary.write();
+
+            if (errors.length > 0) {
+              core.setFailed(`${errors.length} registry consistency errors found.`);
+            }

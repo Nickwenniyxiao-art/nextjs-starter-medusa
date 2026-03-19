@@ -1,0 +1,111 @@
+name: Sentry Alert Monitor
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-sentry-errors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Query Sentry error rate
+        id: sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        run: |
+          if [ -z "$SENTRY_AUTH_TOKEN" ] || [ -z "$SENTRY_ORG" ] || [ -z "$SENTRY_PROJECT" ]; then
+            echo "⚠️ Sentry credentials not configured, skipping"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Query events from the last hour
+          SINCE=$(date -u -d '1 hour ago' '+%Y-%m-%dT%H:%M:%S' 2>/dev/null || date -u -v-1H '+%Y-%m-%dT%H:%M:%S')
+          UNTIL=$(date -u '+%Y-%m-%dT%H:%M:%S')
+
+          RESPONSE=$(curl -s \
+            -H "Authorization: Bearer $SENTRY_AUTH_TOKEN" \
+            "https://sentry.io/api/0/projects/$SENTRY_ORG/$SENTRY_PROJECT/stats/?stat=received&since=$(date -u -d '1 hour ago' +%s 2>/dev/null || date -u -v-1H +%s)&until=$(date -u +%s)&resolution=1h")
+
+          # Extract event count (last data point)
+          EVENT_COUNT=$(echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          if isinstance(data, list) and len(data) > 0:
+              print(data[-1][1])
+          else:
+              print(0)
+          " 2>/dev/null || echo "0")
+
+          echo "event_count=$EVENT_COUNT" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "📊 Sentry events in last hour: $EVENT_COUNT"
+
+      - name: Check threshold and alert
+        if: steps.sentry.outputs.skip != 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          EVENT_COUNT: ${{ steps.sentry.outputs.event_count }}
+          # Alert if more than 100 errors in the last hour
+          ERROR_THRESHOLD: '100'
+        run: |
+          if [ "$EVENT_COUNT" -gt "$ERROR_THRESHOLD" ]; then
+            SENTRY_URL="https://sentry.io/organizations/$SENTRY_ORG/issues/?project=$SENTRY_PROJECT"
+            chmod +x scripts/telegram-notify.sh
+            ./scripts/telegram-notify.sh \
+              "⚠️ *Sentry 错误率异常*\n\n过去 1 小时内捕获 *${EVENT_COUNT}* 个错误（阈值: ${ERROR_THRESHOLD}）\n\n[查看 Sentry Issues]($SENTRY_URL)" \
+              "⚠️"
+            echo "🚨 Alert sent: $EVENT_COUNT errors exceeds threshold $ERROR_THRESHOLD"
+          else
+            echo "✅ Error count $EVENT_COUNT within threshold $ERROR_THRESHOLD, no alert needed"
+          fi
+
+      - name: Create GitHub issue on sustained high errors
+        if: steps.sentry.outputs.skip != 'true' && steps.sentry.outputs.event_count > 500
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const eventCount = '${{ steps.sentry.outputs.event_count }}';
+            const org = process.env.SENTRY_ORG || 'your-org';
+            const project = process.env.SENTRY_PROJECT || 'nordhjem-frontend';
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 [P1] Sentry 错误率严重异常 — 1小时内 ${eventCount} 个错误`,
+              body: [
+                '## 告警详情',
+                '',
+                `- **错误数**: ${eventCount} (过去 1 小时)`,
+                `- **告警阈值**: 500`,
+                `- **告警时间**: ${new Date().toISOString()}`,
+                '',
+                '## 处置步骤',
+                '',
+                '1. 查看 [Sentry Issues](https://sentry.io) 确认错误类型',
+                '2. 检查是否与最近部署相关（对照 DEPLOY-LOG.md）',
+                '3. 评估是否需要回滚',
+                '4. 参考 [docs/runbook.md](docs/runbook.md) 执行响应流程',
+                '',
+                '> 此 Issue 由 Sentry Alert Monitor 自动创建'
+              ].join('\n'),
+              labels: ['bug', 'P1', 'monitoring']
+            });
+        env:
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}

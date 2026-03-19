@@ -185,18 +185,28 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.CD_PAT }}
+          token: ${{ secrets.BOT_PAT }}
 
-      - name: Merge staging into main
+      - name: Create promote PR (staging → main)
+        env:
+          GH_TOKEN: ${{ secrets.BOT_PAT }}
+          CD_PAT: ${{ secrets.CD_PAT }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git checkout main
-          git merge origin/staging --no-edit --ff-only
-          if [ $? -ne 0 ]; then
-            echo "❌ Fast-forward merge failed — main has diverged from staging."
-            echo "Please manually resolve the conflict or reset main."
-            exit 1
+          EXISTING_PR=$(gh pr list --repo ${{ github.repository }} --base main --head staging --json number --jq '.[0].number' 2>/dev/null || echo "")
+          if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
+            PR_NUMBER="$EXISTING_PR"
+            echo "Promote PR #${PR_NUMBER} already exists"
+          else
+            printf '## Promote: staging to production\n\nStaging deploy and E2E tests passed.\n\n**Owner approval required to deploy to production.**\n\n- Staging deploy: OK\n- E2E tests: OK\n- Awaiting Owner approve\n' > /tmp/promote-pr-body.txt
+            PR_URL=$(gh pr create \
+              --repo ${{ github.repository }} \
+              --base main \
+              --head staging \
+              --title "release: promote staging to production" \
+              --body-file /tmp/promote-pr-body.txt)
+            PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+            echo "Promote PR #${PR_NUMBER} created"
           fi
-          git push origin main
+
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "✅ Promote PR #${PR_NUMBER} ready — waiting for Owner approval"

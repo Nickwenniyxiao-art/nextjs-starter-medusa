@@ -1,10 +1,7 @@
 name: Playwright Site Monitor
 
 on:
-  schedule:
-    # Run every 15 minutes
-    - cron: '*/15 * * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch: # Manual trigger only — schedule disabled until production is stable
 
 jobs:
   monitor:

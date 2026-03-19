@@ -9,8 +9,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  wait-for-ci:
+    name: "⏳ Wait for CI"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Wait for CI to pass
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const sha = context.sha;
+            for (let i = 1; i <= 30; i++) {
+              core.info(`Attempt ${i}/30: checking CI status...`);
+              const { data: runs } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner, repo, head_sha: sha, event: 'push',
+              });
+              const ciRun = runs.workflow_runs.find(r => r.name === 'CI');
+              if (ciRun) {
+                core.info(`CI: ${ciRun.status} / ${ciRun.conclusion}`);
+                if (ciRun.status === 'completed') {
+                  if (ciRun.conclusion === 'success') {
+                    core.info('CI completed successfully');
+                    await new Promise(r => setTimeout(r, 10000));
+                    return;
+                  } else {
+                    core.setFailed(`CI failed: ${ciRun.conclusion}`);
+                    return;
+                  }
+                }
+              }
+              await new Promise(r => setTimeout(r, 15000));
+            }
+            core.warning('CI did not complete in time, proceeding anyway...');
+
   deploy-test:
     name: "🚀 Deploy → Test"
+    needs: wait-for-ci
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

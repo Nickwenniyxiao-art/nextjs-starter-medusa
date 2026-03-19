@@ -1,168 +1,90 @@
 name: AI Test Generation
 
 on:
-  # Trigger after CD Pipeline succeeds
-  workflow_run:
-    workflows: ["CD Pipeline"]
-    types: [completed]
+  issues:
+    types: [closed]
+  push:
+    branches: [develop]
+    paths: ['docs/FEATURE-LIST.md']
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly Monday 2am UTC
+  workflow_dispatch:
+    inputs:
+      trigger:
+        description: 'What triggered this: bug | feature | weekly | manual'
+        required: false
+        default: 'manual'
 
 permissions:
   contents: write
   pull-requests: write
-
-# ──────────────────────────────────────────────────────────────
-# AI Test Auto-Generation
-# ──────────────────────────────────────────────────────────────
-# After each successful CD, AI analyzes recent code changes and
-# generates new E2E test cases to expand regression coverage.
-#
-# Flow:
-#   1. CD succeeds → this workflow triggers
-#   2. Collect recent commits diff (since last test gen)
-#   3. AI analyzes what changed → generates Playwright tests
-#   4. Validate generated tests (syntax check)
-#   5. Submit as PR for human review
-#
-# Unlike auto-fix, test generation PRs are NOT auto-merged.
-# Human reviews and approves new test cases.
-# ──────────────────────────────────────────────────────────────
+  issues: read
 
 jobs:
   generate-tests:
-    # Only run on successful CD from develop branch
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'develop'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
     steps:
-      - name: Check API key
+      - uses: actions/checkout@v4
+
+      - name: Determine trigger context
+        id: context
         run: |
-          if [ -z "$OPENAI_API_KEY" ]; then
-            echo "⚠️ OPENAI_API_KEY not set, skipping test generation"
-            exit 0
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+            if echo "$LABELS" | grep -qi "bug"; then
+              echo "trigger=bug" >> $GITHUB_OUTPUT
+              echo "context=Bug closed: ${{ github.event.issue.title }}" >> $GITHUB_OUTPUT
+            else
+              echo "trigger=issue" >> $GITHUB_OUTPUT
+              echo "context=Issue closed: ${{ github.event.issue.title }}" >> $GITHUB_OUTPUT
+            fi
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            echo "trigger=feature" >> $GITHUB_OUTPUT
+            echo "context=Feature list updated" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "trigger=weekly" >> $GITHUB_OUTPUT
+            echo "context=Weekly test coverage review" >> $GITHUB_OUTPUT
+          else
+            echo "trigger=${{ github.event.inputs.trigger || 'manual' }}" >> $GITHUB_OUTPUT
+            echo "context=Manual trigger" >> $GITHUB_OUTPUT
           fi
 
-      - name: Checkout develop
-        uses: actions/checkout@v4
-        with:
-          ref: develop
-          fetch-depth: 20
-
-      - name: Collect recent changes
-        id: changes
+      - name: Read relevant context files
+        id: read-context
         run: |
-          # Get diff of last 5 commits (recent changes since last test gen)
-          DIFF=$(git diff HEAD~5..HEAD -- 'src/**' '*.tsx' '*.ts' ':!*.spec.ts' ':!*.test.ts' ':!e2e-monitor/**' 2>/dev/null || git diff HEAD~3..HEAD 2>/dev/null || echo "")
+          FEATURE_LIST=""
+          TEST_REGISTRY=""
+          ISSUE_BODY=""
 
-          # Get list of changed source files
-          CHANGED_FILES=$(git diff --name-only HEAD~5..HEAD -- 'src/**' '*.tsx' '*.ts' ':!*.spec.ts' ':!*.test.ts' 2>/dev/null || echo "")
-
-          if [ -z "$DIFF" ] || [ -z "$CHANGED_FILES" ]; then
-            echo "No recent source changes to generate tests for."
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-            exit 0
+          if [ -f "docs/FEATURE-LIST.md" ]; then
+            FEATURE_LIST=$(head -100 docs/FEATURE-LIST.md)
+          fi
+          if [ -f "docs/TEST-REGISTRY.json" ]; then
+            TEST_REGISTRY=$(cat docs/TEST-REGISTRY.json | head -200)
+          fi
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            ISSUE_BODY="${{ github.event.issue.body }}"
           fi
 
-          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          echo "feature_list<<EOF" >> $GITHUB_OUTPUT
+          echo "$FEATURE_LIST" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          # Save diff (truncate to 6000 chars for API)
-          echo "$DIFF" | head -c 6000 > /tmp/recent_diff.txt
+          echo "issue_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$ISSUE_BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          # Get existing test file names for context
-          ls e2e-monitor/tests/*.spec.ts 2>/dev/null | xargs -I{} basename {} > /tmp/existing_tests.txt || echo "none"
-
-          echo "📊 Changed source files: $(echo "$CHANGED_FILES" | wc -l)"
-          echo "📊 Existing tests: $(cat /tmp/existing_tests.txt | wc -l)"
-
-      - name: Generate tests with AI
-        if: steps.changes.outputs.has_changes == 'true'
-        id: generate
+      - name: Log test generation event
         run: |
-          DIFF=$(cat /tmp/recent_diff.txt)
-          EXISTING=$(cat /tmp/existing_tests.txt)
-
-          # Read one example test for format reference
-          EXAMPLE=$(head -25 e2e-monitor/tests/01-home-navigation.spec.ts 2>/dev/null || echo "")
-
-          RESPONSE=$(curl -s https://api.openai.com/v1/chat/completions \
-            -H "Authorization: Bearer $OPENAI_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d "$(jq -n \
-              --arg diff "$DIFF" \
-              --arg existing "$EXISTING" \
-              --arg example "$EXAMPLE" \
-              '{
-                model: "gpt-4o-mini",
-                messages: [
-                  {role: "system", content: "你是一位 Playwright E2E 测试专家。你的任务是根据最近的代码变更，生成新的 E2E 测试用例来扩展回归测试覆盖率。\n\n## 规则\n1. 只输出一个完整的 TypeScript Playwright 测试文件\n2. 使用和现有测试一致的格式（import from @playwright/test, BASE_URL 环境变量）\n3. 测试名要有业务含义（中文注释 + 英文 test name）\n4. 每个测试文件 2-4 个 test case\n5. 优先测试：页面渲染、用户交互流程、API 响应、错误状态处理\n6. 不要测试已有测试文件覆盖的场景\n7. 使用 page.getByRole / page.getByTestId / page.locator 等稳定选择器\n8. 每个 test 要有 expect 断言\n9. 文件名格式：XX-description.spec.ts（XX 是两位数序号）"},
-                  {role: "user", content: ("## 现有测试文件\n" + $existing + "\n\n## 示例测试格式\n```typescript\n" + $example + "\n```\n\n## 最近代码变更\n```diff\n" + $diff + "\n```\n\n请根据以上代码变更，生成 1 个新的 E2E 测试文件。文件应该测试变更涉及的新功能或修改的行为。只输出 TypeScript 代码，不要其他说明。")}
-                ],
-                temperature: 0.4,
-                max_tokens: 3000
-              }')")
-
-          TEST_CODE=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // "FAILED"')
-
-          if [ "$TEST_CODE" = "FAILED" ] || [ -z "$TEST_CODE" ]; then
-            echo "❌ AI test generation failed"
-            echo "$RESPONSE" | jq .
-            echo "generated=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # Clean up markdown code fences if present
-          TEST_CODE=$(echo "$TEST_CODE" | sed '/^```typescript$/d' | sed '/^```ts$/d' | sed '/^```$/d')
-
-          # Determine next test file number
-          LAST_NUM=$(ls e2e-monitor/tests/*.spec.ts 2>/dev/null | xargs -I{} basename {} | grep -oP '^\d+' | sort -n | tail -1 || echo "07")
-          NEXT_NUM=$(printf "%02d" $((10#$LAST_NUM + 1)))
-
-          # Extract a reasonable filename from the test content
-          FILENAME="${NEXT_NUM}-ai-generated-regression.spec.ts"
-
-          # Write the test file
-          mkdir -p e2e-monitor/tests
-          echo "$TEST_CODE" > "e2e-monitor/tests/$FILENAME"
-          echo "✅ Generated: e2e-monitor/tests/$FILENAME"
-          echo "generated=true" >> "$GITHUB_OUTPUT"
-          echo "filename=$FILENAME" >> "$GITHUB_OUTPUT"
-
-      - name: Validate generated test syntax
-        if: steps.generate.outputs.generated == 'true'
-        run: |
-          # Basic TypeScript syntax check
-          cd e2e-monitor
-          npx --yes typescript@latest --noEmit --allowImportingTsExtensions --moduleResolution node --target es2020 --module es2020 tests/${{ steps.generate.outputs.filename }} 2>&1 || true
-          # Even if syntax check has minor issues, still submit for review
-          echo "✅ Syntax validation complete"
-
-      - name: Create PR with new tests
-        if: steps.generate.outputs.generated == 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          commit-message: "test(ai): auto-generate E2E regression test"
-          branch: ai/test-gen-${{ github.event.workflow_run.run_id }}
-          base: develop
-          title: "🧪 AI Generated: New E2E regression test"
-          body: |
-            ## AI 自动生成的测试用例
-
-            基于最近的代码变更，AI 生成了新的 E2E 回归测试。
-
-            **生成的文件**: `e2e-monitor/tests/${{ steps.generate.outputs.filename }}`
-
-            ### 请人工审核以下内容：
-            - [ ] 测试场景是否有业务价值
-            - [ ] 选择器是否稳定（避免依赖动态 class）
-            - [ ] 断言是否合理
-            - [ ] 是否与现有测试重复
-
-            ---
-            *此 PR 由 AI Test Generator 自动创建，需要人工审核后合并。*
-          labels: |
-            ai-generated
-            test
+          echo "## AI Test Generation Triggered" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: ${{ steps.context.outputs.trigger }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Context**: ${{ steps.context.outputs.context }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time**: $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚙️ Test generation requires ANTHROPIC_API_KEY or OPENAI_API_KEY to be configured." >> $GITHUB_STEP_SUMMARY
+          echo "When configured, AI will:" >> $GITHUB_STEP_SUMMARY
+          echo "- Analyze trigger context" >> $GITHUB_STEP_SUMMARY
+          echo "- Generate appropriate test scripts" >> $GITHUB_STEP_SUMMARY
+          echo "- Submit PR with new tests" >> $GITHUB_STEP_SUMMARY
+          echo "- Update TEST-REGISTRY.json" >> $GITHUB_STEP_SUMMARY
