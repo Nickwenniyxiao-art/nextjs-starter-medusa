@@ -7,7 +7,7 @@ const getTitleLocator = async (page: Page) => {
   const productContainer = page.getByTestId('product-container')
 
   if (await productContainer.count()) {
-    return productContainer.getByTestId('product-title')
+    return productContainer.getByTestId('product-title').first()
   }
 
   return page.locator('[data-testid="product-title"]').first()
