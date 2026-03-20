@@ -3339,6 +3339,15 @@
       "module": "INFRA",
       "status": "active",
       "description": "批量更新 Phase 1/2 已完成任务的状态标记"
+    },
+    {
+      "id": "UNIT-TEST-COVERAGE-GATE-FRONTEND",
+      "title": "前端单元测试覆盖率门禁",
+      "path": "vitest.config.ts",
+      "type": "config",
+      "module": "INFRA",
+      "status": "active",
+      "description": "Vitest 覆盖率门禁配置（阈值 20%）"
     }
   ]
 }
