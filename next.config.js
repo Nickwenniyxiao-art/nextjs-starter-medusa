@@ -5,6 +5,9 @@ const { withSentryConfig } = require("@sentry/nextjs")
 checkEnvVariables()
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts")
+const shouldUploadSourcemaps = Boolean(
+  process.env.CI && process.env.SENTRY_AUTH_TOKEN
+)
 
 /**
  * Medusa Cloud-related environment variables
@@ -83,17 +86,17 @@ const nextConfig = {
   },
 }
 
-module.exports = withSentryConfig(
-  withNextIntl(nextConfig),
-  {
-    silent: true,
-    org: "huan-xiao-5d",
-    project: "nordhjem-storefront",
+module.exports = withSentryConfig(withNextIntl(nextConfig), {
+  silent: true,
+  org: "huan-xiao-5d",
+  project: "nordhjem-storefront",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  sourcemaps: {
+    disable: !shouldUploadSourcemaps,
+    deleteSourcemapsAfterUpload: shouldUploadSourcemaps,
   },
-  {
-    hideSourceMaps: true,
-    transpileClientSDK: true,
-    tunnelRoute: "/monitoring",
-    reactComponentAnnotation: { enabled: false },
-  }
-)
+  hideSourceMaps: true,
+  transpileClientSDK: true,
+  tunnelRoute: "/monitoring",
+  reactComponentAnnotation: { enabled: false },
+})
