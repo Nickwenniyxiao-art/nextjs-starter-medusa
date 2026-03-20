@@ -37,7 +37,8 @@
     "recharts": "^2.12.7",
     "server-only": "^0.0.1",
     "tailwindcss-radix": "^2.8.0",
-    "webpack": "^5"
+    "webpack": "^5",
+    "@react-email/components": "file:vendor/react-email-components"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",

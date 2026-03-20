@@ -11964,11 +11964,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-email/components@file:vendor/react-email-components::locator=medusa-next%40workspace%3A.":
+  version: 0.0.19
+  resolution: "@react-email/components@file:vendor/react-email-components#vendor/react-email-components::hash=6c02f8&locator=medusa-next%40workspace%3A."
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10/5c07739ad7ccee8384146388b599bda36932083a4b7a127adea5b2775da4c302cbead92df90d7970ec8c96484ccf19724ef88a28db6293c615d6384c39d3bb33
+  languageName: node
+  linkType: hard
+
 "medusa-next@workspace:.":
   version: 0.0.0-use.local
   resolution: "medusa-next@workspace:."
   dependencies:
     "@babel/core": "npm:^7.17.5"
+    "@react-email/components": "file:vendor/react-email-components"
     "@headlessui/react": "npm:^2.2.0"
     "@jest/types": "npm:^29.6.3"
     "@medusajs/icons": "npm:latest"
